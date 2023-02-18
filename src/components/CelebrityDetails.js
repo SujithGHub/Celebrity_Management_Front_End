@@ -17,14 +17,14 @@ import VisibilitySharpIcon from '@mui/icons-material/VisibilitySharp';
 export const CelebrityDetails = () => {
   const navigate = useNavigate()
   const [celebrity, setCelebrity] = useState([]);
-    const[filter, setFilter]=useState([]);
-    const[search, setSearch]=useState([]);
+  const [filter, setFilter] = useState([]);
+  const [search, setSearch] = useState([]);
   useEffect(() => {
     getAllCelebrity();
   }, []);
 
   const getAllCelebrity = () => {
-    axios.get(`${REST_API}/celebrity/get-all-celebrity`, {headers : authHeader()}).then(res => {
+    axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() }).then(res => {
       setCelebrity(_.orderBy(res.data, 'name'));
       setFilter((_.orderBy(res.data, 'name')));
     }).catch(error => {
@@ -32,15 +32,15 @@ export const CelebrityDetails = () => {
     })
   }
 
-  const filterHandler= (e)=>{
+  const filterHandler = (e) => {
 
-    const filterResults=filter.filter(item=>item.name.toLowerCase().includes(e.target.value.toLowerCase()))
+    const filterResults = filter.filter(item => item.name.toLowerCase().includes(e.target.value.toLowerCase()))
     setCelebrity(filterResults)
     setSearch(e.target.value)
   }
 
   const deleteHandler = (id) => {
-    axios.delete(`${REST_API}/celebrity/${id}`,{headers: authHeader()}).then((res) => {
+    axios.delete(`${REST_API}/celebrity/${id}`, { headers: authHeader() }).then((res) => {
       getAllCelebrity();
     });
   }
@@ -62,24 +62,22 @@ export const CelebrityDetails = () => {
       <header className="header">
         <h3>Celebrity Details</h3>
         <div>
-        <TextField
-        style={{height: '60px'}}
-          id="filled-search"
-          label="Search Celebrity"
-          type="search"
-          variant="filled"
-          value={search}
-          onChange={(e) => filterHandler(e)}
-        />
-        <Button className="primary" style={{marginLeft: '2rem'}} onClick={() => handleLogOut()} variant="outlined" color="error">Log Out</Button>
+          <TextField
+            style={{ height: '60px' }}
+            id="filled-search"
+            label="Search Celebrity"
+            type="search"
+            variant="filled"
+            value={search}
+            onChange={(e) => filterHandler(e)}
+          />
+          <Button className="primary" style={{ marginLeft: '2rem' }} onClick={() => handleLogOut()} variant="outlined" color="error">Log Out</Button>
         </div>
       </header>
-      <body>
-      
         <div className="container" style={{ display: "flex", flexWrap: "wrap", maxWidth: "78rem" }} >
 
           {celebrity.map((celebrityItem, index) => (
-            <Card sx={{ maxWidth: 345, width: 345,height: '480px' ,margin: "30px", overflowWrap: 'break-word' }} key={celebrityItem?.id} >
+            <Card sx={{ maxWidth: 345, width: 345, height: '480px', margin: "30px", overflowWrap: 'break-word' }} key={celebrityItem?.id} >
               <CardActionArea >
                 <CardMedia
                   component="img"
@@ -87,29 +85,39 @@ export const CelebrityDetails = () => {
                   image="https://images.unsplash.com/photo-1550751464-57982110c246?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80"
                   alt="green iguana"
                 />
-                <CardContent style={{height: '150px'}}>
+                <CardContent style={{ height: '150px' }}>
                   <Typography gutterBottom variant="h5" component="div" style={{ textAlign: 'center' }} >
                     {celebrityItem.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" style={{textIndent: '1rem'}}>
+                  <Typography variant="body2" color="text.secondary" style={{ textIndent: '1rem' }}>
                     {celebrityItem.description}
                   </Typography>
                 </CardContent>
                 <div style={{ padding: '0px 1rem', height: '140px' }}>
-                  <h6>Date Of Birth : {celebrityItem?.dateOfBirth}</h6>
-                  <h6>Gender: {celebrityItem?.gender}</h6>
-                  <h6>Email : {celebrityItem?.mailId}</h6>
-                  <h6>Address: <p style={{ textIndent: '1rem' }}>{celebrityItem?.address}</p></h6>
+                  <h6><span className="celebrity-info">Date</span>: {celebrityItem?.dateOfBirth}</h6>
+                  <h6><span className="celebrity-info">Gender</span>: {celebrityItem?.gender}</h6>
+                  <h6><span className="celebrity-info">Email</span>: {celebrityItem?.mailId}</h6>
+                  <h6><span className="celebrity-info">Mobile</span>: {celebrityItem?.phoneNumber}</h6>
+                  <h6><span className="celebrity-info">Address</span>: {celebrityItem?.address}</h6>
                 </div>
               </CardActionArea>
               <div className='celebrity-container'>
-                <Tooltip title='view calendar'><VisibilitySharpIcon style={{cursor:'pointer' }} onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} /></Tooltip>
-                <IconButton aria-label="Update" title="Update" style={{ color: '#3f50b5' }} onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
-                  <BorderColorIcon />
-                </IconButton>
-                <IconButton aria-label="delete" title='Delete' style={{ color: 'red' }} onClick={() => deleteHandler(celebrityItem?.id)}>
-                  <DeleteIcon />
-                </IconButton>
+
+                <Tooltip title='View Event Details'>
+                  <IconButton aria-label="delete" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })}>
+                    <VisibilitySharpIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Edit'>
+                  <IconButton style={{ color: '#3f50b5' }} onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
+                    <BorderColorIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Delete'>
+                  <IconButton style={{ color: 'red' }} onClick={() => deleteHandler(celebrityItem?.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </div>
             </Card>
           ))}
@@ -117,7 +125,6 @@ export const CelebrityDetails = () => {
             <button style={{ width: '345px', height: '300px', background: '#FFF', margin: "30px" }} onClick={() => navigate('/add-celebrity-details')}><span style={{ fontSize: '100px' }}>+</span></button>
           </div>
         </div>
-      </body>
       {/* <div>
           <Button className="primary" variant="contained" onClick={() => handleDay('single')}></Button>
           <Button className="primary" variant="contained" onClick={() => handleDay('multiple')}></Button>

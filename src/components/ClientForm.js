@@ -83,12 +83,12 @@ export const ClientForm = () => {
     <div className="enquiry" >
       <div className="container" style={{ height: "100vh", textAlign: 'center', width: '100%' }}>
         <form className="container" onSubmit={(e) => handleSubmit(e)}>
-          <p style={{ fontSize: "45px", paddingBottom: "20px", paddingTop: "30px", }} >
+          <p style={{ fontSize: "45px", paddingBottom: "15px", paddingTop: "15px", }} >
             Enquiry Form
           </p>
-          <div className="row">
+          <div className="row client-input">
             <div className="col">
-              <TextField
+              <TextField className='client-text-field'
                 id="outlined-basic"
                 label="Organization Name"
                 name="organizationName"
@@ -100,11 +100,11 @@ export const ClientForm = () => {
               />
             </div>
             <div className="col">
-              <TextField
+              <TextField className='client-text-field'
                 id="outlined-basic"
-                name="organizerName"
+                name="name"
                 required
-                value={celebrityDetails?.organizerName}
+                value={celebrityDetails?.name}
                 onChange={changeHandler}
                 label="Contact Person Name"
                 variant="outlined"
@@ -113,7 +113,7 @@ export const ClientForm = () => {
           </div>
           <div className="row client-input">
             <div className="col">
-              <TextField
+              <TextField className='client-text-field'
                 id="outlined-basic"
                 type={"email"}
                 name="mailId"
@@ -133,12 +133,12 @@ export const ClientForm = () => {
               onChange={(num) => setPhoneNumber(num)}
               style={{ width: "400px " }}
             /> */}
-              <TextField
+              <TextField className='client-text-field'
                 id="outlined-basic"
-                label="Contact Person"
+                label="Contact Number"
                 variant="outlined"
-                name="contactPerson"
-                value={celebrityDetails?.contactPerson}
+                name="phoneNumber"
+                value={celebrityDetails?.phoneNumber}
                 required
                 onChange={changeHandler} p
               />
@@ -155,16 +155,16 @@ export const ClientForm = () => {
                 required
                 name="celebrity"
                 onChange={(event, value) => changeCelebrity(value)}
-                renderInput={(params) => <TextField {...params} label="Celebrity Name" style={{ width: '14rem' }} />}
+                renderInput={(params) => <TextField {...params} label="Celebrity Name" style={{ width: '25rem' }} />}
               />
             </div>
             <div className="col" >
-              <TextField
+              <TextField className='client-text-field'
                 id="outlined-basic"
                 label="Event Type"
                 variant="outlined"
-                name="eventType"
-                value={celebrityDetails?.eventType}
+                name="eventName"
+                value={celebrityDetails?.eventName}
                 required
                 onChange={changeHandler}
               />
@@ -173,7 +173,7 @@ export const ClientForm = () => {
           <div className="row client-input">
 
             <div className="col">
-              <TextField
+              <TextField className='client-text-field'
                 id="outlined-basic"
                 name="location"
                 required
@@ -185,26 +185,25 @@ export const ClientForm = () => {
             </div>
             <div className="col">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <ToggleButtonGroup
-
-                >
-                  <ToggleButton value="web" onClick={() => handleSingleDay()} style={{ width: '14rem'}}  >Date and Time</ToggleButton>
+                <ToggleButtonGroup>
+                  <ToggleButton value="web" onClick={() => handleSingleDay()} style={{ width: '25rem'}}  >Date and Time</ToggleButton>
                   {/* <ToggleButton value="android" onClick={() => handleMultiDay()}>Multi Day</ToggleButton> */}
                 </ToggleButtonGroup>
-
                 {singleDay ? <div>
                   <DateTimePicker
+                    minDate={new Date()}
                     value={startTime}
                     onChange={(newValue) => setStartTime(newValue)}
                     renderInput={(params) => (
-                      <TextField {...params} helperText="From" />
+                      <TextField {...params} style={{width: '12.5rem'}} helperText="From" />
                     )}
                   />
                   <DateTimePicker
+                    minDate={startTime}
                     value={endTime}
                     onChange={(newValue) => setEndTime(newValue)}
                     renderInput={(params) => (
-                      <TextField {...params} helperText="To" />
+                      <TextField {...params} style={{width: '12.5rem'}} helperText="To" />
                     )}
                   />
                 </div> : ""}

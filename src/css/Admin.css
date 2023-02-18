@@ -183,4 +183,12 @@ input[type="number"]::-webkit-outer-spin-button {
 .client-input {
   display: flex;
   justify-content: center;
+  margin-bottom: 20px;
+}
+.client-text-field{
+  width: 25rem;
+}
+.celebrity-info{
+  display: inline-block;
+  width: 80px;
 }
