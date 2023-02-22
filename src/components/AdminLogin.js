@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import "../css/Admin.css";
-import { authHeader, errorHandler } from "../util/Api";
+import { authHeader } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
 
 export const AdminLogin = () => {
@@ -40,7 +40,7 @@ export const AdminLogin = () => {
       navigate("/enquiry-details")
     })
       .catch((error) => {
-        errorHandler(error);
+        toast.error(error.message);
       });
   };
 

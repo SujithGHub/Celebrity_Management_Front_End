@@ -21,7 +21,7 @@ export function authHeader() {
   }
 }
 
- const logout =()=>{
+export const logout =()=>{
   localStorage.clear();
   window.location="/"
  }

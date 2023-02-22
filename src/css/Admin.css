@@ -137,7 +137,6 @@
 }
 .home header button {
   border-radius: 20px;
-  color: red;
 }
 header h1 {
   color: black;
@@ -191,4 +190,21 @@ input[type="number"]::-webkit-outer-spin-button {
 .celebrity-info{
   display: inline-block;
   width: 80px;
+}
+
+.custom-dateClick {
+  background-color: #e6e6e6;
+}
+.fc .fc-popover {
+  z-index: 1 !important;
+}
+.modal-button{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: 20px;
+}
+.from-to{
+  display: inline-block;
+  width: 50px;
 }

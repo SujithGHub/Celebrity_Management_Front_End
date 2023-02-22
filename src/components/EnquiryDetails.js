@@ -11,22 +11,50 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { authHeader } from '../util/Api';
-import BasicModal from '../util/BasicModal';
+import EnquiryModal from '../util/EnquiryDetailsModal';
+import StatusDropDown from '../util/StatusDropDown';
 import { REST_API } from '../util/EndPoints';
 
-export default function TestingCalendar() {
+export default function EnquiryDetails() {
 
   const navigate = useNavigate();
 
-  const [enquiry, setEnquiry] = useState([]);
   const [open, setOpen] = useState(false);
   const [editable, setEditable] = useState(false);
   const [eventInfo, setEventInfo] = useState([]);
   const [enquiryList, setEnquiryList] = useState([]);
-  const [formattedEnquiry, setFormattedEnquiry] = useState([]);
-  const [acceptedOrRejectedEnquiry, setAcceptedOrRejectedEnquiry] = useState([]);
-  const [pendingEnquiry, setPendingEnquiry] = useState([]);
   const [accepted, setAccepted] = useState(false);
+  const [rejected, setRejected] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [acceptedEnquiry, setAcceptedEnquiry] = useState([]);
+  const [rejectedEnquiry, setRejectedEnquiry] = useState([]);
+  const [pendingEnquiry, setPendingEnquiry] = useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleMenuClose = (event, value) => {
+    if(value === 'Accepted'){
+      setAccepted(true);
+      setRejected(false);
+      setPending(false);
+    } else if (value === 'Rejected'){
+      setAccepted(false);
+      setRejected(true);
+      setPending(false);
+    } else {
+      setPending(true);
+      setAccepted(false);
+      setRejected(false);
+    }
+    setAnchorEl(null);
+
+  };
+
+  const handleClick = (event, key) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const dropDownItem = ['Accepted', 'Rejected', 'Pending']
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -35,11 +63,11 @@ export default function TestingCalendar() {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Organizer name', align: 'center', headerAlign: 'center', width: 120 },
+    { field: 'name', headerName: 'Organizer name', align: 'center', headerAlign: 'center', width: 150 },
     { field: 'organizationName', headerName: 'Organization', align: 'center', headerAlign: 'center', width: 150 },
-    { field: 'eventName', headerName: 'Event Name', align: 'center', headerAlign: 'center', width: 170, },
+    { field: 'eventName', headerName: 'Event Name', align: 'center', headerAlign: 'center', width: 200, },
 
-    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', width: 120, valueGetter: (params) => params.row.celebrity?.name }
+    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', width: 120, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-'}
     ,
     { field: 'startTime', headerName: 'Start', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false, },
     { field: 'endTime', headerName: 'End', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false, },
@@ -75,7 +103,7 @@ export default function TestingCalendar() {
     {
       field: 'save',
       headerName: editable ? 'Save' : 'Edit',
-      hide: accepted,
+      hide: accepted || rejected,
       width: 90,
       align: 'center',
       headerAlign: 'center',
@@ -122,24 +150,14 @@ export default function TestingCalendar() {
   }, [])
 
   const getAllEnquiry = async () => {
-    await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader() }).
-      then(response => {
+    await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader()}).then(response => {
         const res = response.data;
         setEnquiryList(res);
-        console.log(res, "response");
-        // const formattedEnquiry = _.map(res, (en, index) => ({
-        //   id: en.id,
-        //   index: index + 1,
-        //   name: en.name,
-        //   eventName: en.eventName,
-        //   startTime: moment(en.startTime).format("LLL"),
-        //   endTime: moment(en.endTime).format("LLL"),
-        //   celebrity: en.celebrity
-        // }))
         const formattedEnquiry = _.map(res, (en, index) => ({         // total enquiry detail
           ...en, startTime: moment(en.startTime).format("LLL"), endTime: moment(en.endTime).format("LLL"),
         }));
-        setAcceptedOrRejectedEnquiry(formattedEnquiry.filter(en => en.status === "ACCEPTED" || en.status === "REJECTED"));
+        setAcceptedEnquiry(formattedEnquiry.filter(en => en.status === "ACCEPTED"));
+        setRejectedEnquiry(formattedEnquiry.filter(en => en.status === "REJECTED"));
         setPendingEnquiry(formattedEnquiry.filter(en => en.status === 'PENDING'))
       }).catch(error => {
         console.log(error);
@@ -148,7 +166,6 @@ export default function TestingCalendar() {
 
   const submitHandler = (schedule) => {
     const scheduleObj = _.filter(enquiryList, (en) => en.id === schedule.id);
-    console.log(scheduleObj, "scheduleObj");
     const saveSchedule = { ...scheduleObj[0], eventName: schedule.eventName, startTime: new Date(schedule.startTime).getTime(), endTime: new Date(schedule.endTime).getTime() };
     axios.post(`${REST_API}/enquiry`, saveSchedule, { headers: authHeader() }).then((response) => {
       setOpen(false);
@@ -163,23 +180,24 @@ export default function TestingCalendar() {
     <Box sx={{ height: 400, width: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 style={{ textAlign: 'center', padding: '1rem' }}>Enquiry Details</h3>
-        <Button onClick={() => navigate('/celebrity-details')}> ...Celebrity Details</Button>
+        <Button onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
       </div>
       <div style={{ textAlign: 'end', padding: '10px' }} >
-        <Button className='primary' color='info' title={accepted ? 'Show Pending' : 'Show Accepted/Rejected'} variant='contained' onClick={() => { setAccepted(!accepted) }}>{accepted ? 'Show Pending' : 'Show Acc/Rej'}</Button>
+        <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')}/>
       </div>
       <DataGrid
-        rows={accepted ? acceptedOrRejectedEnquiry : pendingEnquiry}
+        rows={(accepted === true ? acceptedEnquiry : rejected === true ? rejectedEnquiry : pendingEnquiry)}
         columns={columns}
-        disableColumnMenu
-        disableColumnFilter
-        disableColumnSelector
+        autoHeight
+        // disableColumnMenu
+        // disableColumnFilter
+        // disableColumnSelector
         pageSize={5}
         rowsPerPageOptions={[5]}
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
       />
-      {editable && open ? <BasicModal open={open} handleOpen={() => handleOpen()} handleClose={() => handleClose()} eventInfo={eventInfo} submitHandler={submitHandler} /> : ""}
+      {editable && open ? <EnquiryModal open={open} handleOpen={() => handleOpen()} handleClose={() => handleClose()} eventInfo={eventInfo} submitHandler={submitHandler} /> : ""}
     </Box>
   );
 }

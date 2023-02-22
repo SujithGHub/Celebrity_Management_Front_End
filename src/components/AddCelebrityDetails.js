@@ -13,6 +13,7 @@ import moment from "moment";
 import { MuiTelInput } from "mui-tel-input";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { authHeader, errorHandler } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
 import { isValidMobileNo } from "../util/Validation";
@@ -48,6 +49,7 @@ export const AddCelebrityDetails = () => {
       const celebrity = { ...celebrityDetails, dateOfBirth: moment(value?.$d).format('L') }
       axios.post(`${REST_API}/celebrity`, celebrity, { headers: authHeader() }).then((res) => {
         console.log(res.data, "response");
+        toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
         navigate('/celebrity-details')
       }).catch(error => {
         errorHandler(error);

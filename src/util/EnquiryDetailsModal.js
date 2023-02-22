@@ -55,12 +55,15 @@ export default function BasicModal(props) {
     >
       {/* For calender page event accept/reject in modal */}
       {props?.event ? <Box sx={style}>
+      <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold' }} >
+          {/* Available Events : {props.event} */}
+        </Typography>
         <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold' }} >
           {props.event?.title}
         </Typography>
         <Typography id="keep-mounted-modal-description" sx={{ mt: 2 }} >
-          <h6>Start Time: {moment(props.event?.start).format("ddd, hA")}</h6>
-          <h6>End Time: {moment(props.event?.end).format("ddd, hA")}</h6>
+          <h6>Start Time: {moment(props.event?.start).format('LLL')}</h6>
+          <h6>End Time: {moment(props.event?.end).format('LLL')}</h6>
         </Typography>
         {/* <div className='modal-buttons'>
           <Button color='primary' style={{ marginRight: '10px' }} onClick={() => props.handleStatusChange(props?.event?.id, 'accept')} variant='contained'>Accept</Button>

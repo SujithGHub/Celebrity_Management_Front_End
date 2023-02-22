@@ -5,8 +5,9 @@ import { DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
-import { MuiTelInput } from "mui-tel-input";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { authHeader, errorHandler } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
 
@@ -38,7 +39,6 @@ export const ClientForm = () => {
   const getAllCelebrity = () => {
     axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() })
       .then((res) => {
-        console.log(res.data);
         setActorName(res.data);
       }).catch(error => {
         errorHandler(error)
@@ -46,23 +46,18 @@ export const ClientForm = () => {
   }
 
   const changeCelebrity = (value) => {
-    console.log(value);
     setCelebrityDetails({ ...celebrityDetails, celebrity: value })
   }
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
-
-    console.log(startTime?.$d, endTime?.$d);
-
-    const enquiryInfo = { ...celebrityDetails, phoneNumber: phoneNumber, startTime: startTime.$d, endTime: endTime.$d }
+    const enquiryInfo = { ...celebrityDetails, phoneNumber: phoneNumber, startTime: startTime, endTime: endTime }
     axios.post(`${REST_API}/enquiry`, enquiryInfo, { headers: authHeader() }).then(res => {
+      console.log(res.data);
+      toast.success(res?.data.message);
       window.location.reload();
-      console.log("Success", res.data);
     }).catch(error => {
-      console.log(error);
+      toast.error(error.response?.data?.message)
     })
   };
 
@@ -135,6 +130,7 @@ export const ClientForm = () => {
             /> */}
               <TextField className='client-text-field'
                 id="outlined-basic"
+                type={"number"}
                 label="Contact Number"
                 variant="outlined"
                 name="phoneNumber"
@@ -193,7 +189,7 @@ export const ClientForm = () => {
                   <DateTimePicker
                     minDate={new Date()}
                     value={startTime}
-                    onChange={(newValue) => setStartTime(newValue)}
+                    onChange={(newValue) => setStartTime(newValue?.$d)}
                     renderInput={(params) => (
                       <TextField {...params} style={{width: '12.5rem'}} helperText="From" />
                     )}
@@ -201,7 +197,7 @@ export const ClientForm = () => {
                   <DateTimePicker
                     minDate={startTime}
                     value={endTime}
-                    onChange={(newValue) => setEndTime(newValue)}
+                    onChange={(newValue) => setEndTime(newValue?.$d)}
                     renderInput={(params) => (
                       <TextField {...params} style={{width: '12.5rem'}} helperText="To" />
                     )}
