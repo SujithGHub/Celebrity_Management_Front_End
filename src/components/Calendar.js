@@ -1,35 +1,40 @@
+import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import timeGridPlugin from '@fullcalendar/timegrid';
-import LogoutIcon from '@mui/icons-material/Logout';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Button } from '@mui/material';
 import axios from 'axios';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/css/bootstrap.css';
 import _ from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { authHeader, errorHandler } from '../util/Api';
-import BasicModal from '../util/EnquiryDetailsModal';
-import { REST_API } from '../util/EndPoints';
-import BlockDatesModal from '../util/BlockDatesModal';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { authHeader, errorHandler } from '../util/Api';
+import BlockDatesModal from '../util/BlockDatesModal';
+import { REST_API } from '../util/EndPoints';
+import BasicModal from '../util/EnquiryDetailsModal';
 
 const Calendar = () => {
 
   const location = useLocation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const calendarRef = useRef(null);
 
-  const [celebrity,setCelebrity] = useState([])
-  
+  const { c } = location.state
+
+  const [celebrity,] = useState(c)
   const [events, setEvents] = useState([]);
-  const [weekEndAvailability, setWeekEndAvailability] = useState(true)
+  const [weekEndAvailability, ] = useState(true)
   const [open, setOpen] = useState(false);
   const [openBlockDate, setOpenBlockDate] = useState(false);
   const [, setAllEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [blockDates, setBlockDates] = useState(null);
+  const [blockedDates, setBlockedDates] = useState([]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -39,8 +44,8 @@ const Calendar = () => {
   
   
   useEffect(() => {
-    setCelebrity(location.state?.c)
     getEvents(celebrity?.id);
+    getBlockedDates(c?.id);
   },[celebrity])
 
  const handleLogOut=()=>{
@@ -49,42 +54,50 @@ const Calendar = () => {
 
   const renderSidebar = () => {
     return (
-      <div className='demo-app-sidebar' style={{display: 'flex', justifyContent: 'space-between', padding: '10px 40px 0 0'}}>
+      <div className='demo-app-sidebar' style={{display: 'flex', justifyContent: 'space-between', padding: '10px 40px 0 15px'}}>
         <div className='demo-app-sidebar-section'>
           <h4>Available Events : <span style={{color: 'red'}}>{events.length}</span></h4>
+          <h2>{celebrity?.name}</h2>
         </div>
         <div className='demo-app-sidebar-section' style={{display: 'flex',flexDirection: 'column', alignItems: 'center'}}>
-            <Button onClick={()=>handleLogOut()}><LogoutIcon/></Button>
-          <h2>{celebrity?.name}</h2>
+            <Button onClick={()=>handleLogOut()} color='error' title='Back'><ArrowBackIcon/></Button>
         </div>
       </div>
     )
   }
 
-  const getEventColor = (start) => start > moment().format() ? 'green' : 'red'
+  const getEventColor = (start) => {
+    return (
+      moment(start).format('ll') < moment().format('ll') ? 'red' : 'green'
+    )
+  }
+
+  const getBlockedDates = (celebrityId) => {
+    axios.get(`${REST_API}/block-date/getByCelebrityId/${celebrityId}`, {headers: authHeader()}).then(response => {
+      let res = response.data
+      setBlockedDates(res);
+    }).catch(error => {
+      console.log(error)
+    })
+  }
 
   const getEvents = (celebrityId) => {
     axios.get(`${REST_API}/schedule/celebrity-id/${celebrityId}`,{ headers: authHeader()}).then(res => {
       const response = res.data
       setAllEvents(response);
-      const filteredEvents = _.filter(response, (res => moment().format()));
+      const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
       const formattedEvents = _.map(filteredEvents, (event, key) => ({
         id: event.id,
         title: event.eventName,
         start: moment(event.startTime).format(),
         end: moment(event.endTime).format(),
         status: (moment(event.startTime).format() < moment().format()) ? "COMPLETED" : "PENDING",
-        color: getEventColor(moment(event.startTime).format()),
+        color: getEventColor(event.startTime),
       }))
-      console.log(formattedEvents)
       setEvents(formattedEvents)
     }).catch(error => {
       errorHandler(error);
     })
-  }
-
-  const handleDateClick = (arg) => { // bind with an arrow function
-    alert(arg.dateStr)
   }
 
   const handleEventClick = (clickInfo) => {
@@ -92,29 +105,33 @@ const Calendar = () => {
     setOpen(true);
   }
 
-  const handleStatusChange = (scheduleId, status) => {
+  const handleCancelEvent = (scheduleId, status) => {
     axios.post(`${REST_API}/schedule/status?id=${scheduleId}&status=${status}`, {headers : authHeader()}).then(response => {
       console.log(response)
+      setOpen(false);
+      getEvents();
     }).catch(error => {
       console.log(error)
+      setOpen(false);
     })
   }
 
   const handleDateSelect = (args) => {
-    console.log(args, "args")
     setBlockDates(args);
     setOpenBlockDate(true);
   }
 
   const handleBlockDate = (from, to) => {
-    console.log(from, "from")
     const blockObj = {};
     blockObj['celebrityId'] = celebrity?.id;
     blockObj['blockedDate'] = from;
     axios.post(`${REST_API}/block-date`, blockObj, {headers : authHeader()}).then((response) => {
-      console.log("response", response)
+      getBlockedDates(celebrity?.id)
+      setOpenBlockDate(false);
+      toast.success(response?.data.message);
     }).catch(error => {
-      toast.error(error?.message)
+      setOpenBlockDate(false);
+      toast.error(error?.response?.data.message)
       console.log(error)
     })
   }
@@ -128,19 +145,22 @@ const Calendar = () => {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
+          stickyHeaderDates
+          backgroundEvents={blockedDates}
+          themeSystem="bootstrap5"
           eventColor={""}
           ref={calendarRef}
           aspectRatio={3}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
           weekends={weekEndAvailability}
           selectable={true}
           events={events}
           selectAllow={(event) => event.start < new Date() ? false : true}
           select={(event) => handleDateSelect(event)}
-          dayMaxEvents={true}
+          dayMaxEvents={false}
           eventClick={(event) => handleEventClick(event)}
         />
-        {open && selectedEvent.extendedProps.status === 'PENDING' ? <BasicModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleStatusChange={handleStatusChange}/> : ""}
+        {open && selectedEvent.extendedProps.status === 'PENDING' ? <BasicModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent}/> : ""}
         {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />} 
     </>
     )

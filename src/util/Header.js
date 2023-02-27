@@ -1,24 +1,17 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Logo from '../assets/cm.png';
 import { AccountCircle } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
+import Logo from '../assets/logo.png';
 import { logout } from './Api';
 
 export default function Header() {
 
-  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -28,16 +21,12 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  const handleLogOut = () => {
-
-  }
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar sx={{ backgroundColor: '#1976d2'}}>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <img style={{cursor: 'pointer'}} src={Logo} width= '150'></img>
+            <img style={{cursor: 'pointer'}} alt='Logo' src={Logo} width= '100' height='50'></img>
           </Typography>
           <div>
               <IconButton

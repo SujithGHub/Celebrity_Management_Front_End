@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 // import '../css/Admin.css'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import SearchIcon from '@mui/icons-material/Search';
 import { Button, CardActionArea, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -14,15 +16,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authHeader, errorHandler } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
-import SearchIcon from '@mui/icons-material/Search';
-
 export const CelebrityDetails = () => {
   const navigate = useNavigate()
   const [celebrity, setCelebrity] = useState([]);
   const [filter, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
-  const [count, setCount] = useState(0);
-  const [invisible, setInvisible] = useState(false);
 
   useEffect(() => {
     getAllCelebrity();
@@ -33,12 +31,13 @@ export const CelebrityDetails = () => {
       setCelebrity(_.orderBy(res.data, 'name'));
       setFilter((_.orderBy(res.data, 'name')));
     }).catch(error => {
+      console.log(error, "error")
       errorHandler(error);
     })
   }
 
   const filterHandler = (e) => {
-    const filterResults = filter.filter(item => item.name.toLowerCase().includes(e.target.value.toLowerCase()))
+    const filterResults = filter.filter(item => item.name?.toLowerCase().includes(e.target.value.toLowerCase()))
     setCelebrity(filterResults)
     setSearch(e.target.value)
   }
@@ -52,8 +51,7 @@ export const CelebrityDetails = () => {
   }
 
   const handleLogOut = () => {
-    localStorage.clear("token");
-    window.location.href = "/";
+    window.location.href = "/enquiry-details";
   }
 
   return (
@@ -80,10 +78,10 @@ export const CelebrityDetails = () => {
               ),
             }}
           />
-          <Button className="primary" style={{ marginLeft: '2rem' }} onClick={() => handleLogOut()} variant="outlined" color="error">Log Out</Button>
+          <Button onClick={() => handleLogOut()} color='error' title="Back"><ArrowBackIcon/></Button>
         </div>
       </header>
-        <div className="container" style={{ display: "flex", flexWrap: "wrap", maxWidth: "78rem" }} >
+        <div className="container" style={{ display: "flex", flexWrap: "wrap", height: '100vh', maxWidth: "78rem" }} >
           {celebrity.map((celebrityItem, index) => (
             <Card sx={{ maxWidth: 345, width: 345, height: '515px', margin: "30px", overflowWrap: 'break-word' }} key={celebrityItem?.id} >
               <CardActionArea style={{minHeight: '28rem'}} >
@@ -95,14 +93,14 @@ export const CelebrityDetails = () => {
                 />
                 <CardContent style={{ height: '20rem', padding: '10px', overflow: 'auto',maxHight: '150px' }}>
                   <Typography gutterBottom variant="h5" component="div" style={{ textAlign: 'center' }} >
-                    {celebrityItem.name}
+                    {celebrityItem?.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" style={{ textIndent: '1rem' }}>
-                    {celebrityItem.description}
+                    {celebrityItem?.description}
                   </Typography>
                 <div style={{ padding: '10px 10px', wordBreak:'break-all' }}>
                   <h6><span className="celebrity-info">DOB</span>: {celebrityItem?.dateOfBirth}</h6>
-                  <h6><span className="celebrity-info">Gender</span>: {celebrityItem?.gender.toUpperCase()}</h6>
+                  <h6><span className="celebrity-info">Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
                   <h6><span className="celebrity-info">Email</span>: {celebrityItem?.mailId}</h6>
                   <h6><span className="celebrity-info">Mobile</span>: {celebrityItem?.phoneNumber}</h6>
                   <h6><span className="celebrity-info">Address</span>: {celebrityItem?.address}</h6>

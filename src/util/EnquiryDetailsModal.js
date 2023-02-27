@@ -65,10 +65,13 @@ export default function BasicModal(props) {
           <h6>Start Time: {moment(props.event?.start).format('LLL')}</h6>
           <h6>End Time: {moment(props.event?.end).format('LLL')}</h6>
         </Typography>
-        {/* <div className='modal-buttons'>
-          <Button color='primary' style={{ marginRight: '10px' }} onClick={() => props.handleStatusChange(props?.event?.id, 'accept')} variant='contained'>Accept</Button>
-          <Button color='error' variant='contained' onClick={() => props.handleStatusChange(props?.event?.id, 'reject')}>Reject</Button>
-        </div> */}
+        <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold' }} >
+          Do you want to cancel this Event?
+        </Typography>
+        <div className='modal-buttons'>
+          <Button color='primary' style={{ marginRight: '10px' }} onClick={() => props.handleCancelEvent(props?.event?.id, 'REJECTED')} variant='contained'>Yes</Button>
+          <Button color='error' variant='contained' onClick={props.handleClose}>No</Button>
+        </div>
       </Box> :
         <Box sx={style}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: '35px', marginBottom: '1rem'}}>
@@ -109,7 +112,7 @@ export default function BasicModal(props) {
               }}
             />
           </LocalizationProvider>
-          <Button className='primary' onClick={() => props.submitHandler(eventToBeEdited)}>Save Changes</Button>
+          <Button className='primary' style={{width: '100%'}} onClick={() => props.submitHandler(eventToBeEdited)}>Save Changes</Button>
         </Box>}
     </Modal>
   );

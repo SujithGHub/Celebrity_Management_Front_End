@@ -43,7 +43,7 @@ export default function BasicMenu(props) {
       >
         {props.dropDownItem.map(item => {
           return (
-            <MenuItem value={item} onClick={(event) => props.handleMenuClose(event, item)}>{item}</MenuItem>
+            <MenuItem value={item} key={item?.id} onClick={(event) => props.handleMenuClose(event, item)}>{item}</MenuItem>
           )
         })}
       </Menu>

@@ -1,3 +1,4 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -10,24 +11,19 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
 import moment from "moment";
-import { MuiTelInput } from "mui-tel-input";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authHeader, errorHandler } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
-import { isValidMobileNo } from "../util/Validation";
-
 
 export const AddCelebrityDetails = () => {
   const [celebrityDetails, setCelebrityDetails] = useState({});
-  const [phoneNumber, setPhoneNumber] = useState("");
 
   const location=useLocation()
   const navigate=useNavigate()
 
   const changeHandler = (e) => {
-  
     setCelebrityDetails((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -36,7 +32,6 @@ export const AddCelebrityDetails = () => {
 
   useEffect(()=>{
     if(location?.state?.CelebrityDetails){
-      console.log(location?.state?.CelebrityDetails)
       setCelebrityDetails(location?.state?.CelebrityDetails)
     }
   },[location])
@@ -48,7 +43,6 @@ export const AddCelebrityDetails = () => {
     // if(isValidMobileNo(celebrityDetails?.phoneNumber)){
       const celebrity = { ...celebrityDetails, dateOfBirth: moment(value?.$d).format('L') }
       axios.post(`${REST_API}/celebrity`, celebrity, { headers: authHeader() }).then((res) => {
-        console.log(res.data, "response");
         toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
         navigate('/celebrity-details')
       }).catch(error => {
@@ -57,10 +51,16 @@ export const AddCelebrityDetails = () => {
     // }
     // window.alert("Invalid")
   };   
+  const handleBack= () =>{
+    window.location.href = "/celebrity-details"
+  }
 
   return (
       <form className="container form-container" onSubmit={(e) => handleSubmit(e)} style={{ backgroundColor: "#f0f2f5", height: "100vh" }}>
+        <div style={{width:'100%',display:'flex',flexDirection:'row',justifyContent:'space-around'}}>
         <h2 style={{ textAlign: "center" }} >  {celebrityDetails?.id?`Update ${celebrityDetails?.name}'s Details`:`Add Celebrity Details`}</h2>
+        <Button  onClick={()=>handleBack()} title="Back" color="error"><ArrowBackIcon/></Button>
+        </div>
         <div className="row">
           <div className="col">
             <TextField

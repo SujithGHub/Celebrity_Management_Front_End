@@ -5,7 +5,6 @@ import { DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { authHeader, errorHandler } from "../util/Api";
@@ -13,15 +12,13 @@ import { REST_API } from "../util/EndPoints";
 
 export const ClientForm = () => {
   const [celebrityDetails, setCelebrityDetails] = useState({});
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, ] = useState("");
   const [actorName, setActorName] = useState([]);
   const [singleDay, setSingleDay] = useState(false);
-  const [multiDay, setMultiDay] = useState(false);
+  const [, setMultiDay] = useState(false);
 
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-
-
 
   const changeHandler = (e) => {
     setCelebrityDetails((prev) => ({
@@ -52,8 +49,8 @@ export const ClientForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const enquiryInfo = { ...celebrityDetails, phoneNumber: phoneNumber, startTime: startTime, endTime: endTime }
+    console.log(enquiryInfo,"enquiryInfo");
     axios.post(`${REST_API}/enquiry`, enquiryInfo, { headers: authHeader() }).then(res => {
-      console.log(res.data);
       toast.success(res?.data.message);
       window.location.reload();
     }).catch(error => {
@@ -67,13 +64,7 @@ export const ClientForm = () => {
     setMultiDay(false)
     setEndTime(null)
   }
-  const handleMultiDay = () => {
-    setMultiDay(!multiDay)
-    setEndTime(null)
-    setSingleDay(false)
-    setStartTime(null)
 
-  }
   return (
     <div className="enquiry" >
       <div className="container" style={{ height: "100vh", textAlign: 'center', width: '100%' }}>
@@ -136,7 +127,7 @@ export const ClientForm = () => {
                 name="phoneNumber"
                 value={celebrityDetails?.phoneNumber}
                 required
-                onChange={changeHandler} p
+                onChange={changeHandler}
               />
             </div>
           </div>
@@ -188,6 +179,7 @@ export const ClientForm = () => {
                 {singleDay ? <div>
                   <DateTimePicker
                     minDate={new Date()}
+                    inputFormat="DD/MM/YYYY"
                     value={startTime}
                     onChange={(newValue) => setStartTime(newValue?.$d)}
                     renderInput={(params) => (
@@ -196,6 +188,7 @@ export const ClientForm = () => {
                   />
                   <DateTimePicker
                     minDate={startTime}
+                    inputFormat="DD/MM/YYYY"
                     value={endTime}
                     onChange={(newValue) => setEndTime(newValue?.$d)}
                     renderInput={(params) => (

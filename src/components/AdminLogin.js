@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import "../css/Admin.css";
-import { authHeader } from "../util/Api";
+import { authHeader, errorHandler } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
 
 export const AdminLogin = () => {
@@ -31,7 +31,6 @@ export const AdminLogin = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     axios.post(`${REST_API}/user/login`, admin, { headers: authHeader() }).then((res) => {
-      console.log(res.data.response);
       localStorage.setItem("token", res.data.response)
       const name = admin.mailId.split("@");
       toast.success(`Welcome ${name[0].toUpperCase()}!!!`, {
@@ -40,7 +39,7 @@ export const AdminLogin = () => {
       navigate("/enquiry-details")
     })
       .catch((error) => {
-        toast.error(error.message);
+        errorHandler(error);
       });
   };
 
@@ -91,6 +90,3 @@ export const AdminLogin = () => {
     </div>
   );
 };
-
-
-{/*   */}

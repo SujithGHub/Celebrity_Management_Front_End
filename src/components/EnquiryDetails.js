@@ -10,10 +10,10 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { authHeader } from '../util/Api';
+import { authHeader, errorHandler } from '../util/Api';
+import { REST_API } from '../util/EndPoints';
 import EnquiryModal from '../util/EnquiryDetailsModal';
 import StatusDropDown from '../util/StatusDropDown';
-import { REST_API } from '../util/EndPoints';
 
 export default function EnquiryDetails() {
 
@@ -25,11 +25,12 @@ export default function EnquiryDetails() {
   const [enquiryList, setEnquiryList] = useState([]);
   const [accepted, setAccepted] = useState(false);
   const [rejected, setRejected] = useState(false);
-  const [pending, setPending] = useState(false);
+  const [, setPending] = useState(false);
   const [acceptedEnquiry, setAcceptedEnquiry] = useState([]);
   const [rejectedEnquiry, setRejectedEnquiry] = useState([]);
   const [pendingEnquiry, setPendingEnquiry] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [pageSize, setPageSize] = useState(5);
   const openMenu = Boolean(anchorEl);
 
   const handleMenuClose = (event, value) => {
@@ -91,10 +92,10 @@ export default function EnquiryDetails() {
         return (
           <>
             <Button onClick={(event) => handleDateEdit(row?.row, 'ACCEPTED')}>
-              Accept
+              Process
             </Button>
             <Button color='error' onClick={(event) => handleDateEdit(row?.row, 'REJECTED')}>
-              Reject
+              Cancel
             </Button>
           </>
         )
@@ -121,12 +122,14 @@ export default function EnquiryDetails() {
   }
 
   const handleEventSave = (row) => {
+    console.log(row, "row");
     setEventInfo(row);
     setOpen(true);
     setEditable(true);
   }
 
   const handleDateEdit = (row, key) => {
+    console.log(new Date(row.startTime).getTime());
     const schedule = {};
     schedule['eventName'] = row.eventName;
     schedule['startTime'] = new Date(row.startTime).getTime();
@@ -135,13 +138,12 @@ export default function EnquiryDetails() {
     schedule['availability'] = 'AVAILABLE';
     schedule['celebrity'] = row.celebrity;
     schedule['enquiryId'] = row.id;
-    console.log(schedule);
+    console.log(schedule, "schedule");
     axios.post(`${REST_API}/enquiry/status`, schedule, { headers: authHeader() }).then(response => {
-      console.log(response);
       getAllEnquiry();
       toast.success("Status Changed");
     }).catch(error => {
-      console.log(error);
+      errorHandler(error);
     })
   }
 
@@ -170,6 +172,7 @@ export default function EnquiryDetails() {
     axios.post(`${REST_API}/enquiry`, saveSchedule, { headers: authHeader() }).then((response) => {
       setOpen(false);
       setEditable(false);
+      toast.success("Changes Saved");
       getAllEnquiry();
     }).catch(error => {
       console.log(error, 'schedule error');
@@ -189,11 +192,10 @@ export default function EnquiryDetails() {
         rows={(accepted === true ? acceptedEnquiry : rejected === true ? rejectedEnquiry : pendingEnquiry)}
         columns={columns}
         autoHeight
-        // disableColumnMenu
-        // disableColumnFilter
-        // disableColumnSelector
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pagination
+        pageSize={pageSize}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        rowsPerPageOptions={[5, 10, 20]}
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
       />

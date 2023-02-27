@@ -1,9 +1,9 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
 import moment from 'moment';
+import * as React from 'react';
 
 const style = {
   position: 'absolute',
@@ -16,13 +16,9 @@ const style = {
   boxShadow: 24,
   p: 3,
   outline: "none",
-  borderRadius: '15px',
 };
 
 export default function BlockDatesModal(props) {
-
-  const [from, setFrom] = React.useState(null);
-  const [to, setTo] = React.useState(null);
 
   let { blockDates } = props;
 
@@ -42,11 +38,11 @@ export default function BlockDatesModal(props) {
             <span className='from-to'>From</span>: {moment(blockDates.startStr).format('LLL')}
           </Typography>
           <Typography id="modal-modal-description">
-            <span className='from-to'>To</span>: {moment(blockDates.endStr).format('LLL')}
+            <span className='from-to'>To</span>: {moment(blockDates.endStr).subtract(1,'minute').format('LLL')}
           </Typography>
           <div className='modal-button'>
             <Button variant='contained' style={{ marginRight: '10px' }} onClick={() => props.handleBlockDate(blockDates.start, blockDates.end)} color='error'>Yes</Button>
-            <Button variant='contained'>No</Button>
+            <Button variant='contained'onClick={props.handleClose}>No</Button>
           </div>
         </Box>
       </Modal>
