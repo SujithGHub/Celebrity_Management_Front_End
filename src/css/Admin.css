@@ -6,6 +6,9 @@
   font-family: inherit;
   text-align: center;
   height: 100vh;
+  background-image: url('../assets/logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .form {
@@ -15,6 +18,7 @@
   background: rgb(227, 227, 227);
   padding: 40px;
   width: 400px;
+  background-image: url("../assets/logo.png");
 }
 
 /* by celebrity details */
@@ -210,4 +214,30 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .css-pdct74-MuiTablePagination-selectLabel, .css-levciy-MuiTablePagination-displayedRows {
   margin-bottom: 0 !important;
+}
+.event-details{
+  margin: 20px;
+}
+
+.my-autocomplete .MuiOutlinedInput-notchedOutline {
+  border: none;
+  border-bottom: 1px solid black;
+  border-radius: 0;
+  padding: 0;
+}
+
+.my-autocomplete .MuiOutlinedInput-notchedOutline:hover {
+  border-bottom: 1px solid black;
+  padding: 0;
+}
+
+.my-autocomplete .Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-bottom: 1px solid black;
+  padding: 0;
+}
+.scroll::-webkit-scrollbar { 
+  display: none;
+}
+.pointer-cursor * {
+  cursor: pointer;
 }

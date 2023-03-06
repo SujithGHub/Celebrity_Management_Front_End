@@ -25,8 +25,8 @@ export default function BlockDatesModal(props) {
   return (
     <div>
       <Modal
-        open={props.open}
-        onClose={props.handleClose}
+        open={props?.open}
+        onClose={props?.handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >

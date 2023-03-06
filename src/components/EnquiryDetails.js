@@ -23,6 +23,8 @@ export default function EnquiryDetails() {
   const [editable, setEditable] = useState(false);
   const [eventInfo, setEventInfo] = useState([]);
   const [enquiryList, setEnquiryList] = useState([]);
+  const [celebrity, setCelebrity] = useState([]);
+  const [selectedCelebrity, setSelectedCelebrity] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [, setPending] = useState(false);
@@ -30,15 +32,20 @@ export default function EnquiryDetails() {
   const [rejectedEnquiry, setRejectedEnquiry] = useState([]);
   const [pendingEnquiry, setPendingEnquiry] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const openMenu = Boolean(anchorEl);
 
+  useEffect(() => {
+    getAllEnquiry();
+    getAllCelebrity();
+  }, [])
+
   const handleMenuClose = (event, value) => {
-    if(value === 'Accepted'){
+    if (value === 'Accepted') {
       setAccepted(true);
       setRejected(false);
       setPending(false);
-    } else if (value === 'Rejected'){
+    } else if (value === 'Rejected') {
       setAccepted(false);
       setRejected(true);
       setPending(false);
@@ -67,38 +74,37 @@ export default function EnquiryDetails() {
     { field: 'name', headerName: 'Organizer name', align: 'center', headerAlign: 'center', width: 150 },
     { field: 'organizationName', headerName: 'Organization', align: 'center', headerAlign: 'center', width: 150 },
     { field: 'eventName', headerName: 'Event Name', align: 'center', headerAlign: 'center', width: 200, },
-
-    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', width: 120, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-'}
-    ,
-    { field: 'startTime', headerName: 'Start', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false, },
-    { field: 'endTime', headerName: 'End', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false, },
+    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', width: 120, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
+    { field: 'startTime', headerName: 'Start', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false ,renderCell: (row) => moment(row?.row?.startTime).format('LLL') },
+    { field: 'endTime', headerName: 'End', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row?.row?.endTime).format('LLL') },
     {
-      field: 'action', headerName: 'Action', width: 200, align: 'center', headerAlign: 'center',
+      field: 'action', headerName: 'Action', width: 210, align: 'center', headerAlign: 'center',
       renderCell: (row) => {
         const { status } = row.row;
         if (status === "ACCEPTED") {
           return (
-            <Button color='success' onClick={(event) => toast.info('Status Already Updated!!!')}>
+            <Button color='success' onClick={(event) => toast.info('Already Accepted!!!')}>
               ACCEPTED
             </Button>
           )
         } else if (status === "REJECTED") {
           return (
-            <Button color='error' onClick={(event) => toast.info('Status Already Updated!!!')}>
+            <Button color='error' onClick={(event) => toast.info('Already Rejected!!!')}>
               REJECTED
             </Button>
           )
+        } else {
+          return (
+            <>
+              <Button onClick={() => handleEventSave(row)}>
+                {editable ? 'InProgress' : 'Process'}
+              </Button>
+              <Button color='error' onClick={(event) => handleEventSubmit(row?.row, 'REJECTED')}>
+                Cancel
+              </Button>
+            </>
+          )
         }
-        return (
-          <>
-            <Button onClick={(event) => handleDateEdit(row?.row, 'ACCEPTED')}>
-              Process
-            </Button>
-            <Button color='error' onClick={(event) => handleDateEdit(row?.row, 'REJECTED')}>
-              Cancel
-            </Button>
-          </>
-        )
       }
     },
     {
@@ -108,12 +114,7 @@ export default function EnquiryDetails() {
       width: 90,
       align: 'center',
       headerAlign: 'center',
-      renderCell: (row) =>
-        <>
-          {editable ?
-            <Button onClick={() => handleEventEdit(row)}>{<DoneIcon />}</Button>
-            : <Button onClick={() => handleEventSave(row)}>{<EditIcon />}</Button>}
-        </>
+      renderCell: (row) => <Button onClick={() => handleEventSave(row)}>{<EditIcon />}</Button>
     },
   ];
 
@@ -122,60 +123,50 @@ export default function EnquiryDetails() {
   }
 
   const handleEventSave = (row) => {
-    console.log(row, "row");
-    setEventInfo(row);
+    setEventInfo(row?.row);
     setOpen(true);
     setEditable(true);
   }
 
-  const handleDateEdit = (row, key) => {
-    console.log(new Date(row.startTime).getTime());
-    const schedule = {};
-    schedule['eventName'] = row.eventName;
-    schedule['startTime'] = new Date(row.startTime).getTime();
-    schedule['endTime'] = new Date(row.endTime).getTime();
-    schedule['status'] = key;
-    schedule['availability'] = 'AVAILABLE';
-    schedule['celebrity'] = row.celebrity;
-    schedule['enquiryId'] = row.id;
-    console.log(schedule, "schedule");
-    axios.post(`${REST_API}/enquiry/status`, schedule, { headers: authHeader() }).then(response => {
-      getAllEnquiry();
-      toast.success("Status Changed");
+  const handleEventSubmit = (row, key) => {
+    if (!_.isEmpty(row.celebrity)) {
+      const schedule = {};
+      schedule['startTime'] = new Date(row.startTime).getTime();
+      schedule['endTime'] = new Date(row.endTime).getTime();
+      schedule['status'] = key;
+      schedule['celebrity'] = row.celebrity;
+      schedule['enquiryId'] = row.id;
+      schedule["eventName"] = row.eventName;
+      axios.post(`${REST_API}/enquiry/status`, schedule, { headers: authHeader() }).then(response => {
+        getAllEnquiry();
+        toast.success("Status Changed");
+        setOpen(false);
+        setEditable(false);
+      }).catch(error => {
+        errorHandler(error);
+      })
+    } else {
+      toast.error("Select Celebrity")
+    }
+  }
+
+  const getAllCelebrity = async () => {
+    await axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() }).then(res => {
+      setCelebrity(res.data)
     }).catch(error => {
-      errorHandler(error);
+      console.log(error)
     })
   }
 
-  useEffect(() => {
-    getAllEnquiry();
-  }, [])
-
   const getAllEnquiry = async () => {
-    await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader()}).then(response => {
-        const res = response.data;
-        setEnquiryList(res);
-        const formattedEnquiry = _.map(res, (en, index) => ({         // total enquiry detail
-          ...en, startTime: moment(en.startTime).format("LLL"), endTime: moment(en.endTime).format("LLL"),
-        }));
-        setAcceptedEnquiry(formattedEnquiry.filter(en => en.status === "ACCEPTED"));
-        setRejectedEnquiry(formattedEnquiry.filter(en => en.status === "REJECTED"));
-        setPendingEnquiry(formattedEnquiry.filter(en => en.status === 'PENDING'))
-      }).catch(error => {
-        console.log(error);
-      })
-  }
-
-  const submitHandler = (schedule) => {
-    const scheduleObj = _.filter(enquiryList, (en) => en.id === schedule.id);
-    const saveSchedule = { ...scheduleObj[0], eventName: schedule.eventName, startTime: new Date(schedule.startTime).getTime(), endTime: new Date(schedule.endTime).getTime() };
-    axios.post(`${REST_API}/enquiry`, saveSchedule, { headers: authHeader() }).then((response) => {
-      setOpen(false);
-      setEditable(false);
-      toast.success("Changes Saved");
-      getAllEnquiry();
+    const res = await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader() }).then(res => {
+      const enquiry = res.data.response;
+      setEnquiryList(enquiry);
+      setAcceptedEnquiry(enquiry.filter(en => en.status === "ACCEPTED"));
+      setRejectedEnquiry(enquiry.filter(en => en.status === "REJECTED"));
+      setPendingEnquiry(enquiry.filter(en => en.status === 'PENDING'));
     }).catch(error => {
-      console.log(error, 'schedule error');
+      console.log(error);
     })
   }
 
@@ -186,20 +177,24 @@ export default function EnquiryDetails() {
         <Button onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
       </div>
       <div style={{ textAlign: 'end', padding: '10px' }} >
-        <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')}/>
+        <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')} />
       </div>
       <DataGrid
         rows={(accepted === true ? acceptedEnquiry : rejected === true ? rejectedEnquiry : pendingEnquiry)}
         columns={columns}
         autoHeight
         pagination
+        disableColumnFilter
+        disableColumnMenu
+        disableColumnSelector
         pageSize={pageSize}
+        // sortModel={[{field: "start", sort:'asc'}]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         rowsPerPageOptions={[5, 10, 20]}
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
       />
-      {editable && open ? <EnquiryModal open={open} handleOpen={() => handleOpen()} handleClose={() => handleClose()} eventInfo={eventInfo} submitHandler={submitHandler} /> : ""}
+      {editable && open ? <EnquiryModal open={open} handleOpen={() => handleOpen()} celebrity={celebrity} handleClose={() => handleClose()} eventInfo={eventInfo} submitHandler={handleEventSubmit} /> : ""}
     </Box>
   );
 }

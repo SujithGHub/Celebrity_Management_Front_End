@@ -40,6 +40,6 @@ document.addEventListener('click',skipOutsideClick)
     case 422:
     case 500: toast.error(error.response?.data?.message || "something went wrong");
       break;
-    default:toast("Oops Something went wrong")
+    default:toast("Oops!!! Something went wrong")
   }
 };

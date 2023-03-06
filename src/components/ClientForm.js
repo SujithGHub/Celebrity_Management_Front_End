@@ -12,7 +12,6 @@ import { REST_API } from "../util/EndPoints";
 
 export const ClientForm = () => {
   const [celebrityDetails, setCelebrityDetails] = useState({});
-  const [phoneNumber, ] = useState("");
   const [actorName, setActorName] = useState([]);
   const [singleDay, setSingleDay] = useState(false);
   const [, setMultiDay] = useState(false);
@@ -36,7 +35,8 @@ export const ClientForm = () => {
   const getAllCelebrity = () => {
     axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() })
       .then((res) => {
-        setActorName(res.data);
+        const response = res.data
+        setActorName(response);
       }).catch(error => {
         errorHandler(error)
       })
@@ -48,7 +48,7 @@ export const ClientForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const enquiryInfo = { ...celebrityDetails, phoneNumber: phoneNumber, startTime: startTime, endTime: endTime }
+    const enquiryInfo = { ...celebrityDetails, startTime: startTime, endTime: endTime }
     console.log(enquiryInfo,"enquiryInfo");
     axios.post(`${REST_API}/enquiry`, enquiryInfo, { headers: authHeader() }).then(res => {
       toast.success(res?.data.message);
@@ -121,7 +121,7 @@ export const ClientForm = () => {
             /> */}
               <TextField className='client-text-field'
                 id="outlined-basic"
-                type={"number"}
+                type="number"
                 label="Contact Number"
                 variant="outlined"
                 name="phoneNumber"
@@ -179,7 +179,7 @@ export const ClientForm = () => {
                 {singleDay ? <div>
                   <DateTimePicker
                     minDate={new Date()}
-                    inputFormat="DD/MM/YYYY"
+                    inputFormat="DD/MM/YYYY hh:mm A"
                     value={startTime}
                     onChange={(newValue) => setStartTime(newValue?.$d)}
                     renderInput={(params) => (
@@ -188,7 +188,7 @@ export const ClientForm = () => {
                   />
                   <DateTimePicker
                     minDate={startTime}
-                    inputFormat="DD/MM/YYYY"
+                    inputFormat="DD/MM/YYYY hh:mm A"
                     value={endTime}
                     onChange={(newValue) => setEndTime(newValue?.$d)}
                     renderInput={(params) => (

@@ -11,14 +11,17 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authHeader, errorHandler } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
 
 export const AddCelebrityDetails = () => {
-  const [celebrityDetails, setCelebrityDetails] = useState({});
+  const [celebrityDetails, setCelebrityDetails] = useState(null);
+  const [image, setImage] = useState(null);
+  const [value, setValue] = useState(null);
+  const fileInputRef = useRef(null);
 
   const location=useLocation()
   const navigate=useNavigate()
@@ -32,25 +35,29 @@ export const AddCelebrityDetails = () => {
 
   useEffect(()=>{
     if(location?.state?.CelebrityDetails){
+      if(location?.state?.CelebrityDetails?.image){
+        const file = new File([location.state?.CelebrityDetails?.image], 'celebrity.jpeg', {type:'image/jpeg'});
+        setImage(file);
+      }
       setCelebrityDetails(location?.state?.CelebrityDetails)
     }
   },[location])
 
-  const [value, setValue] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // if(isValidMobileNo(celebrityDetails?.phoneNumber)){
-      const celebrity = { ...celebrityDetails, dateOfBirth: moment(value?.$d).format('L') }
-      axios.post(`${REST_API}/celebrity`, celebrity, { headers: authHeader() }).then((res) => {
-        toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
-        navigate('/celebrity-details')
-      }).catch(error => {
-        errorHandler(error);
-      })
-    // }
-    // window.alert("Invalid")
-  };   
+    const celebrity = { ...celebrityDetails, dateOfBirth: moment(value?.$d).format('L') }
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("celebrity", JSON.stringify(celebrity));
+    axios.post(`${REST_API}/celebrity`, formData, { headers: authHeader(), "Content-Type": "multipart/form-data" }).then((res) => {
+      toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
+      navigate('/celebrity-details')
+    }).catch(error => {
+      errorHandler(error);
+    })
+  };
+
   const handleBack= () =>{
     window.location.href = "/celebrity-details"
   }
@@ -68,7 +75,7 @@ export const AddCelebrityDetails = () => {
               label="Name"
               name="name"
               value={celebrityDetails?.name}
-              onChange={changeHandler}
+              onChange={(event) => changeHandler(event)}
               variant="outlined"
               required
               style={{ width: "400px" }}
@@ -81,7 +88,7 @@ export const AddCelebrityDetails = () => {
               name="mailId"
               required
               value={celebrityDetails?.mailId}
-              onChange={changeHandler}
+              onChange={(event) => changeHandler(event)}
               label="Mail Id"
               variant="outlined"
               style={{ width: "400px" }}
@@ -107,7 +114,7 @@ export const AddCelebrityDetails = () => {
               name="phoneNumber"
               value={celebrityDetails?.phoneNumber}
               required
-              onChange={changeHandler}
+              onChange={(event) => changeHandler(event)}
               style={{ width: "400px " }}
             />
 
@@ -118,7 +125,7 @@ export const AddCelebrityDetails = () => {
               label="Address"
               name="address"
               value={celebrityDetails?.address}
-              onChange={changeHandler}
+              onChange={(event) => changeHandler(event)}
               variant="outlined"
               style={{ width: "400px" }}
             />
@@ -150,7 +157,7 @@ export const AddCelebrityDetails = () => {
                 aria-labelledby="demo-row-radio-buttons-group-label"
                 name="gender"
                 value={celebrityDetails?.gender}
-                onChange={changeHandler}
+                onChange={(event) => changeHandler(event)}
               >
                 <div style={{ marginRight: "23px" }}>
                   <FormControlLabel
@@ -181,7 +188,7 @@ export const AddCelebrityDetails = () => {
               variant="outlined"
               name="profession"
               value={celebrityDetails?.profession}
-              onChange={changeHandler}
+              onChange={(event) => changeHandler(event)}
               style={{ width: "400px" }}
             />
           </div>
@@ -192,7 +199,7 @@ export const AddCelebrityDetails = () => {
               label="Description"
               name="description"
               value={celebrityDetails?.description}
-              onChange={changeHandler}
+              onChange={(event) => changeHandler(event)}
               multiline
               maxRows={4}
             />
@@ -200,9 +207,12 @@ export const AddCelebrityDetails = () => {
         </div>
 
         <div className="row">
+          <div className='col'>
+            <input type='file' name='img' accept='.jpeg, .jpeg, .png' ref={fileInputRef}  onChange={(event) => setImage(event.target.files[0])} ></input>
+          </div>
           <div className="col" style={{ display: "flex", alignItems: "flex-end" }} >
             <Button type="submit" variant="contained">
-             {celebrityDetails?.id?"update":" Add Details"}
+             {celebrityDetails?.id ? "Update":" Add Details"}
             </Button>
           </div>
         </div>

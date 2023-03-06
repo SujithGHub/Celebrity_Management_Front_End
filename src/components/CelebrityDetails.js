@@ -81,24 +81,24 @@ export const CelebrityDetails = () => {
           <Button onClick={() => handleLogOut()} color='error' title="Back"><ArrowBackIcon/></Button>
         </div>
       </header>
-        <div className="container" style={{ display: "flex", flexWrap: "wrap", height: '100vh', maxWidth: "78rem" }} >
+        <div className="container" style={{ display: "flex", flexWrap: "wrap", maxWidth: "78rem" }} >
           {celebrity.map((celebrityItem, index) => (
             <Card sx={{ maxWidth: 345, width: 345, height: '515px', margin: "30px", overflowWrap: 'break-word' }} key={celebrityItem?.id} >
               <CardActionArea style={{minHeight: '28rem'}} >
                 <CardMedia
                   component="img"
-                  height="140"
-                  image="https://images.unsplash.com/photo-1550751464-57982110c246?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80"
-                  alt="green iguana"
+                  height="130"
+                  src={`data:image/jpeg/png;base64,${celebrityItem?.base64Image}`}
+                  alt={celebrityItem?.name}
                 />
-                <CardContent style={{ height: '20rem', padding: '10px', overflow: 'auto',maxHight: '150px' }}>
+                <CardContent className="scroll" style={{ height: '20rem', padding: '10px', overflow: 'auto',maxHight: '150px' }}>
                   <Typography gutterBottom variant="h5" component="div" style={{ textAlign: 'center' }} >
                     {celebrityItem?.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" style={{ textIndent: '1rem' }}>
+                  <Typography variant="body2" color="text.secondary" style={{ textIndent: '1rem', minHeight: '5rem' }}>
                     {celebrityItem?.description}
                   </Typography>
-                <div style={{ padding: '10px 10px', wordBreak:'break-all' }}>
+                <div style={{ padding: '10px 10px', wordBreak:'break-all', minHeight: '9rem' }}>
                   <h6><span className="celebrity-info">DOB</span>: {celebrityItem?.dateOfBirth}</h6>
                   <h6><span className="celebrity-info">Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
                   <h6><span className="celebrity-info">Email</span>: {celebrityItem?.mailId}</h6>
