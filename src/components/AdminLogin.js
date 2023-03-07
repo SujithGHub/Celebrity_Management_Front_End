@@ -2,14 +2,12 @@ import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
-import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import "../css/Admin.css";
-import { authHeader, errorHandler } from "../util/Api";
-import { REST_API } from "../util/EndPoints";
+import axiosInstance from "../util/Interceptor";
 
 export const AdminLogin = () => {
   const navigate = useNavigate();
@@ -30,18 +28,14 @@ export const AdminLogin = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    axios.post(`${REST_API}/user/login`, admin, { headers: authHeader() }).then((res) => {
-      localStorage.setItem("token", res.data.response)
+    axiosInstance.post(`/user/login`, admin).then((res) => {
+      localStorage.setItem("token", res.response)
       const name = admin.mailId.split("@");
       toast.success(`Welcome ${name[0].toUpperCase()}!!!`, {
         position: toast.POSITION.TOP_RIGHT
       });
       navigate("/enquiry-details")
-    })
-      .catch((error) => {
-        errorHandler(error);
-      });
-  };
+    })};
 
   return (
     <div className="admin-login">

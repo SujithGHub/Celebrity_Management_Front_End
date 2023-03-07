@@ -192,6 +192,11 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 25rem;
 }
 .celebrity-info{
+  font-weight: 400;
+  width: 100%;
+}
+
+.celebrity-info span{
   display: inline-block;
   width: 80px;
 }
@@ -206,10 +211,11 @@ input[type="number"]::-webkit-outer-spin-button {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-top: 20px;
+  /* padding-top: 20px; */
 }
 .from-to{
   display: inline-block;
+  /* font-weight: 700; */
   width: 50px;
 }
 .css-pdct74-MuiTablePagination-selectLabel, .css-levciy-MuiTablePagination-displayedRows {

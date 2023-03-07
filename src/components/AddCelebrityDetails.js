@@ -9,13 +9,11 @@ import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { authHeader, errorHandler } from "../util/Api";
-import { REST_API } from "../util/EndPoints";
+import axiosInstance from '../util/Interceptor';
 
 export const AddCelebrityDetails = () => {
   const [celebrityDetails, setCelebrityDetails] = useState(null);
@@ -50,23 +48,17 @@ export const AddCelebrityDetails = () => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("celebrity", JSON.stringify(celebrity));
-    axios.post(`${REST_API}/celebrity`, formData, { headers: authHeader(), "Content-Type": "multipart/form-data" }).then((res) => {
+    axiosInstance.post(`/celebrity`, formData, {headers: {'Content-Type': "multipart/form-data"}} ).then((res) => {
       toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
       navigate('/celebrity-details')
-    }).catch(error => {
-      errorHandler(error);
     })
   };
-
-  const handleBack= () =>{
-    window.location.href = "/celebrity-details"
-  }
 
   return (
       <form className="container form-container" onSubmit={(e) => handleSubmit(e)} style={{ backgroundColor: "#f0f2f5", height: "100vh" }}>
         <div style={{width:'100%',display:'flex',flexDirection:'row',justifyContent:'space-around'}}>
         <h2 style={{ textAlign: "center" }} >  {celebrityDetails?.id?`Update ${celebrityDetails?.name}'s Details`:`Add Celebrity Details`}</h2>
-        <Button  onClick={()=>handleBack()} title="Back" color="error"><ArrowBackIcon/></Button>
+        <Button onClick={()=>navigate("/celebrity-details")} title="Back" color="error"><ArrowBackIcon/></Button>
         </div>
         <div className="row">
           <div className="col">

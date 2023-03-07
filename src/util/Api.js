@@ -32,7 +32,7 @@ document.addEventListener('click',skipOutsideClick)
     case 401:
       if(error.response?.data?.message?.includes("Unauthorized User")){
       toast.error(error.response?.data?.message);
-    logout();
+      logout();
       }
       break;
     case 400:

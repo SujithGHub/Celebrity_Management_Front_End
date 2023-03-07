@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 // import '../css/Admin.css'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,9 +12,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { authHeader, errorHandler } from "../util/Api";
-import { REST_API } from "../util/EndPoints";
+import axiosInstance from "../util/Interceptor";
 export const CelebrityDetails = () => {
   const navigate = useNavigate()
   const [celebrity, setCelebrity] = useState([]);
@@ -27,12 +24,10 @@ export const CelebrityDetails = () => {
   }, []);
 
   const getAllCelebrity = () => {
-    axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() }).then(res => {
-      setCelebrity(_.orderBy(res.data, 'name'));
-      setFilter((_.orderBy(res.data, 'name')));
-    }).catch(error => {
-      console.log(error, "error")
-      errorHandler(error);
+    axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
+      let result = _.orderBy(res, 'name')
+      setCelebrity(result);
+      setFilter(result);
     })
   }
 
@@ -43,15 +38,9 @@ export const CelebrityDetails = () => {
   }
 
   const deleteHandler = (id) => {
-    axios.delete(`${REST_API}/celebrity/${id}`, { headers: authHeader() }).then((res) => {
+    axiosInstance.delete(`/celebrity/${id}`).then((res) => {
       getAllCelebrity();
-    }).catch(error => {
-      toast.error(error.message);
     })
-  }
-
-  const handleLogOut = () => {
-    window.location.href = "/enquiry-details";
   }
 
   return (
@@ -78,7 +67,7 @@ export const CelebrityDetails = () => {
               ),
             }}
           />
-          <Button onClick={() => handleLogOut()} color='error' title="Back"><ArrowBackIcon/></Button>
+          <Button onClick={() => navigate("/enquiry-details")} color='error' title="Back"><ArrowBackIcon/></Button>
         </div>
       </header>
         <div className="container" style={{ display: "flex", flexWrap: "wrap", maxWidth: "78rem" }} >
@@ -99,11 +88,11 @@ export const CelebrityDetails = () => {
                     {celebrityItem?.description}
                   </Typography>
                 <div style={{ padding: '10px 10px', wordBreak:'break-all', minHeight: '9rem' }}>
-                  <h6><span className="celebrity-info">DOB</span>: {celebrityItem?.dateOfBirth}</h6>
-                  <h6><span className="celebrity-info">Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
-                  <h6><span className="celebrity-info">Email</span>: {celebrityItem?.mailId}</h6>
-                  <h6><span className="celebrity-info">Mobile</span>: {celebrityItem?.phoneNumber}</h6>
-                  <h6><span className="celebrity-info">Address</span>: {celebrityItem?.address}</h6>
+                  <h6 className="celebrity-info"><span>DOB</span>: {celebrityItem?.dateOfBirth}</h6>
+                  <h6 className="celebrity-info"><span>Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
+                  <h6 className="celebrity-info"><span>Email</span>: {celebrityItem?.mailId}</h6>
+                  <h6 className="celebrity-info"><span>Mobile</span>: {celebrityItem?.phoneNumber}</h6>
+                  <h6 className="celebrity-info"><span>Address</span>: {celebrityItem?.address}</h6>
                 </div>
                 </CardContent>
               </CardActionArea>

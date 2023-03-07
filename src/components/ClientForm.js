@@ -4,11 +4,9 @@ import TextField from "@mui/material/TextField";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { authHeader, errorHandler } from "../util/Api";
-import { REST_API } from "../util/EndPoints";
+import axiosInstance from "../util/Interceptor";
 
 export const ClientForm = () => {
   const [celebrityDetails, setCelebrityDetails] = useState({});
@@ -33,14 +31,9 @@ export const ClientForm = () => {
 
 
   const getAllCelebrity = () => {
-    axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() })
-      .then((res) => {
-        const response = res.data
-        setActorName(response);
-      }).catch(error => {
-        errorHandler(error)
-      })
-  }
+    axiosInstance.get(`/celebrity/get-all-celebrity`).then((res) => {
+        setActorName(res);
+      })}
 
   const changeCelebrity = (value) => {
     setCelebrityDetails({ ...celebrityDetails, celebrity: value })
@@ -50,13 +43,10 @@ export const ClientForm = () => {
     e.preventDefault();
     const enquiryInfo = { ...celebrityDetails, startTime: startTime, endTime: endTime }
     console.log(enquiryInfo,"enquiryInfo");
-    axios.post(`${REST_API}/enquiry`, enquiryInfo, { headers: authHeader() }).then(res => {
-      toast.success(res?.data.message);
+    axiosInstance.post(`/enquiry`, enquiryInfo).then(res => {
+      toast.success(res?.message);
       window.location.reload();
-    }).catch(error => {
-      toast.error(error.response?.data?.message)
-    })
-  };
+    })};
 
   const handleSingleDay = () => {
     setSingleDay(!singleDay)

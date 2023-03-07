@@ -76,26 +76,6 @@ export default function BasicModal(props) {
       aria-labelledby="keep-mounted-modal-title"
       aria-describedby="keep-mounted-modal-description"
     >
-      {/* For calender page event accept/reject in modal */}
-      {props?.event ? <Box sx={style}>
-        <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold' }} >
-          {/* Available Events : {props.event} */}
-        </Typography>
-        <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold' }} >
-          {props.event?.title}
-        </Typography>
-        <Typography id="keep-mounted-modal-description" sx={{ mt: 2 }} >
-          <span>Start Time: {moment(props.event?.start).format('LLL')}</span><br />
-          <span>End Time: {moment(props.event?.end).format('LLL')}</span>
-        </Typography>
-        <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold', margin: '1rem' }} >
-          Do you want to cancel this Event?
-        </Typography>
-        <div className='modal-buttons'>
-          <Button color='primary' style={{ marginRight: '10px' }} onClick={() => props.handleCancelEvent(props?.event?.id, 'REJECTED')} variant='contained'>Yes</Button>
-          <Button color='error' variant='contained' onClick={props.handleClose}>No</Button>
-        </div>
-      </Box> :
         <Box sx={[style, { width: '70%', height: '90%', padding: '20px 40px 0px 40px', overflow: 'auto' }]}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: '30px', marginBottom: '1rem' }}>
             <h2 style={{ textAlign: 'center', marginBottom: 0, fontWeight: 'bolder' }}>Event Details</h2>
@@ -103,14 +83,14 @@ export default function BasicModal(props) {
           </div>
           <>
             <div className='row event-details'>
-              <div className='col'>
+            <div className='col'>
                 <TextField
                   variant='standard'
+                  name='organizationName'
                   style={{ width: '90%' }}
-                  name='name'
-                  placeholder='Organizer Name'
-                  helperText="Event Organizer Name"
-                  value={eventToBeEdited?.name}
+                  placeholder='Organization Name'
+                  helperText="Event Organization Name"
+                  value={eventToBeEdited?.organizationName}
                   inputProps={
                     { readOnly: true }
                   }
@@ -120,10 +100,10 @@ export default function BasicModal(props) {
                 <TextField
                   variant='standard'
                   style={{ width: '90%' }}
-                  name='phoneNumber'
-                  placeholder='Organizer phoneNumber'
-                  helperText="Event Organizer Mobile"
-                  value={eventToBeEdited?.phoneNumber}
+                  name='name'
+                  placeholder='Organizer Name'
+                  helperText="Event Organizer Name"
+                  value={eventToBeEdited?.name}
                   inputProps={
                     { readOnly: true }
                   }
@@ -147,11 +127,11 @@ export default function BasicModal(props) {
               <div className='col'>
                 <TextField
                   variant='standard'
-                  name='organizationName'
                   style={{ width: '90%' }}
-                  placeholder='Organization Name'
-                  helperText="Event Organization Name"
-                  value={eventToBeEdited?.organizationName}
+                  name='phoneNumber'
+                  placeholder='Organizer phoneNumber'
+                  helperText="Event Organizer Mobile"
+                  value={eventToBeEdited?.phoneNumber}
                   inputProps={
                     { readOnly: true }
                   }
@@ -245,7 +225,7 @@ export default function BasicModal(props) {
                   name="celebrity"
                   placeholder='Celebrity Name'
                   onChange={(event, newValue) => changeCelebrity(newValue)}
-                  renderInput={(params) => <TextField {...params} helperText="Celebrity" label="Celebrity" style={{ width: '90%', borderRadius: 0 }} />}
+                  renderInput={(params) => <TextField {...params} className='my-autocomplete textfield' helperText="Celebrity" label="Celebrity" style={{ width: '90%', borderRadius: 0 }} />}
                 />
               </div>
               <div className='col'>
@@ -256,7 +236,7 @@ export default function BasicModal(props) {
             // onClick={() => submit(eventToBeEdited)}
             >Accept Enquiry</Button>
           </>
-        </Box>}
+        </Box>
     </Modal>
   );
 }

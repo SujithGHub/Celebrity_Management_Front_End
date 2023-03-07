@@ -1,18 +1,15 @@
-import DoneIcon from '@mui/icons-material/Done';
 import EditIcon from '@mui/icons-material/Edit';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import axios from 'axios';
 import _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { authHeader, errorHandler } from '../util/Api';
-import { REST_API } from '../util/EndPoints';
 import EnquiryModal from '../util/EnquiryDetailsModal';
+import axiosInstance from '../util/Interceptor';
 import StatusDropDown from '../util/StatusDropDown';
 
 export default function EnquiryDetails() {
@@ -137,13 +134,11 @@ export default function EnquiryDetails() {
       schedule['celebrity'] = row.celebrity;
       schedule['enquiryId'] = row.id;
       schedule["eventName"] = row.eventName;
-      axios.post(`${REST_API}/enquiry/status`, schedule, { headers: authHeader() }).then(response => {
+      axiosInstance.post(`/enquiry/status`, schedule).then(response => {
         getAllEnquiry();
         toast.success("Status Changed");
         setOpen(false);
         setEditable(false);
-      }).catch(error => {
-        errorHandler(error);
       })
     } else {
       toast.error("Select Celebrity")
@@ -151,22 +146,18 @@ export default function EnquiryDetails() {
   }
 
   const getAllCelebrity = async () => {
-    await axios.get(`${REST_API}/celebrity/get-all-celebrity`, { headers: authHeader() }).then(res => {
-      setCelebrity(res.data)
-    }).catch(error => {
-      console.log(error)
+    await axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
+      setCelebrity(res)
     })
   }
 
   const getAllEnquiry = async () => {
-    const res = await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader() }).then(res => {
-      const enquiry = res.data.response;
+    const res = await axiosInstance.get(`/enquiry/get-all-enquiry`).then(res => {
+      const enquiry = res.response;
       setEnquiryList(enquiry);
       setAcceptedEnquiry(enquiry.filter(en => en.status === "ACCEPTED"));
       setRejectedEnquiry(enquiry.filter(en => en.status === "REJECTED"));
       setPendingEnquiry(enquiry.filter(en => en.status === 'PENDING'));
-    }).catch(error => {
-      console.log(error);
     })
   }
 
