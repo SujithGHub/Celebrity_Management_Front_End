@@ -13,11 +13,28 @@ import Typography from "@mui/material/Typography";
 import _ from "lodash";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../util/Interceptor";
+import DeleteModal from "../util/DeleteModal";
 export const CelebrityDetails = () => {
   const navigate = useNavigate()
   const [celebrity, setCelebrity] = useState([]);
   const [filter, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
+  const [selectedCelebrity, setSelectedCelebrity] = useState(null)
+  const [open, setOpen] = React.useState(false);
+  const dropDownItem = ['ACTIVE', 'INACTIVE']
+  const [available, setAvailable] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const [availability, setAvailability] = useState([]);
+  const [unavailability, setUnavailability] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const label = { inputProps: { 'aria-label': 'Switch demo' } };
+
+  const handleOpen = (cel) => {
+    setOpen(true);
+    setSelectedCelebrity(cel);
+  }
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     getAllCelebrity();
@@ -133,6 +150,7 @@ export const CelebrityDetails = () => {
             }
         </div> */}
       <footer>Copyright @2023 </footer>
+      <DeleteModal open={open} handleClose={handleClose} selectedCelebrity={selectedCelebrity} deleteHandler={deleteHandler}></DeleteModal>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import Calendar from './components/Calendar';
 import { CelebrityDetails } from './components/CelebrityDetails';
 import { ClientForm } from './components/ClientForm';
 import EnquiryDetails from './components/EnquiryDetails';
+import { Processing } from './components/Processing';
 import Header from './util/Header';
 
 function App() {
@@ -20,8 +21,11 @@ function App() {
         <Route path='/add-celebrity-details' element={<AddCelebrityDetails />} />
         <Route path='/client' element={<ClientForm />} />
         <Route path='/event-details' element={<Calendar />} />
+        <Route path='/processing' element={<Processing/>} />
+
       </Routes>
         <ToastContainer />
+    
     </div>
   );
 }

@@ -48,6 +48,7 @@ export const AddCelebrityDetails = () => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("celebrity", JSON.stringify(celebrity));
+    console.log(celebrity, "celebrity")
     axiosInstance.post(`/celebrity`, formData, {headers: {'Content-Type': "multipart/form-data"}} ).then((res) => {
       toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
       navigate('/celebrity-details')
@@ -123,8 +124,8 @@ export const AddCelebrityDetails = () => {
             />
           </div>
         </div>
-        <div className="row">
-        <div className="col" style={{position: 'relative', left:'-11px'}}>
+        <div className="row" >
+        <div className="col" style={{position: 'relative', left:'-11px',}}>
             <LocalizationProvider 
             dateAdapter={AdapterDayjs} 
             >
@@ -135,11 +136,11 @@ export const AddCelebrityDetails = () => {
                 onChange={(value) => {
                   setValue(value)
                 }}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => <TextField {...params} style={{width:"400px"}} />}
               />
             </LocalizationProvider>
           </div>
-          <div className="col gender-field">
+          <div className="col gender-field" >
             <FormControl style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingTop: '5px'}}>
               <FormLabel id="demo-row-radio-buttons-group-label">
                 Gender
@@ -151,7 +152,7 @@ export const AddCelebrityDetails = () => {
                 value={celebrityDetails?.gender}
                 onChange={(event) => changeHandler(event)}
               >
-                <div style={{ marginRight: "23px" }}>
+                <div style={{ marginRight: "25px",width:"300px" }}>
                   <FormControlLabel
                     value="male"
                     control={<Radio checked={celebrityDetails?.gender === 'male'} />}
@@ -202,12 +203,37 @@ export const AddCelebrityDetails = () => {
           <div className='col'>
             <input type='file' name='img' accept='.jpeg, .jpeg, .png' ref={fileInputRef}  onChange={(event) => setImage(event.target.files[0])} ></input>
           </div>
-          <div className="col" style={{ display: "flex", alignItems: "flex-end" }} >
+          <div className="col" >
+          <FormControl >
+            <FormLabel id="demo-row-radio-buttons-group-label">
+              status
+            </FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="status"
+              value={celebrityDetails?.status}
+              onChange={(event) => changeHandler(event)}
+            >
+                <FormControlLabel
+                  value="ACTIVE"
+                  control={<Radio checked={celebrityDetails?.status === 'ACTIVE'} />}
+                  label="ACTIVE"
+                />
+                <FormControlLabel
+                  value="INACTIVE"
+                  control={<Radio checked={celebrityDetails?.status === 'INACTIVE'} />}
+                  label="INACTIVE"
+                />
+            </RadioGroup>
+          </FormControl>
+        </div>
+        </div>
+          <div className="row" >
             <Button type="submit" variant="contained">
              {celebrityDetails?.id ? "Update":" Add Details"}
             </Button>
           </div>
-        </div>
       </form>
   );
 };
