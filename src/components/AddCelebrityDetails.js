@@ -24,11 +24,12 @@ export const AddCelebrityDetails = () => {
   const location=useLocation()
   const navigate=useNavigate()
 
-  const changeHandler = (e) => {
-    setCelebrityDetails((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+  const changeHandler = (e, key) => {
+    console.log(moment(e?.$d).format('DD/MM/yyyy'))
+    key === 'dateOfBirth' ? 
+    setCelebrityDetails((prev) => ({ ...prev,  'dateOfBirth' : moment(e?.$d).format('DD/MM/yyyy')})) 
+    :
+    setCelebrityDetails((prev) => ({ ...prev, [e.target?.name]: e.target?.value, }));
   };
 
   useEffect(()=>{
@@ -44,7 +45,7 @@ export const AddCelebrityDetails = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const celebrity = { ...celebrityDetails, dateOfBirth: moment(value?.$d).format('L') }
+    const celebrity = { ...celebrityDetails }
     const formData = new FormData();
     formData.append("file", image);
     formData.append("celebrity", JSON.stringify(celebrity));
@@ -68,7 +69,7 @@ export const AddCelebrityDetails = () => {
               label="Name"
               name="name"
               value={celebrityDetails?.name}
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'name')}
               variant="outlined"
               required
               style={{ width: "400px" }}
@@ -81,7 +82,7 @@ export const AddCelebrityDetails = () => {
               name="mailId"
               required
               value={celebrityDetails?.mailId}
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'mailId')}
               label="Mail Id"
               variant="outlined"
               style={{ width: "400px" }}
@@ -107,7 +108,7 @@ export const AddCelebrityDetails = () => {
               name="phoneNumber"
               value={celebrityDetails?.phoneNumber}
               required
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'phoneNumber')}
               style={{ width: "400px " }}
             />
 
@@ -118,7 +119,7 @@ export const AddCelebrityDetails = () => {
               label="Address"
               name="address"
               value={celebrityDetails?.address}
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'address')}
               variant="outlined"
               style={{ width: "400px" }}
             />
@@ -132,9 +133,10 @@ export const AddCelebrityDetails = () => {
               <DatePicker
                 label="Date Of Birth"
                 inputFormat="DD/MM/YYYY"
-                value={celebrityDetails?.dateOfBirth ?  celebrityDetails?.dateOfBirth : value}
-                onChange={(value) => {
-                  setValue(value)
+                name="dateOfBirth"
+                value={celebrityDetails?.dateOfBirth || ''}
+                onChange={(event) => {
+                  changeHandler(event, 'dateOfBirth')
                 }}
                 renderInput={(params) => <TextField {...params} style={{width:"400px"}} />}
               />
@@ -150,7 +152,7 @@ export const AddCelebrityDetails = () => {
                 aria-labelledby="demo-row-radio-buttons-group-label"
                 name="gender"
                 value={celebrityDetails?.gender}
-                onChange={(event) => changeHandler(event)}
+                onChange={(event) => changeHandler(event, 'gender')}
               >
                 <div style={{ marginRight: "25px",width:"300px" }}>
                   <FormControlLabel
@@ -181,7 +183,7 @@ export const AddCelebrityDetails = () => {
               variant="outlined"
               name="profession"
               value={celebrityDetails?.profession}
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'profession')}
               style={{ width: "400px" }}
             />
           </div>
@@ -192,7 +194,7 @@ export const AddCelebrityDetails = () => {
               label="Description"
               name="description"
               value={celebrityDetails?.description}
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'description')}
               multiline
               maxRows={4}
             />
@@ -213,7 +215,7 @@ export const AddCelebrityDetails = () => {
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="status"
               value={celebrityDetails?.status}
-              onChange={(event) => changeHandler(event)}
+              onChange={(event) => changeHandler(event, 'status')}
             >
                 <FormControlLabel
                   value="ACTIVE"

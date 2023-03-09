@@ -84,7 +84,7 @@ export const CelebrityDetails = () => {
               ),
             }}
           />
-          <Button onClick={() => navigate("/enquiry-details")} color='error' title="Back"><ArrowBackIcon/></Button>
+          <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon/></Button>
         </div>
       </header>
         <div className="container" style={{ display: "flex", flexWrap: "wrap", maxWidth: "78rem" }} >

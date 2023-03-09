@@ -124,19 +124,24 @@ export default function EnquiryDetails() {
     setOpen(true);
     setEditable(true);
   }
-
+const [enquiryDetails, setEnquiryDetails] = useState({
+  
+})
   const handleEventSubmit = (row, key) => {
+    console.log(row, "enquiryId")
     if (!_.isEmpty(row.celebrity)) {
-      const schedule = {};
-      schedule['startTime'] = new Date(row.startTime).getTime();
-      schedule['endTime'] = new Date(row.endTime).getTime();
-      schedule['status'] = key;
-      schedule['celebrity'] = row.celebrity;
-      schedule['enquiryId'] = row.id;
-      schedule["eventName"] = row.eventName;
+      // const schedule = {};
+      // schedule['startTime'] = new Date(row.startTime).getTime();
+      // schedule['endTime'] = new Date(row.endTime).getTime();
+      // schedule['status'] = key;
+      // schedule['celebrity'] = row.celebrity;
+      // schedule['enquiryId'] = row.id;
+      // schedule["eventName"] = row.eventName;
+      const sched = {...row, status: key}
+      const schedule = {enquiryDetails: sched}
       axiosInstance.post(`/enquiry/status`, schedule).then(response => {
         getAllEnquiry();
-        toast.success("Status Changed");
+        toast.success(key === 'ACCEPTED' ? "Enquiry Accepted" : "Enquiry Rejected ");
         setOpen(false);
         setEditable(false);
       })
@@ -165,7 +170,7 @@ export default function EnquiryDetails() {
     <Box sx={{ height: 400, width: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 style={{ textAlign: 'center', padding: '1rem' }}>Enquiry Details</h3>
-        <Button onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
+        <Button className='primary' onClick={() => navigate('/processing')}>Schedule List</Button>
       </div>
       <div style={{ textAlign: 'end', padding: '10px' }} >
         <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')} />

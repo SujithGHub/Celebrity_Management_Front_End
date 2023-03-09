@@ -247,3 +247,13 @@ input[type="number"]::-webkit-outer-spin-button {
 .pointer-cursor * {
   cursor: pointer;
 }
+.fc.fc-media-screen.fc-direction-ltr.fc-theme-bootstrap5 {
+  padding: 1rem;
+}
+.processing-header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem;
+}

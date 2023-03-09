@@ -11,6 +11,7 @@ import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import CalendarModal from '../util/CalendarModal';
 import BlockDatesModal from '../util/CalendarModal';
 import axiosInstance from '../util/Interceptor';
 
@@ -46,13 +47,13 @@ const Calendar = () => {
 
   const renderSidebar = () => {
     return (
-      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 40px 0 15px' }}>
+      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 15px 0 15px' }}>
         <div className='demo-app-sidebar-section'>
-          <h4>Available Events : <span style={{ color: 'red' }}>{events.length}</span></h4>
-          <h2>{celebrity?.name}</h2>
+          {/* <h4>Available Events : <span style={{ color: 'red' }}>{events.length}</span></h4> */}
+          <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
         </div>
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
+          <h2>{celebrity?.name}</h2>
         </div>
       </div>
     )
@@ -97,17 +98,26 @@ const Calendar = () => {
     })}
 
   const handleEventClick = (clickInfo) => {
-    setSelectedEvent(clickInfo.event.toPlainObject());
-    setOpen(true);
+    let event = clickInfo.event.toPlainObject();
+    if (event.extendedProps?.status === 'REJECTED') {
+      toast.error("Rejected Enquiry")
+    } else {
+      setSelectedEvent(event);
+      setOpen(true);
+    }
   }
 
   const handleCancelEvent = (scheduleId, status) => {
     axiosInstance.post(`/schedule/status?id=${scheduleId}&status=${status}`).then(() => {
       setOpen(false);
       getEvents(celebrity?.id);
-    })}
+    })
+  }
 
-  const handleDateSelect = (args) => {
+  const handleDateClick = (args) => {
+    console.log(args.start, "handleDateClick")
+    console.log(blockedDates.map(blocked => new Date(blocked.blockedDate)), "sdafsfsdfwsf")
+    console.log(_.filter(blockedDates, (blocked => blocked.blockedDate === args.start)), "filter");
     setBlockDates(args);
     setOpenBlockDate(true);
   }
@@ -120,7 +130,8 @@ const Calendar = () => {
       getBlockedDates(celebrity?.id)
       setOpenBlockDate(false);
       toast.success(response?.message);
-    })}
+    })
+  }
 
   return (
     <>
@@ -140,14 +151,15 @@ const Calendar = () => {
         selectable={true}
         events={events}
         selectAllow={(event) => event.start < new Date() ? false : true}
-        select={(event) => handleDateSelect(event)}
+        select={(event) => handleDateClick(event)}
         dayMaxEvents={false}
         eventClick={(event) => handleEventClick(event)}
         eventDisplay="block"
         eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}
       />
-      {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <BlockDatesModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : ""}
-      {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
+      {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}
+
+      {openBlockDate && <CalendarModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
     </>
   )
 }

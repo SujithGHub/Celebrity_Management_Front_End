@@ -9,8 +9,12 @@ import { authHeader } from "../util/Api";
 import moment from "moment";
 import { formatDate } from "@fullcalendar/core";
 import { logDOM } from "@testing-library/react";
+import { useNavigate } from "react-router-dom";
 
 export const Processing = () => {
+
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [available, setAvailable] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -24,7 +28,7 @@ export const Processing = () => {
     window.location.href = "/enquiry-details"
   }
   const handleClick = (event, key) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event?.currentTarget);
   };
   const handleMenuClose = (e, value) => {
     if (value === 'UpcomingEvents') {
@@ -87,7 +91,7 @@ export const Processing = () => {
       type: 'number',
       width: 150,
       editable: false,
-      valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : "-",
+      valueGetter: (params) => params.row?.celebrity ? params.row?.celebrity?.name : "-",
       headerAlign: 'center',
       align: 'left'
     },
@@ -141,24 +145,25 @@ export const Processing = () => {
   ];
   return (
     <div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-        <h1>Processing Table</h1>
-        <Button className="primary" color="error" title="Back" onClick={() => handleBack()}><ArrowBackIcon /></Button>
-      </div>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse' }}>
-        <StatusDropDown dropDownItem={dropDownItem} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
+      <div className="processing-header">
+        <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button>
+        <h2>Processing Table</h2>
+        <div style={{display: 'flex', alignItems: 'center'}}>
+        <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
+        <StatusDropDown dropDownItem={dropDownItem} buttonName={'Filter'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
+        </div>
       </div>
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           rows={(completed ? completedEvents : availableEvents)}
           columns={columns}
-          pageSize={5}
+          pageSize={7}
           autoHeight
           disableColumnFilter
           disableColumnMenu
           disableColumnSelector
           sortModel={[{ field: "startTime", sort: 'asc' }]}
-          rowsPerPageOptions={[5]}
+          rowsPerPageOptions={[5,7,10]}
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
         />

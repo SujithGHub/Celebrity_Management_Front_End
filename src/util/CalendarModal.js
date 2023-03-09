@@ -20,7 +20,7 @@ const style = {
   borderRadius: '15px',
 };
 
-export default function BlockDatesModal(props) {
+export default function CalendarModal(props) {
 
   let { blockDates } = props;
 

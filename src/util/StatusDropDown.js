@@ -17,6 +17,12 @@ export default function BasicMenu(props) {
       status === 'pending' ? <span className='filter-text'>Pending</span> : status === 'accepted' ? <span className='filter-text'>Accepted</span> : <span className='filter-text'>Rejected</span>
     )
   }
+
+  const getButtonName = (name) => {
+    return name;
+  }
+
+
   return (
     <div>
       <Button
@@ -26,11 +32,11 @@ export default function BasicMenu(props) {
         aria-controls={props.openMenu ? 'basic-menu' : undefined}
         aria-haspopup="true"
         variant='contained'
-        color={props.status ? getStatusColor(props.status) : ""}
+        color={props.status ? getStatusColor(props.status) : "primary"}
         aria-expanded={props.openMenu ? 'true' : undefined}
         onClick={props.handleClick}
       >
-        {props.status ? getStatus(props.status) : "Default Button Name"}<FilterAltOutlinedIcon />
+        {props.status ? getStatus(props?.status) : getButtonName(props?.buttonName)}<FilterAltOutlinedIcon />
       </Button>
       <Menu
         id="basic-menu"
