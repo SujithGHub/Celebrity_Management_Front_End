@@ -68,14 +68,14 @@ export default function EnquiryDetails() {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Organizer name', align: 'center', headerAlign: 'center', width: 150 },
-    { field: 'organizationName', headerName: 'Organization', align: 'center', headerAlign: 'center', width: 150 },
-    { field: 'eventName', headerName: 'Event Name', align: 'center', headerAlign: 'center', width: 200, },
-    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', width: 120, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
-    { field: 'startTime', headerName: 'Start', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false ,renderCell: (row) => moment(row?.row?.startTime).format('LLL') },
-    { field: 'endTime', headerName: 'End', type: 'date', width: 210, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row?.row?.endTime).format('LLL') },
+    { field: 'name', headerName: 'Organizer name', align: 'center', headerAlign: 'center', flex: 1, width: 80 },
+    { field: 'organizationName', headerName: 'Organization', align: 'center', headerAlign: 'center', flex: 1, minWidth: 80 },
+    { field: 'eventName', headerName: 'Event Name', align: 'center', headerAlign: 'center', flex: 1, minWidth: 110, },
+    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
+    { field: 'startTime', headerName: 'Start', type: 'date', flex: 1, minWidth: 110, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row?.row?.startTime).format('LLL') },
+    { field: 'endTime', headerName: 'End', type: 'date', flex: 1, minWidth: 110, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row?.row?.endTime).format('LLL') },
     {
-      field: 'action', headerName: 'Action', width: 210, align: 'center', headerAlign: 'center',
+      field: 'action', headerName: 'Action', flex: 1, minWidth: 110, align: 'center', headerAlign: 'center',
       renderCell: (row) => {
         const { status } = row.row;
         if (status === "ACCEPTED") {
@@ -108,7 +108,7 @@ export default function EnquiryDetails() {
       field: 'save',
       headerName: editable ? 'Save' : 'Edit',
       hide: accepted || rejected,
-      width: 90,
+      flex: 1, minWidth: 50,
       align: 'center',
       headerAlign: 'center',
       renderCell: (row) => <Button onClick={() => handleEventSave(row)}>{<EditIcon />}</Button>
@@ -124,21 +124,15 @@ export default function EnquiryDetails() {
     setOpen(true);
     setEditable(true);
   }
-const [enquiryDetails, setEnquiryDetails] = useState({
-  
-})
+  const [enquiryDetails, setEnquiryDetails] = useState({
+
+  })
   const handleEventSubmit = (row, key) => {
     console.log(row, "enquiryId")
     if (!_.isEmpty(row.celebrity)) {
-      // const schedule = {};
-      // schedule['startTime'] = new Date(row.startTime).getTime();
-      // schedule['endTime'] = new Date(row.endTime).getTime();
-      // schedule['status'] = key;
-      // schedule['celebrity'] = row.celebrity;
-      // schedule['enquiryId'] = row.id;
-      // schedule["eventName"] = row.eventName;
-      const sched = {...row, status: key}
-      const schedule = {enquiryDetails: sched}
+      const acceptedSchedule = { ...row, status: key }
+      const schedule = { enquiryDetails: acceptedSchedule }
+      console.log(schedule, "schedule");
       axiosInstance.post(`/enquiry/status`, schedule).then(response => {
         getAllEnquiry();
         toast.success(key === 'ACCEPTED' ? "Enquiry Accepted" : "Enquiry Rejected ");

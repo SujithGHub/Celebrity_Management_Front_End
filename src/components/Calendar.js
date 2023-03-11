@@ -5,9 +5,11 @@ import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import timeGridPlugin from '@fullcalendar/timegrid';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Button } from '@mui/material';
+import { Tooltip } from 'bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import _ from 'lodash';
+import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -87,12 +89,12 @@ const Calendar = () => {
       setAllEvents(response);
       // const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
       const formattedEvents = _.map(response, (event, key) => ({
-        id: event.id,
-        title: event.eventName,
-        start: event.startTime,
-        end: event.endTime,
-        status: getEventStatus(event.startTime, event.status),
-        color: getEventColor(event.startTime, event.status),
+        id: event.enquiryDetails.id,
+        title: event.enquiryDetails.eventName,
+        start: event.enquiryDetails.startTime,
+        end: event.enquiryDetails.endTime,
+        status: getEventStatus(event.enquiryDetails.startTime, event.enquiryDetails.status),
+        color: getEventColor(event.enquiryDetails.startTime, event.enquiryDetails.status),
       }))
       setEvents(formattedEvents)
     })}
@@ -133,6 +135,17 @@ const Calendar = () => {
     })
   }
 
+  const toolTipFunction = (info) => {
+    let event = info.event?.toPlainObject();
+    console.log(event, 'event')
+    var toolTip = new Tooltip(info.el, {
+        title: `${event?.title} - ${moment(event?.start).calendar()}`,
+        placement: 'top',
+        trigger: 'hover',
+        container: 'body'
+    })
+  }
+
   return (
     <>
       {renderSidebar()}
@@ -145,16 +158,17 @@ const Calendar = () => {
         stickyHeaderDates
         themeSystem="bootstrap5"
         ref={calendarRef}
-        aspectRatio={3}
+        aspectRatio={2}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
         weekends={weekEndAvailability}
         selectable={true}
         events={events}
         selectAllow={(event) => event.start < new Date() ? false : true}
         select={(event) => handleDateClick(event)}
+        eventDidMount={toolTipFunction}
         dayMaxEvents={false}
         eventClick={(event) => handleEventClick(event)}
-        eventDisplay="block"
+        eventDisplay="list-item"
         eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}
       />
       {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}

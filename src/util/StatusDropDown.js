@@ -28,7 +28,7 @@ export default function BasicMenu(props) {
       <Button
         id="basic-button"
         title='Filter'
-        style={{paddingLeft: '10px', paddingRight: '6px'}}
+        style={{paddingLeft: '10px', paddingRight: '6px', width: '110px'}}
         aria-controls={props.openMenu ? 'basic-menu' : undefined}
         aria-haspopup="true"
         variant='contained'

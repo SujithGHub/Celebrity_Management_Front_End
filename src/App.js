@@ -22,7 +22,6 @@ function App() {
         <Route path='/client' element={<ClientForm />} />
         <Route path='/event-details' element={<Calendar />} />
         <Route path='/processing' element={<Processing/>} />
-
       </Routes>
         <ToastContainer />
     

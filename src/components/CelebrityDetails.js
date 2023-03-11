@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
 // import '../css/Admin.css'
+import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import SearchIcon from '@mui/icons-material/Search';
-import { Button, CardActionArea, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
+import { Button, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
 import _ from "lodash";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import Logo from '../assets/Google-Calendar-icon.png';
+import EditIcon from '../assets/edit_icon.png';
 import axiosInstance from "../util/Interceptor";
-import DeleteModal from "../util/DeleteModal";
+import Loader from "../util/Loader";
 import StatusDropDown from '../util/StatusDropDown';
-import AddIcon from '@mui/icons-material/Add';
 
 export const CelebrityDetails = () => {
   const navigate = useNavigate()
@@ -33,10 +31,10 @@ export const CelebrityDetails = () => {
   const [activeCelebrity, setActiveCelebrity] = useState([]);
   const [inactiveCelebrity, setInactiveCelebrity] = useState([]);
   const [active, setActive] = useState(true);
-  
+  const [loading, setLoading] = useState(false);
+
   const openMenu = Boolean(anchorEl);
   const label = { inputProps: { 'aria-label': 'Switch demo' } };
-
 
   const handleOpen = (cel) => {
     setOpen(true);
@@ -49,23 +47,27 @@ export const CelebrityDetails = () => {
   }, []);
 
   const getAllCelebrity = () => {
+    setLoading(true)
     axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
       let result = _.orderBy(res, 'name')
       let activeFilter = _.filter(result, (res => res.status === "ACTIVE"))
       setActiveCelebrity(activeFilter)
-      console.log(activeFilter, "act");
       let inactiveFilter = _.filter(result, (res => res.status === "INACTIVE"))
       setInactiveCelebrity(inactiveFilter)
-      console.log(res, "res");
-
-      setCelebrity(result);
+      // setCelebrity(result);
       setFilter(result);
+      setLoading(false);
     })
   }
 
-  const filterHandler = (e) => {
+  const filterHandler = (e, active) => {
     const filterResults = filter.filter(item => item.name?.toLowerCase().includes(e.target.value.toLowerCase()))
-    setCelebrity(filterResults)
+    console.log(filterResults, "filterResults")
+    if (active === true) {
+      setActiveCelebrity(filterResults)
+    } else if (active === false) {
+      setInactiveCelebrity(filterResults)
+    }
     setSearch(e.target.value)
   }
 
@@ -77,19 +79,21 @@ export const CelebrityDetails = () => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleMenuClose = (event, value) => {
     if (value === 'ACTIVE') {
       setActive(true);
+      setAnchorEl(null);
     }
     else if (value === 'INACTIVE') {
       setActive(false);
+      setAnchorEl(null);
     }
     setAnchorEl(null);
   }
 
   const deleteCelebrity = (celeb) => {
     setOpen(true);
-
   }
 
   const getActive = () => {
@@ -98,18 +102,17 @@ export const CelebrityDetails = () => {
 
 
   return (
-    <div className="home">
+    <>
       <header className="header">
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Button onClick={() => navigate("/enquiry-details")} color='error' title="Back"><ArrowBackIcon /></Button>
-          <h3>Celebrity Details</h3>
+          <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon /></Button>
+          <h3 style={{ marginBottom: 0 }}>Celebrity Details</h3>
         </div>
-
         <div>
           <TextField
             id="filled-search"
             className="text"
-            onChange={(e) => filterHandler(e)}
+            onChange={(e) => filterHandler(e, active)}
             value={search}
             type="search"
             variant="outlined"
@@ -131,63 +134,62 @@ export const CelebrityDetails = () => {
           <Button className="primary" variant="contained" title="Add celebrity" onClick={() => navigate('/add-celebrity-details')}><AddIcon /></Button>
           <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
         </div>
-
       </header>
-
-
-      <div className="container" style={{ display: "flex", flexWrap: "wrap", maxWidth: "78rem", minHeight: 'calc(100vh - 251px)' }} >
-        {getActive().map((celebrityItem, index) => (
-          <Card sx={{ maxWidth: 345, width: 345, height: '515px', margin: "30px", overflowWrap: 'break-word' }} key={celebrityItem?.id} >
-            <CardActionArea style={{ minHeight: '28rem' }} >
-              <CardMedia
-                component="img"
-                height="130"
-                src={`data:image/jpeg/png;base64,${celebrityItem?.base64Image}`}
-                alt={celebrityItem?.name}
-              />
-              <CardContent className="scroll" style={{ height: '20rem', padding: '10px', overflow: 'auto', maxHight: '150px' }}>
-                <Typography gutterBottom variant="h5" component="div" style={{ textAlign: 'center' }} >
-                  {celebrityItem?.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" style={{ textIndent: '1rem', minHeight: '5rem' }}>
-                  {celebrityItem?.description}
-                </Typography>
-                <div style={{ padding: '10px 10px', wordBreak: 'break-all', minHeight: '9rem' }}>
-                  <h6 className="celebrity-info"><span>DOB</span>: {celebrityItem?.dateOfBirth}</h6>
-                  <h6 className="celebrity-info"><span>Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
-                  <h6 className="celebrity-info"><span>Email</span>: {celebrityItem?.mailId}</h6>
-                  <h6 className="celebrity-info"><span>Mobile</span>: {celebrityItem?.phoneNumber}</h6>
-                  <h6 className="celebrity-info"><span>Address</span>: {celebrityItem?.address}</h6>
+      {loading ? <Loader /> :
+        <div className="celebrity-card">
+          {getActive().map(celebrityItem => (
+            <div class="flip-card">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <CardMedia
+                    component="img"
+                    src={`data:image/jpeg/png;base64,${celebrityItem?.base64Image}`}
+                    style={{ borderRadius: '2rem 0 2rem 0', width: '270px', height: '397px' }}
+                    alt={celebrityItem?.name}
+                  />
                 </div>
-              </CardContent>
-            </CardActionArea>
-            <div className='celebrity-container'>
-              <Tooltip title='View Event Details'>
-                <IconButton aria-label="delete" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })}>
-                  <EventAvailableIcon style={{ width: '25px', height: '25px' }} color="action" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='Edit'>
-                <IconButton style={{ color: '#3f50b5' }} onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
-                  <BorderColorIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='Delete'>
-                <IconButton style={{ color: 'red' }} onClick={() => handleOpen(celebrityItem)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </div>
-          </Card>
-        ))}
-        {/* {active ? <div>
-          <button style={{ width: '345px', height: '300px', background: '#FFF', margin: "30px" }} onClick={() => navigate('/add-celebrity-details')}><span style={{ fontSize: '100px' }}>+</span></button>
-        </div> : ""
-        } */}
-      </div>
-
-      <footer>Copyright @2023 </footer>
-      <DeleteModal open={open} handleClose={handleClose} selectedCelebrity={selectedCelebrity} deleteHandler={deleteHandler}></DeleteModal>
-    </div >
+                <div class="flip-card-back">
+                  <div style={{ padding: '20px 0 0 20px', wordBreak: 'break-all', cursor: 'default', minHeight: '300px', color: 'white', opacity: 1 }}>
+                    <h6 className="celebrity-info"><span>DOB</span>: {moment(celebrityItem?.dateOfBirth).format('DD/MM/YYYY')}</h6>
+                    <h6 className="celebrity-info"><span>Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
+                    <div className="scroll" style={{ maxHeight: '2rem', wordWrap: 'break-word', overflow: 'auto' }}>
+                      <h6 className="celebrity-info"><span>Email</span>: {celebrityItem?.mailId}</h6>
+                    </div>
+                    <h6 className="celebrity-info"><span>Mobile</span>: {celebrityItem?.phoneNumber}</h6>
+                    <div className="scroll" style={{ maxHeight: '4rem', height: '4rem', wordWrap: 'break-word', overflow: 'auto' }}>
+                      <h6 className="celebrity-info"><span>Address</span>: {celebrityItem?.address}</h6>
+                    </div>
+                    <h6 style={{ textAlign: 'left', textDecoration: 'underline' }}>Description:</h6>
+                    <div className="scroll" style={{ maxHeight: '7.5rem', height: '7.5rem', wordWrap: 'break-word', overflow: 'auto' }}>
+                      <p style={{ color: 'white', paddingRight: '10px', paddingBottom: '10px', textAlign: 'left', textIndent: '1rem', wordBreak: 'break-word' }}>{celebrityItem?.description}</p>
+                    </div>
+                  </div>
+                  <div className='celebrity-container'>
+                    {/* <Tooltip title='View Event Details'>
+                      <Button className='primary' variant='contained' onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} style={{ borderRadius: '3rem', backgroundColor: 'yellow', color: 'red', width: '121px', height: '30px', fontSize: '10px', fontWeight: '700' }}>View Calendar</Button>
+                    </Tooltip> */}
+                    {/* <Tooltip title='Edit'>
+                      <IconButton style={{ color: 'red' }} onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
+                        <img src={EditIcon} style={{ marginRight: 0 }} alt="image" width='35px' height='35px' />
+                      </IconButton>
+                    </Tooltip> */}
+                  </div>
+                </div>
+              </div>
+              <div className="card-footer">
+                <Tooltip title='Edit'>
+                  <IconButton style={{ color: 'red' }} onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
+                    <img src={EditIcon} style={{ marginRight: 0 }} alt="image" width='30px' height='30px' />
+                  </IconButton>
+                </Tooltip>
+                <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0 }} alt="image" width='30px' height='30px' />}>
+                </Button>
+                <div className="divider"></div>
+                <h2 style={{ marginLeft: '1rem', marginBottom: '0', fontFamily: '"TrasandinaW03Light",sans-serif', fontSize: '1.3rem' }}>{celebrityItem?.name}</h2>
+              </div>
+            </div>))}
+        </div>}
+    </>
   );
 };
+

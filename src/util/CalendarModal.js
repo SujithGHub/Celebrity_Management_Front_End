@@ -44,7 +44,7 @@ export default function CalendarModal(props) {
           </Typography>
           <div className='modal-buttons'>
             <Button color='primary' style={{ marginRight: '10px' }} onClick={() => props.handleCancelEvent(props?.event?.id, 'REJECTED')} variant='contained'>Yes</Button>
-            <Button color='error' style={{ marginRight: '2rem' }} variant='contained' onClick={props.handleClose}>No</Button>
+            <Button color='error' variant='contained' onClick={props.handleClose}>No</Button>
           </div>
         </Box>
           :

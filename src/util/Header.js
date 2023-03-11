@@ -6,11 +6,13 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 import Logo from '../assets/logo.png';
 import { logout } from './Api';
 
 export default function Header() {
 
+  const {pathname} = useLocation();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenu = (event) => {
@@ -22,6 +24,8 @@ export default function Header() {
   };
 
   return (
+    <>
+    {pathname === '/' ? null :
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar sx={{ backgroundColor: '#1976d2'}}>
@@ -54,12 +58,13 @@ export default function Header() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
                 <MenuItem onClick={() => logout()}>Log Out</MenuItem>
               </Menu>
             </div>
         </Toolbar>
       </AppBar>
-    </Box>
+    </Box>}
+    </>
   );
 }

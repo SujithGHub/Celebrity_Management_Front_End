@@ -63,62 +63,69 @@ export const Processing = () => {
     {
       field: 'name',
       headerName: 'Organizer Name',
-      width: 100,
+      minWidth: 80,
+      flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
     },
     {
       field: 'organizationName',
       headerName: 'Organization Name',
-      width: 150,
+      minWidth: 50,
+      flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
     },
     {
       field: 'eventName',
       headerName: 'EventName',
       type: 'number',
-      width: 150,
+      minWidth: 80,
+      flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
     },
     {
       field: 'CelebrityName',
       headerName: 'Celebrity Name',
       type: 'number',
-      width: 150,
+      minWidth: 80,
+      flex: 1,
       editable: false,
       valueGetter: (params) => params.row?.celebrity ? params.row?.celebrity?.name : "-",
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
     },
     {
       field: 'location',
       headerName: 'Event place',
       type: 'number',
-      width: 190,
+      minWidth: 80,
+      flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
     },
     {
       field: 'startTime',
       headerName: 'StartTime',
       type: 'number',
-      width: 200,
+      minWidth: 180,
+      flex: 1,
       editable: false,
       renderCell: (param) => moment(param?.row.startTime).format('LLL'),
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
     },
     {
       field: 'endTime',
       headerName: 'EndTime',
       type: 'number',
-      width: 200,
+      minWidth: 180,
+      flex: 1,
       editable: false,
       renderCell: (param) => moment(param?.row.endTime).format('LLL'),
       headerAlign: 'center',
@@ -128,7 +135,8 @@ export const Processing = () => {
       field: 'mailId',
       headerName: 'MailId',
       type: 'number',
-      width: 150,
+      minWidth: 180,
+      flex: 1,
       editable: false,
       headerAlign: 'center',
       align: 'left'
@@ -136,7 +144,8 @@ export const Processing = () => {
     {
       field: 'phoneNumber',
       headerName: 'Contact Number ',
-      width: 130,
+      minWidth: 80,
+      flex: 1,
       editable: false,
       headerAlign: 'center',
       align: 'left'
@@ -147,7 +156,7 @@ export const Processing = () => {
     <div>
       <div className="processing-header">
         <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button>
-        <h2>Processing Table</h2>
+        <h2>Schedule List</h2>
         <div style={{display: 'flex', alignItems: 'center'}}>
         <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
         <StatusDropDown dropDownItem={dropDownItem} buttonName={'Filter'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
@@ -157,13 +166,13 @@ export const Processing = () => {
         <DataGrid
           rows={(completed ? completedEvents : availableEvents)}
           columns={columns}
-          pageSize={7}
+          pageSize={10}
           autoHeight
           disableColumnFilter
           disableColumnMenu
           disableColumnSelector
           sortModel={[{ field: "startTime", sort: 'asc' }]}
-          rowsPerPageOptions={[5,7,10]}
+          rowsPerPageOptions={[5,10,15]}
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
         />
