@@ -19,9 +19,8 @@ export default function EnquiryDetails() {
   const [open, setOpen] = useState(false);
   const [editable, setEditable] = useState(false);
   const [eventInfo, setEventInfo] = useState([]);
-  const [enquiryList, setEnquiryList] = useState([]);
+  const [, setEnquiryList] = useState([]);
   const [celebrity, setCelebrity] = useState([]);
-  const [selectedCelebrity, setSelectedCelebrity] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [, setPending] = useState(false);
@@ -124,9 +123,7 @@ export default function EnquiryDetails() {
     setOpen(true);
     setEditable(true);
   }
-  const [enquiryDetails, setEnquiryDetails] = useState({
 
-  })
   const handleEventSubmit = (row, key) => {
     console.log(row, "enquiryId")
     if (!_.isEmpty(row.celebrity)) {
@@ -151,7 +148,7 @@ export default function EnquiryDetails() {
   }
 
   const getAllEnquiry = async () => {
-    const res = await axiosInstance.get(`/enquiry/get-all-enquiry`).then(res => {
+    await axiosInstance.get(`/enquiry/get-all-enquiry`).then(res => {
       const enquiry = res.response;
       setEnquiryList(enquiry);
       setAcceptedEnquiry(enquiry.filter(en => en.status === "ACCEPTED"));

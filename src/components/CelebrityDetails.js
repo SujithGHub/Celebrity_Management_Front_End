@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 // import '../css/Admin.css'
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
 import _ from "lodash";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import Logo from '../assets/Google-Calendar-icon.png';
 import EditIcon from '../assets/edit_icon.png';
+import Logo from '../assets/Google-Calendar-icon.png';
 import axiosInstance from "../util/Interceptor";
 import Loader from "../util/Loader";
 import StatusDropDown from '../util/StatusDropDown';

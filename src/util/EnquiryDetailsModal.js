@@ -1,15 +1,13 @@
-import * as React from 'react';
+import CloseIcon from '@mui/icons-material/Close';
+import { Autocomplete, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import moment from 'moment';
-import { Autocomplete, TextField } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import moment from 'moment';
+import * as React from 'react';
 import { useState } from 'react';
-import CloseIcon from '@mui/icons-material/Close';
-import { set } from 'lodash';
 
 const style = {
   position: 'absolute',

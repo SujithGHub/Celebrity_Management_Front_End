@@ -1,32 +1,27 @@
-import { Box, Button } from "@mui/material"
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import StatusDropDown from '../util/StatusDropDown';
-import { useEffect, useState } from "react";
-import { REST_API } from "../util/EndPoints";
+import { Box, Button } from "@mui/material";
+import { DataGrid } from '@mui/x-data-grid';
 import axios from "axios";
-import { authHeader } from "../util/Api";
 import moment from "moment";
-import { formatDate } from "@fullcalendar/core";
-import { logDOM } from "@testing-library/react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authHeader } from "../util/Api";
+import { REST_API } from "../util/EndPoints";
+import StatusDropDown from '../util/StatusDropDown';
 
 export const Processing = () => {
 
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [available, setAvailable] = useState(false);
+  const [, setAvailable] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [availableEvents, setAvailableEvents] = useState([]);
   const [completedEvents, setCompletedEvents] = useState([]);
-  const [schedule, setSchedule] = useState([]);
+  const [, setSchedule] = useState([]);
   const dropDownItem = ['UpcomingEvents', 'CompletedEvents']
   const openMenu = Boolean(anchorEl);
 
-  const handleBack = () => {
-    window.location.href = "/enquiry-details"
-  }
   const handleClick = (event, key) => {
     setAnchorEl(event?.currentTarget);
   };

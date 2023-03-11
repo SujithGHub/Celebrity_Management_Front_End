@@ -1,7 +1,6 @@
-import React from "react";
 import axios from "axios";
-import { REST_API } from "./EndPoints";
 import { errorHandler } from "./Api";
+import { REST_API } from "./EndPoints";
 
 const axiosInstance = axios.create({
     baseURL: REST_API,

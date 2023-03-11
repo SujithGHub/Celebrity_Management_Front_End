@@ -16,8 +16,6 @@ const style = {
   boxShadow: 24,
   p: 3,
   outline: "none",
-  // textAlign: "center",
-  borderRadius: '15px',
 };
 
 export default function CalendarModal(props) {
