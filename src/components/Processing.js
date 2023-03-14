@@ -43,7 +43,6 @@ export const Processing = () => {
   const getAllSchedule = async () => {
     await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader() }).then(res => {
       const response = res.data.response;
-      console.log(response, "enquiry");
       setSchedule(response);
       setAvailableEvents(response.filter(res => res.startTime > new Date().getTime()));
       setCompletedEvents(response.filter(res => res.startTime < new Date().getTime()));
@@ -58,6 +57,7 @@ export const Processing = () => {
     {
       field: 'name',
       headerName: 'Organizer Name',
+      type: 'text',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -67,6 +67,7 @@ export const Processing = () => {
     {
       field: 'organizationName',
       headerName: 'Organization Name',
+      type: 'text',
       minWidth: 50,
       flex: 1,
       editable: false,
@@ -76,7 +77,7 @@ export const Processing = () => {
     {
       field: 'eventName',
       headerName: 'EventName',
-      type: 'number',
+      type: 'text',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -86,7 +87,7 @@ export const Processing = () => {
     {
       field: 'CelebrityName',
       headerName: 'Celebrity Name',
-      type: 'number',
+      type: 'text',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -97,7 +98,7 @@ export const Processing = () => {
     {
       field: 'location',
       headerName: 'Event place',
-      type: 'number',
+      type: 'text',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -111,7 +112,7 @@ export const Processing = () => {
       minWidth: 180,
       flex: 1,
       editable: false,
-      renderCell: (param) => moment(param?.row.startTime).format('LLL'),
+      renderCell: (param) => moment(param?.row?.startTime).format('LLL'),
       headerAlign: 'center',
       align: 'center'
     },
@@ -122,14 +123,14 @@ export const Processing = () => {
       minWidth: 180,
       flex: 1,
       editable: false,
-      renderCell: (param) => moment(param?.row.endTime).format('LLL'),
+      renderCell: (param) => moment(param?.row?.endTime).format('LLL'),
       headerAlign: 'center',
       align: 'left'
     },
     {
       field: 'mailId',
       headerName: 'MailId',
-      type: 'number',
+      type: 'email',
       minWidth: 180,
       flex: 1,
       editable: false,
@@ -139,6 +140,7 @@ export const Processing = () => {
     {
       field: 'phoneNumber',
       headerName: 'Contact Number ',
+      type: 'number',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -151,10 +153,10 @@ export const Processing = () => {
     <div>
       <div className="processing-header">
         <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button>
-        <h2>Schedule List</h2>
-        <div style={{display: 'flex', alignItems: 'center'}}>
-        <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
-        <StatusDropDown dropDownItem={dropDownItem} buttonName={'Filter'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
+        <h2>{completed ? 'Completed Events' : 'Upcoming Events'}</h2>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
+          <StatusDropDown dropDownItem={dropDownItem} buttonName={'Filter'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
         </div>
       </div>
       <Box sx={{ height: 400, width: '100%' }}>
@@ -163,11 +165,12 @@ export const Processing = () => {
           columns={columns}
           pageSize={10}
           autoHeight
-          disableColumnFilter
-          disableColumnMenu
-          disableColumnSelector
+          rowSelection={false}
+          // disableColumnFilter
+          // disableColumnMenu
+          // disableColumnSelector
           sortModel={[{ field: "startTime", sort: 'asc' }]}
-          rowsPerPageOptions={[5,10,15]}
+          rowsPerPageOptions={[5, 10, 15]}
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
         />

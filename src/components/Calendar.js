@@ -10,11 +10,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import _ from 'lodash';
 import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CalendarModal from '../util/CalendarModal';
-import BlockDatesModal from '../util/CalendarModal';
 import axiosInstance from '../util/Interceptor';
 
 const Calendar = () => {
@@ -25,7 +24,7 @@ const Calendar = () => {
 
   const { c } = location.state
 
-  const [celebrity,] = useState(c)
+  const [celebrity,] = useState(c);
   const [events, setEvents] = useState([]);
   const [weekEndAvailability,] = useState(true)
   const [open, setOpen] = useState(false);
@@ -41,21 +40,48 @@ const Calendar = () => {
   const handleBlockDatesOpen = () => setOpenBlockDate(true);
   const handleBlockDatesClose = () => setOpenBlockDate(false);
 
+  const getBlockedDates = useCallback((celebrityId) => {
+    axiosInstance.get(`/block-date/getByCelebrityId/${celebrityId}`).then(response => {
+      setBlockedDates(response);
+      console.log(response, "response");
+    })
+  }, [])
+
+  const getEvents = useCallback((id) => {
+    axiosInstance.get(`/schedule/celebrity-id/${id}`).then(response => {
+      setAllEvents(response);
+      // const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
+      const formattedEvents = _.map(response, (event, key) => ({
+        id: event.enquiryDetails.id,
+        title: event.enquiryDetails.eventName,
+        start: event.enquiryDetails.startTime,
+        end: event.enquiryDetails.endTime,
+        status: getEventStatus(event.enquiryDetails.startTime, event.enquiryDetails.status),
+        color: getEventColor(event.enquiryDetails.startTime, event.enquiryDetails.status),
+      }))
+      setEvents(formattedEvents)
+    })
+  }, [])
+
 
   useEffect(() => {
-    getEvents(celebrity?.id);
+    getEvents(c?.id);
     getBlockedDates(c?.id);
-  }, [celebrity])
+  }, [c?.id, getEvents, getBlockedDates])
 
   const renderSidebar = () => {
     return (
       <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 15px 0 15px' }}>
-        <div className='demo-app-sidebar-section'>
-          {/* <h4>Available Events : <span style={{ color: 'red' }}>{events.length}</span></h4> */}
+        <div className='demo-app-sidebar-section' style={{ display: 'flex', alignItems: 'center' }}>
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
+          <h4 style={{ marginBottom: '0' }}>Available Events : <span style={{ color: 'red' }}>{events.length}</span></h4>
         </div>
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h2>{celebrity?.name}</h2>
+          <ul style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '20rem' }}>
+            <li>Completed Events</li>
+            <li>Upcoming Events</li>
+          </ul>
         </div>
       </div>
     )
@@ -74,10 +100,10 @@ const Calendar = () => {
   const getEventColor = (start, status) => {
     if ((new Date(start) < new Date()) || status === 'REJECTED') {
       return '#ff1a1a'
-     } else {
+    } else {
       return '#0d6efd'
-     }
     }
+  }
 
   const getBlockedDates = (celebrityId) => {
     axiosInstance.get(`/block-date/getByCelebrityId/${celebrityId}`).then(response => {
@@ -140,12 +166,11 @@ const Calendar = () => {
 
   const toolTipFunction = (info) => {
     let event = info.event?.toPlainObject();
-    console.log(event, 'event')
-    var toolTip = new Tooltip(info.el, {
-        title: `${event?.title} - ${moment(event?.start).calendar()}`,
-        placement: 'top',
-        trigger: 'hover',
-        container: 'body'
+    new Tooltip(info.el, {
+      title: `${event?.title} - ${moment(event?.start).calendar()}`,
+      placement: 'top',
+      trigger: 'hover',
+      container: 'body'
     })
   }
 
@@ -161,7 +186,11 @@ const Calendar = () => {
         stickyHeaderDates
         themeSystem="bootstrap5"
         ref={calendarRef}
-        aspectRatio={2}
+        aspectRatio={3}
+        dayMaxEventRows={3}
+        dayPopoverFormat={{ day: 'numeric', month: 'short', year: 'numeric' }}
+        height={600}
+        contentHeight={600}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
         weekends={weekEndAvailability}
         selectable={true}

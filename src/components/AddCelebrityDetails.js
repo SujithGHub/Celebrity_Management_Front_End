@@ -42,7 +42,7 @@ export const AddCelebrityDetails = () => {
       setValue(CelebrityDetails?.CelebrityDetails?.dateOfBirth)
       setCelebrityDetails(CelebrityDetails?.CelebrityDetails)
     }
-  }, [location])
+  }, [CelebrityDetails])
 
 
   const handleSubmit = (e) => {

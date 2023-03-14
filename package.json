@@ -20,7 +20,7 @@
     "@mui/lab": "^5.0.0-alpha.118",
     "@mui/material": "^5.11.7",
     "@mui/styled-engine-sc": "^5.11.0",
-    "@mui/x-data-grid": "^5.17.24",
+    "@mui/x-data-grid": "^6.0.1",
     "@mui/x-date-pickers": "^5.0.17",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
