@@ -93,6 +93,9 @@ const Calendar = () => {
         title: event.enquiryDetails.eventName,
         start: event.enquiryDetails.startTime,
         end: event.enquiryDetails.endTime,
+        location:event.enquiryDetails.location,
+        phNo:event.enquiryDetails.phoneNumber,
+        OrganizerName:event.enquiryDetails.name,
         status: getEventStatus(event.enquiryDetails.startTime, event.enquiryDetails.status),
         color: getEventColor(event.enquiryDetails.startTime, event.enquiryDetails.status),
       }))
