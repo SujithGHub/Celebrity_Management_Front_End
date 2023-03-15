@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CalendarModal from '../util/CalendarModal';
 import axiosInstance from '../util/Interceptor';
+import { WATCH } from '../util/Loader';
 
 const Calendar = () => {
 
@@ -105,29 +106,6 @@ const Calendar = () => {
     }
   }
 
-  const getBlockedDates = (celebrityId) => {
-    axiosInstance.get(`/block-date/getByCelebrityId/${celebrityId}`).then(response => {
-      setBlockedDates(response);
-    })}
-
-  const getEvents = (celebrityId) => {
-    axiosInstance.get(`/schedule/celebrity-id/${celebrityId}`).then(response => {
-      setAllEvents(response);
-      // const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
-      const formattedEvents = _.map(response, (event, key) => ({
-        id: event.enquiryDetails.id,
-        title: event.enquiryDetails.eventName,
-        start: event.enquiryDetails.startTime,
-        end: event.enquiryDetails.endTime,
-        location:event.enquiryDetails.location,
-        phNo:event.enquiryDetails.phoneNumber,
-        OrganizerName:event.enquiryDetails.name,
-        status: getEventStatus(event.enquiryDetails.startTime, event.enquiryDetails.status),
-        color: getEventColor(event.enquiryDetails.startTime, event.enquiryDetails.status),
-      }))
-      setEvents(formattedEvents)
-    })}
-
   const handleEventClick = (clickInfo) => {
     let event = clickInfo.event.toPlainObject();
     if (event.extendedProps?.status === 'REJECTED') {
@@ -166,7 +144,8 @@ const Calendar = () => {
 
   const toolTipFunction = (info) => {
     let event = info.event?.toPlainObject();
-    new Tooltip(info.el, {
+    console.log(event, 'event')
+    var toolTip = new Tooltip(info.el, {
       title: `${event?.title} - ${moment(event?.start).calendar()}`,
       placement: 'top',
       trigger: 'hover',
@@ -176,36 +155,35 @@ const Calendar = () => {
 
   return (
     <>
-      {renderSidebar()}
-      <FullCalendar
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        }}
-        stickyHeaderDates
-        themeSystem="bootstrap5"
-        ref={calendarRef}
-        aspectRatio={3}
-        dayMaxEventRows={3}
-        dayPopoverFormat={{ day: 'numeric', month: 'short', year: 'numeric' }}
-        height={600}
-        contentHeight={600}
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
-        weekends={weekEndAvailability}
-        selectable={true}
-        events={events}
-        selectAllow={(event) => event.start < new Date() ? false : true}
-        select={(event) => handleDateClick(event)}
-        eventDidMount={toolTipFunction}
-        dayMaxEvents={false}
-        eventClick={(event) => handleEventClick(event)}
-        eventDisplay="list-item"
-        eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}
-      />
-      {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}
+      {loading ? WATCH :
+        <>
+          {renderSidebar()}
+          <FullCalendar
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            }}
+            stickyHeaderDates
+            themeSystem="bootstrap5"
+            ref={calendarRef}
+            aspectRatio={2}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
+            weekends={weekEndAvailability}
+            selectable={true}
+            events={events}
+            selectAllow={(event) => event.start < new Date() ? false : true}
+            select={(event) => handleDateClick(event)}
+            eventDidMount={toolTipFunction}
+            dayMaxEvents={false}
+            eventClick={(event) => handleEventClick(event)}
+            eventDisplay="list-item"
+            eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}
+          />
+          {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}
 
-      {openBlockDate && <CalendarModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
+          {openBlockDate && <CalendarModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
+        </>}
     </>
   )
 }

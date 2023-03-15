@@ -19,7 +19,7 @@ export const AddCelebrityDetails = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const CelebrityDetails = location?.state
+  const CelebrityDetails = location?.state  
 
   const [celebrityDetails, setCelebrityDetails] = useState(null);
   const [image, setImage] = useState(null);

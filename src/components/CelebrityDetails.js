@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from '../assets/edit_icon.png';
 import Logo from '../assets/Google-Calendar-icon.png';
 import axiosInstance from "../util/Interceptor";
-import Loader from "../util/Loader";
+import  { CIRCLE_WITH_BAR } from "../util/Loader";
 import StatusDropDown from '../util/StatusDropDown';
 
 export const CelebrityDetails = () => {
@@ -40,7 +40,6 @@ export const CelebrityDetails = () => {
       setActiveCelebrity(activeFilter)
       let inactiveFilter = _.filter(result, (res => res.status === "INACTIVE"))
       setInactiveCelebrity(inactiveFilter)
-      // setCelebrity(result);
       setFilter(result);
       setLoading(false);
     })
@@ -111,7 +110,7 @@ export const CelebrityDetails = () => {
           <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
         </div>
       </header>
-      {loading ? <Loader /> :
+      {loading ? CIRCLE_WITH_BAR :
         <div className="celebrity-card">
           {getActive().map((celebrityItem, key) => (
             <div className="flip-card" key={celebrityItem?.id}>
