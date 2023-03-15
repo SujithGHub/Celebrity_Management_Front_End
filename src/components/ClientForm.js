@@ -139,10 +139,9 @@ export const ClientForm = () => {
                   <div className="col">
                     <Autocomplete
                       disablePortal
-                      getOptionLabel={(option) => option.name || ''}
+                      getOptionLabel={(option) => option.name}
                       id="combo-box-demo"
                       options={actorName}
-                      value={actorName}
                       required
                       name="celebrity"
                       onChange={(event, value) => changeCelebrity(value)}

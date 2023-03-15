@@ -23,7 +23,7 @@ function App() {
         <Route path='/event-details' element={<Calendar />} />
         <Route path='/processing' element={<Processing/>} />
       </Routes>
-        <ToastContainer />
+        <ToastContainer autoClose={1000}/>
     
     </div>
   );

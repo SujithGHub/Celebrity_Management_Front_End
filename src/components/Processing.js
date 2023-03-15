@@ -13,6 +13,7 @@ export const Processing = () => {
 
   const navigate = useNavigate();
 
+  const [pageSize, ] = useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
   const [, setAvailable] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -51,13 +52,12 @@ export const Processing = () => {
     })
   }
 
-
-
   const columns = [
     {
       field: 'name',
       headerName: 'Organizer Name',
-      type: 'text',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -67,7 +67,8 @@ export const Processing = () => {
     {
       field: 'organizationName',
       headerName: 'Organization Name',
-      type: 'text',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
       minWidth: 50,
       flex: 1,
       editable: false,
@@ -77,7 +78,8 @@ export const Processing = () => {
     {
       field: 'eventName',
       headerName: 'EventName',
-      type: 'text',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -87,7 +89,8 @@ export const Processing = () => {
     {
       field: 'CelebrityName',
       headerName: 'Celebrity Name',
-      type: 'text',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -98,7 +101,8 @@ export const Processing = () => {
     {
       field: 'location',
       headerName: 'Event place',
-      type: 'text',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
       minWidth: 80,
       flex: 1,
       editable: false,
@@ -108,6 +112,7 @@ export const Processing = () => {
     {
       field: 'startTime',
       headerName: 'StartTime',
+      headerClassName: 'super-app-theme--header',
       type: 'number',
       minWidth: 180,
       flex: 1,
@@ -119,6 +124,7 @@ export const Processing = () => {
     {
       field: 'endTime',
       headerName: 'EndTime',
+      headerClassName: 'super-app-theme--header',
       type: 'number',
       minWidth: 180,
       flex: 1,
@@ -130,7 +136,8 @@ export const Processing = () => {
     {
       field: 'mailId',
       headerName: 'MailId',
-      type: 'email',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
       minWidth: 180,
       flex: 1,
       editable: false,
@@ -140,6 +147,7 @@ export const Processing = () => {
     {
       field: 'phoneNumber',
       headerName: 'Contact Number ',
+      headerClassName: 'super-app-theme--header',
       type: 'number',
       minWidth: 80,
       flex: 1,
@@ -159,11 +167,15 @@ export const Processing = () => {
           <StatusDropDown dropDownItem={dropDownItem} buttonName={'Filter'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
         </div>
       </div>
-      <Box sx={{ height: 400, width: '100%' }}>
+      <Box sx={{ height: 400, width: '100%', padding: '2rem', '& .super-app-theme--header': {
+        backgroundColor: '#1976d2',
+        color: 'white',
+      }}}>
         <DataGrid
           rows={(completed ? completedEvents : availableEvents)}
           columns={columns}
-          pageSize={10}
+          pageSize={pageSize}
+          rowsPerPage={2}
           autoHeight
           rowSelection={false}
           // disableColumnFilter

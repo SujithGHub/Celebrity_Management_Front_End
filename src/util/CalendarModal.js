@@ -10,7 +10,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 500,
   bgcolor: 'background.paper',
   borderRadius: '15px',
   boxShadow: 24,
@@ -23,14 +23,10 @@ const style = {
 
 function ChildModal(props) {
 
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+    const [open, setOpen] = React.useState(false);
 
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
   return (
     <React.Fragment>
@@ -51,10 +47,8 @@ function ChildModal(props) {
 
           <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ margin: '1rem' }} >
             Are you sure to cancel this Event???
-
           </Typography>
-
-          <div className='modal-buttons'>
+          <div className='modal-button'>
             <Button color='error' style={{ marginRight: '10px' }} onClick={() => props.handleCancelEvent(props?.event?.id)} variant='contained'>Yes</Button>
             <Button variant='contained' onClick={props.handleClose}>No</Button>
           </div>
@@ -63,7 +57,6 @@ function ChildModal(props) {
     </React.Fragment>
   );
 }
-
 
 export function CalendarModal(props) {
 
@@ -92,7 +85,7 @@ export function CalendarModal(props) {
               <span><b>Start Time</b>: {moment(props.event?.start).format('LLL')}</span><br />
               <span><b>End Time</b>: {moment(props.event?.end).format('LLL')}</span><br />
             </Typography>
-            <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold', margin: '1rem' }} >
+            <Typography id="keep-mounted-modal-title" variant="h6" style={{ fontWeight: 'bold', margin: '1rem' }} >
               Do you want to cancel this Event?
             </Typography>
             <ChildModal {...props} />
@@ -105,6 +98,8 @@ export function CalendarModal(props) {
 
 export const BlockDatesModal = (props) => {
 
+  console.log(props, "blocked");
+
   let { blockDates } = props;
 
   return (
@@ -114,13 +109,17 @@ export const BlockDatesModal = (props) => {
       aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
+        <Typography id="keep-mounted-modal-title" variant="h5">
           Do you want to block these dates?
         </Typography>
         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
-          <span className='from-to'>From</span>: {moment(blockDates.startStr).format('LLL')} <br />
-          <span className='from-to'>To</span>: {moment(blockDates.endStr).subtract(1, 'minute').format('LLL')}
+          <span className='from-to'>From</span>: {moment(blockDates?.startStr).format('LLL')} <br />
+          <span className='from-to'>To</span>: {moment(blockDates?.endStr).subtract(1, 'minute').format('LLL')}
         </Typography>
+        <div className='modal-button'>
+            <Button variant='contained' style={{ marginRight: '10px' }} onClick={() => props.handleBlockDate(blockDates.start, blockDates.end)} color='error'>Yes</Button>
+            <Button variant='contained' onClick={props.handleClose}>No</Button>
+          </div>
       </Box>
     </Modal>
   )

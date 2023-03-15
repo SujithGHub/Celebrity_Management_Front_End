@@ -34,7 +34,7 @@ const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [blockDates, setBlockDates] = useState(null);
   const [blockedDates, setBlockedDates] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -45,7 +45,6 @@ const Calendar = () => {
   const getBlockedDates = useCallback((celebrityId) => {
     axiosInstance.get(`/block-date/getByCelebrityId/${celebrityId}`).then(response => {
       setBlockedDates(response);
-      console.log(response, "response");
     })
   }, [])
 
@@ -54,16 +53,16 @@ const Calendar = () => {
       setAllEvents(response);
       // const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
       const formattedEvents = _.map(response, (event, key) => ({
-        id: event?.id,
-        title: event?.enquiryDetails?.eventName,
-        start: event?.enquiryDetails?.startTime,
-        end: event?.enquiryDetails?.endTime,
-        location: event?.enquiryDetails?.location,
-        phoneNumber: event?.enquiryDetails?.phoneNumber,
-        organizerName: event?.enquiryDetails?.name,
-        organizationName: event?.enquiryDetails?.organizationName,
-        status: getEventStatus(event?.enquiryDetails?.startTime, event?.enquiryDetails?.status),
-        color: getEventColor(event?.enquiryDetails?.startTime, event?.enquiryDetails?.status),
+        id : event?.id,
+        title : event.enquiryDetails?.eventName,
+        start : event.enquiryDetails?.startTime,
+        end: event.enquiryDetails?.endTime,
+        location : event.enquiryDetails?.location,
+        phoneNumber : event.enquiryDetails?.phoneNumber,
+        organizerName : event.enquiryDetails?.name,
+        organizationName : event.enquiryDetails?.organizationName,
+        status: getEventStatus(event.enquiryDetails?.startTime, event.enquiryDetails?.status),
+        color: getEventColor(event.enquiryDetails?.startTime, event.enquiryDetails?.status),
       }))
       setEvents(formattedEvents)
     })
@@ -78,11 +77,11 @@ const Calendar = () => {
   const renderSidebar = () => {
     return (
       <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 15px 0 15px' }}>
-        <div className='demo-app-sidebar-section' style={{ display: 'flex', alignItems: 'center' }}>
+        <div className='demo-app-sidebar-section' style={{ display: 'flex', alignItems: 'center', height: '30px'}}>
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
           <h4 style={{ marginBottom: '0' }}>Available Events : <span style={{ color: 'red' }}>{events.length}</span></h4>
         </div>
-        <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <h2>{celebrity?.name}</h2>
           <ul style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '20rem' }}>
             <li>Completed Events</li>
@@ -110,11 +109,13 @@ const Calendar = () => {
       return '#0d6efd'
     }
   }
-
+   
   const handleEventClick = (clickInfo) => {
     let event = clickInfo.event.toPlainObject();
     if (event.extendedProps?.status === 'REJECTED') {
-      toast.error("Rejected Enquiry")
+      toast.error(`This event is Rejected`)
+    } else if(event.extendedProps?.status === 'COMPLETED'){
+      toast.info("This event is Completed!!!")
     } else {
       setSelectedEvent(event);
       setOpen(true);
@@ -130,8 +131,8 @@ const Calendar = () => {
   }
 
   const handleDateClick = (args) => {
-    console.log(args.start, "handleDateClick")
-    console.log(blockedDates.map(blocked => new Date(blocked.blockedDate)), "sdafsfsdfwsf")
+    console.log(args, "handleDateClick")
+    console.log(blockedDates, "blockedDates")
     console.log(_.filter(blockedDates, (blocked => blocked.blockedDate === args.start)), "filter");
     setBlockDates(args);
     setOpenBlockDate(true);
@@ -150,8 +151,7 @@ const Calendar = () => {
 
   const toolTipFunction = (info) => {
     let event = info.event?.toPlainObject();
-    console.log(event, 'event')
-    var toolTip = new Tooltip(info.el, {
+    new Tooltip(info.el, {
       title: `${event?.title} - ${moment(event?.start).calendar()}`,
       placement: 'top',
       trigger: 'hover',
@@ -187,10 +187,8 @@ const Calendar = () => {
             eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}
           />
           {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}
-
-          {openBlockDate && <CalendarModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
+          {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
         </>}
-      {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
     </>
   )
 }
