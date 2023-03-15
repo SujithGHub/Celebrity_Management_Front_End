@@ -441,3 +441,7 @@ svg#L2 {
   width: 15rem;
   height: calc(100vh - 128px);
 }
+#keep-mounted-modal-description span b{
+  display: inline-block;
+  width: 9.5rem;
+}

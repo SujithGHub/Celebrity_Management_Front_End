@@ -13,7 +13,7 @@ import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import CalendarModal from '../util/CalendarModal';
+import { BlockDatesModal, CalendarModal } from '../util/CalendarModal';
 import axiosInstance from '../util/Interceptor';
 import { WATCH } from '../util/Loader';
 
@@ -34,6 +34,7 @@ const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [blockDates, setBlockDates] = useState(null);
   const [blockedDates, setBlockedDates] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -53,12 +54,16 @@ const Calendar = () => {
       setAllEvents(response);
       // const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
       const formattedEvents = _.map(response, (event, key) => ({
-        id: event.enquiryDetails.id,
-        title: event.enquiryDetails.eventName,
-        start: event.enquiryDetails.startTime,
-        end: event.enquiryDetails.endTime,
-        status: getEventStatus(event.enquiryDetails.startTime, event.enquiryDetails.status),
-        color: getEventColor(event.enquiryDetails.startTime, event.enquiryDetails.status),
+        id: event?.id,
+        title: event?.enquiryDetails?.eventName,
+        start: event?.enquiryDetails?.startTime,
+        end: event?.enquiryDetails?.endTime,
+        location: event?.enquiryDetails?.location,
+        phoneNumber: event?.enquiryDetails?.phoneNumber,
+        organizerName: event?.enquiryDetails?.name,
+        organizationName: event?.enquiryDetails?.organizationName,
+        status: getEventStatus(event?.enquiryDetails?.startTime, event?.enquiryDetails?.status),
+        color: getEventColor(event?.enquiryDetails?.startTime, event?.enquiryDetails?.status),
       }))
       setEvents(formattedEvents)
     })
@@ -116,9 +121,10 @@ const Calendar = () => {
     }
   }
 
-  const handleCancelEvent = (scheduleId, status) => {
-    axiosInstance.post(`/schedule/status?id=${scheduleId}&status=${status}`).then(() => {
+  const handleCancelEvent = (scheduleId) => {
+    axiosInstance.post(`/schedule/status/${scheduleId}`).then(() => {
       setOpen(false);
+      toast.success("Event Cancelled");
       getEvents(celebrity?.id);
     })
   }
@@ -184,6 +190,7 @@ const Calendar = () => {
 
           {openBlockDate && <CalendarModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
         </>}
+      {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
     </>
   )
 }
