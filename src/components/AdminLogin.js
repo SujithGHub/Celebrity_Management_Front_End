@@ -20,7 +20,7 @@ export const AdminLogin = () => {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
   };
 
   const changeHandler = (e) => {
@@ -68,7 +68,7 @@ export const AdminLogin = () => {
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={() => handleClickShowPassword()}
-                  onMouseDown={() => handleMouseDownPassword()}
+                  onMouseDown={(e) => handleMouseDownPassword(e)}
                   edge="end"
                 >
                   {showPassword ? <Visibility /> : <VisibilityOff />}

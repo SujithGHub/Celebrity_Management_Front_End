@@ -155,7 +155,8 @@ const Calendar = () => {
       title: `${event?.title} - ${moment(event?.start).calendar()}`,
       placement: 'top',
       trigger: 'hover',
-      container: 'body'
+      container: 'body',
+      delay: 300
     })
   }
 
@@ -181,7 +182,7 @@ const Calendar = () => {
             selectAllow={(event) => event.start < new Date() ? false : true}
             select={(event) => handleDateClick(event)}
             eventDidMount={toolTipFunction}
-            dayMaxEvents={false}
+            dayMaxEvents={2}
             eventClick={(event) => handleEventClick(event)}
             eventDisplay="list-item"
             eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}

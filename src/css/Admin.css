@@ -12,10 +12,14 @@
 }
 
 .form {
+  position: absolute;
+  right: 10%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  background: rgb(227, 227, 227);
+  /* background: rgb(227, 227, 227); */
+  border: 1px solid darkgray;
+  border-radius: 2rem;
   padding: 40px;
   width: 400px;
   background-image: url("../assets/logo.png");

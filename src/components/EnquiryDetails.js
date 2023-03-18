@@ -28,7 +28,7 @@ export default function EnquiryDetails() {
   const [rejectedEnquiry, setRejectedEnquiry] = useState([]);
   const [pendingEnquiry, setPendingEnquiry] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const openMenu = Boolean(anchorEl);
 
   useEffect(() => {
@@ -66,14 +66,14 @@ export default function EnquiryDetails() {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Organizer name', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
-    { field: 'organizationName', headerName: 'Organization', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
-    { field: 'eventName', headerName: 'Event Name', align: 'center', headerAlign: 'center', flex: 1, minWidth: 110, },
-    { field: 'celebrityName', headerName: 'Celebrity Name', align: 'center', headerAlign: 'center', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
-    { field: 'startTime', headerName: 'Start', type: 'date', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => new Date(row.row?.startTime), renderCell: (row) => moment(row.row?.startTime).format('LLL') },
-    { field: 'endTime', headerName: 'End', type: 'date', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => new Date(row.row?.endTime), renderCell: (row) => moment(row.row?.endTime).format('LLL') },
+    { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
+    { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
+    { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 110, },
+    { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
+    { field: 'startTime', headerName: 'Start', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => new Date(row.row?.startTime), renderCell: (row) => moment(row.row?.startTime).format('LLL') },
+    { field: 'endTime', headerName: 'End', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => new Date(row.row?.endTime), renderCell: (row) => moment(row.row?.endTime).format('LLL') },
     {
-      field: 'action', headerName: 'Action', flex: 1, minWidth: 200, align: 'center', headerAlign: 'center',
+      field: 'action', headerName: 'Action',headerClassName: 'super-app-theme--header', flex: 1, minWidth: 200, align: 'center', headerAlign: 'center',
       renderCell: (row) => {
         const { status } = row.row;
         if (status === "ACCEPTED") {
@@ -105,6 +105,7 @@ export default function EnquiryDetails() {
     {
       field: 'save',
       headerName: editable ? 'Save' : 'Edit',
+      headerClassName: 'super-app-theme--header',
       hide: accepted || rejected,
       flex: 1, maxWidth: 80,
       align: 'center',
@@ -152,10 +153,9 @@ export default function EnquiryDetails() {
   }
 
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
+    <Box sx={{ height: 400, width: '100%',}}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ textAlign: 'center', padding: '1rem' }}>Enquiry Details</h3>
-        <Button className='primary' onClick={() => navigate('/processing')}>Schedule List</Button>
+        {/* <Button className='primary' onClick={() => navigate('/processing')}>Schedule List</Button> */}
       </div>
       <div style={{ textAlign: 'end', padding: '10px' }} >
         <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')} />

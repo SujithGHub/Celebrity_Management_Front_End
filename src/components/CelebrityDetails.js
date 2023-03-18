@@ -81,7 +81,6 @@ export const CelebrityDetails = () => {
       <header className="header">
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon /></Button>
-          <h3 style={{ marginBottom: 0 }}>Celebrity Details</h3>
         </div>
         <div>
           <TextField

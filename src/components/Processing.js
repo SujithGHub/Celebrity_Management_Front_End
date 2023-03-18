@@ -13,24 +13,24 @@ export const Processing = () => {
 
   const navigate = useNavigate();
 
-  const [pageSize, ] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [anchorEl, setAnchorEl] = useState(null);
   const [, setAvailable] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [availableEvents, setAvailableEvents] = useState([]);
   const [completedEvents, setCompletedEvents] = useState([]);
   const [, setSchedule] = useState([]);
-  const dropDownItem = ['UpcomingEvents', 'CompletedEvents']
+  const dropDownItem = ['UPCOMING', 'COMPLETED']
   const openMenu = Boolean(anchorEl);
 
   const handleClick = (event, key) => {
     setAnchorEl(event?.currentTarget);
   };
   const handleMenuClose = (e, value) => {
-    if (value === 'UpcomingEvents') {
+    if (value === 'UPCOMING') {
       setAvailable(true);
       setCompleted(false);
-    } else if (value === 'CompletedEvents') {
+    } else if (value === 'COMPLETED') {
       setCompleted(true);
       setAvailable(false);
     }
@@ -161,26 +161,24 @@ export const Processing = () => {
     <div>
       <div className="processing-header">
         <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button>
-        <h2>{completed ? 'Completed Events' : 'Upcoming Events'}</h2>
+        <h2>{completed ? 'COMPLETED EVENTS' : 'UPCOMING EVENTS'}</h2>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button>
-          <StatusDropDown dropDownItem={dropDownItem} buttonName={'Filter'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
+          {/* <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button> */}
+          <StatusDropDown dropDownItem={dropDownItem} buttonName={'Event'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
         </div>
       </div>
-      <Box sx={{ height: 400, width: '100%', padding: '2rem', '& .super-app-theme--header': {
-        backgroundColor: '#1976d2',
-        color: 'white',
-      }}}>
+      <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           rows={(completed ? completedEvents : availableEvents)}
           columns={columns}
+          pagination
           pageSize={pageSize}
-          rowsPerPage={2}
           autoHeight
           rowSelection={false}
           // disableColumnFilter
           // disableColumnMenu
           // disableColumnSelector
+          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
           sortModel={[{ field: "startTime", sort: 'asc' }]}
           rowsPerPageOptions={[5, 10, 15]}
           disableSelectionOnClick
