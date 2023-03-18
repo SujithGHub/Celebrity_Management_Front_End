@@ -6,15 +6,12 @@ import _ from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import EnquiryModal from '../util/EnquiryDetailsModal';
 import axiosInstance from '../util/Interceptor';
 import StatusDropDown from '../util/StatusDropDown';
 
 export default function EnquiryDetails() {
-
-  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [editable, setEditable] = useState(false);
