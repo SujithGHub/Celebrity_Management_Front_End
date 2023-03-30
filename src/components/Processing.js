@@ -153,7 +153,7 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left'
+      align: 'center'
 
     },
   ];

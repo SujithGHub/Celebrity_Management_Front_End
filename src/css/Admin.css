@@ -121,9 +121,15 @@
   margin: 0.5rem;
 }
 
-.header {
+.private-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+}
+.header{
+  display: flex;
+  justify-content: center;
   align-items: center;
   height: 4rem;
 }
@@ -278,7 +284,7 @@ input[type="number"]::-webkit-outer-spin-button {
   transform-style: preserve-3d;
   box-shadow: 0 17px 8px 0 rgb(0 0 0 / 20%);
   border-radius: 2rem 0 2rem 0;
-  background-color: #310003;
+  background-color: #912E08;
 }
 
 .flip-card:hover .flip-card-inner {
@@ -448,4 +454,47 @@ svg#L2 {
 #keep-mounted-modal-description span b{
   display: inline-block;
   width: 9.5rem;
+}
+.event-display {
+  display: flex;
+  align-items: center;
+  font-family: 'montserrat';
+  font-weight: 600;
+}
+
+.event-display ul{
+  list-style: none;
+  margin: 0;
+  padding-left: 8px;
+}
+
+.completed li::before{
+  content: "\2022";
+  color: red;
+  font-weight: bold;
+  display: inline-block;
+  font-size: 120%;
+  width: 0.8em;
+}
+
+.accepted{
+  color: #0d6efd;
+}
+
+.accepted li::before{
+  content: "\2022";
+  color: #0d6efd;
+  font-weight: bold;
+  display: inline-block; 
+  font-size: 120%;
+  width: 1em;
+}
+
+.blocked li::before{
+  content: "\2022";
+  color:red;
+  font-weight: bold;
+  display: inline-block;
+  font-size: 120%;
+  width: 0.8em;
 }

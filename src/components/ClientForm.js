@@ -5,6 +5,7 @@ import { DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loader from '../assets/handshake.gif';
 import axiosInstance from "../util/Interceptor";
@@ -18,15 +19,15 @@ export const ClientForm = () => {
 
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-
   const changeHandler = (e) => {
     setCelebrityDetails((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
-
+  const location = useLocation();
+  const cel = location?.state;
+  const navigate = useNavigate();
   useEffect(() => {
     getAllCelebrity();
   }, []);
@@ -135,7 +136,6 @@ export const ClientForm = () => {
                   </div>
                 </div>
                 <div className="row client-input">
-
                   <div className="col">
                     <Autocomplete
                       disablePortal
@@ -143,6 +143,8 @@ export const ClientForm = () => {
                       id="combo-box-demo"
                       options={actorName}
                       required
+                      value={cel?.celebrity}
+                      isOptionEqualToValue={(option,value)=>option?.id === value?.id}
                       name="celebrity"
                       onChange={(event, value) => changeCelebrity(value)}
                       renderInput={(params) => <TextField {...params} label="Celebrity Name" style={{ width: '25rem' }} />}
@@ -227,6 +229,7 @@ export const ClientForm = () => {
                 </div>
                 <div className="row" style={{ paddingTop: "30px", display: 'flex', justifyContent: 'center' }}>
                   <div className="col" >
+                    <Button className="primary" variant="contained" color="error" onClick={()=>navigate('/celebrity-details')} sx={{mr:'2rem',width:'87px'}}>Back</Button>
                     <Button type="submit" variant="contained"> SUBMIT </Button>
                   </div>
                 </div>

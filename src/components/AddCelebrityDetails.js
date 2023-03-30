@@ -59,7 +59,7 @@ export const AddCelebrityDetails = () => {
   };
 
   return (
-    <form className="container form-container" onSubmit={(e) => handleSubmit(e)} style={{ backgroundColor: "#f0f2f5", height: "100vh" }}>
+    <form className="container form-container" onSubmit={(e) => handleSubmit(e)} style={{ backgroundColor: "#f0f2f5", height: "100vh", marginTop: '1rem' }}>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
         <h2 style={{ textAlign: "center" }} >  {celebrityDetails?.id ? `Update ${celebrityDetails?.name}'s Details` : `Add Celebrity Details`}</h2>
         <Button onClick={() => navigate("/celebrity-details")} title="Back" color="error"><ArrowBackIcon /></Button>

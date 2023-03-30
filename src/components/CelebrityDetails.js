@@ -11,10 +11,10 @@ import { useNavigate } from "react-router-dom";
 import EditIcon from '../assets/edit_icon.png';
 import Logo from '../assets/Google-Calendar-icon.png';
 import axiosInstance from "../util/Interceptor";
-import  { CIRCLE_WITH_BAR } from "../util/Loader";
+import { CIRCLE_WITH_BAR } from "../util/Loader";
 import StatusDropDown from '../util/StatusDropDown';
 
-export const CelebrityDetails = () => {
+const CelebrityDetails = () => {
   const navigate = useNavigate()
   const [filter, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
@@ -23,6 +23,7 @@ export const CelebrityDetails = () => {
   const [inactiveCelebrity, setInactiveCelebrity] = useState([]);
   const [active, setActive] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState('');
 
   const openMenu = Boolean(anchorEl);
 
@@ -30,6 +31,7 @@ export const CelebrityDetails = () => {
 
   useEffect(() => {
     getAllCelebrity();
+    getToken();
   }, []);
 
   const getAllCelebrity = () => {
@@ -74,15 +76,18 @@ export const CelebrityDetails = () => {
   const getActive = () => {
     return active ? activeCelebrity : inactiveCelebrity
   }
-
+  const getToken = () => {
+    let tok = localStorage.getItem("token");
+    setToken(tok);
+  }
 
   return (
     <>
-      <header className="header">
-        <div style={{ display: "flex", justifyContent: "center" }}>
+      <header className={token ? 'private-header' : 'header'}>
+        {token ? <div style={{ display: "flex", width: '15rem', paddingLeft: '1.5rem' }}>
           <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon /></Button>
-        </div>
-        <div>
+        </div> : ""}
+        <div >
           <TextField
             id="filled-search"
             className="text"
@@ -104,10 +109,10 @@ export const CelebrityDetails = () => {
             }}
           />
         </div>
-        <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
+        {token === null ? "" : <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
           <Button className="primary" variant="contained" title="Add celebrity" onClick={() => navigate('/add-celebrity-details')}><AddIcon /></Button>
           <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
-        </div>
+        </div>}
       </header>
       {loading ? CIRCLE_WITH_BAR :
         <div className="celebrity-card">
@@ -142,15 +147,21 @@ export const CelebrityDetails = () => {
               </div>
               <div className="card-footer">
                 <div style={{ width: '120px', display: 'flex', justifyContent: 'space-evenly' }}>
-                  <Tooltip title='Edit'>
-                    <Button variant="text" onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
-                      <img src={EditIcon} style={{ marginRight: 0 }} alt="edit" width='30px' height='30px' />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title='View Event Details'>
-                    <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0 }} alt="logo" width='30px' height='30px' />}>
-                    </Button>
-                  </Tooltip>
+                  {token ?
+                    <>
+                      <Tooltip title='Edit'>
+                        <Button variant="text" onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrityItem } })}>
+                          <img src={EditIcon} style={{ marginRight: 0 }} alt="edit" width='30px' height='30px' />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title='View Event Details'>
+                        <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0 }} alt="logo" width='30px' height='30px' />}>
+                        </Button>
+                      </Tooltip>
+                    </>
+                    :
+                    <Button className="Primary" variant="contained" onClick={()=>navigate('/client',{state : {celebrity:celebrityItem}})} style={{ marginRight: '1.5rem'}}>BookNow</Button>
+                  }
                 </div>
                 <div className="divider"></div>
                 <div style={{ width: '120px' }}>
@@ -163,3 +174,4 @@ export const CelebrityDetails = () => {
   );
 };
 
+export default CelebrityDetails;

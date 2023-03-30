@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { BlockDatesModal, CalendarModal } from '../util/CalendarModal';
 import axiosInstance from '../util/Interceptor';
 import { WATCH } from '../util/Loader';
+import SnackBar from '../util/SnackBar';
 
 const Calendar = () => {
 
@@ -34,7 +35,21 @@ const Calendar = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [blockDates, setBlockDates] = useState(null);
   const [blockedDates, setBlockedDates] = useState([]);
-  const [loading, ] = useState(false);
+  const [loading,] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(null);
+  const [snackInfo, setSnackInfo] = useState(null);
+  const [openSnack, setOpenSnack] = React.useState(false);
+
+  const handleSnackOpen = () => {
+    setOpenSnack(true);
+  };
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnack(false);
+  };
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -48,42 +63,70 @@ const Calendar = () => {
     })
   }, [])
 
-  const getEvents = useCallback((id) => {
+  const getEventTitle = (event) => event.enquiryDetails ? event.enquiryDetails.eventName : "Date is Blocked"
+  const getEventStart = (event) => {
+    if (event?.enquiryDetails) {
+      return event?.enquiryDetails?.startTime
+    } else {
+      return event?.blockedDate
+    }
+  }
+
+  const getEventEnd = (event) => {
+    const blockedTo = moment(event?.blockedDate).set({ hour: 23, minute: 59, second: 0 });
+    if (event?.enquiryDetails) {
+      return event?.enquiryDetails?.endTime
+    } else {
+      return new Date(blockedTo).getTime()
+    }
+  }
+
+  const getEvents = (id) => {
     axiosInstance.get(`/schedule/celebrity-id/${id}`).then(response => {
       setAllEvents(response);
-      // const filteredEvents = _.filter(response, (res => res.status === "ACCEPTED"));
-      const formattedEvents = _.map(response, (event, key) => ({
-        id : event?.id,
-        title : event.enquiryDetails?.eventName,
-        start : event.enquiryDetails?.startTime,
-        end: event.enquiryDetails?.endTime,
-        location : event.enquiryDetails?.location,
-        phoneNumber : event.enquiryDetails?.phoneNumber,
-        organizerName : event.enquiryDetails?.name,
-        organizationName : event.enquiryDetails?.organizationName,
-        status: getEventStatus(event.enquiryDetails?.startTime, event.enquiryDetails?.status),
-        color: getEventColor(event.enquiryDetails?.startTime, event.enquiryDetails?.status),
+      const combinedEvents = response.concat(blockedDates)
+      const formattedEvents = _.map(combinedEvents, (event, key) => ({
+        id: event?.id,
+        title: getEventTitle(event),
+        start: getEventStart(event),
+        end: getEventEnd(event),
+        location: event.enquiryDetails ? event.enquiryDetails?.location : 'un_available',
+        phoneNumber: event.enquiryDetails ? event.enquiryDetails?.phoneNumber : 'un_available',
+        organizerName: event.enquiryDetails ? event.enquiryDetails?.name : 'un_available',
+        organizationName: event.enquiryDetails ? event.enquiryDetails?.organizationName : 'un_available',
+        status: event.enquiryDetails ? getEventStatus(event) : 'BLOCKED',
+        color: event.enquiryDetails ? getEventColor(event) : '#ef5050',
+        display: event.enquiryDetails ? 'list-item' : 'block'
       }))
       setEvents(formattedEvents)
     })
-  }, [])
-
+  }
 
   useEffect(() => {
-    getEvents(c?.id);
-    getBlockedDates(c?.id);
-  }, [c?.id, getEvents, getBlockedDates])
+    axiosInstance.get(`/block-date/getByCelebrityId/${c?.id}`).then(response => {
+      setBlockedDates(response);
+    })
+  }, [c?.id])
+
+  useEffect(() => {
+    getEvents(c?.id)
+  }, [blockedDates])
 
   const renderSidebar = () => {
     return (
-      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 15px 0 15px' }}>
-        <div className='demo-app-sidebar-section' style={{ display: 'flex', alignItems: 'center', height: '30px'}}>
+      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 15px 0 15px' }}>
+        <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection:'column', alignItems: 'start', height: '30px' }}>
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
-          <h4 style={{ marginBottom: '0' }}>Available Events : <span style={{ color: 'red' }}>{events.length}</span></h4>
+          <ul>
+            <li>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></li>
+            <li>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events,currentMonth)}</span></li>
+          </ul>
+          {/* <h6 style={{ marginBottom: '0' }}>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></h6>
+          <h6 style={{ marginBottom: '0' }}>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events,currentMonth)}</span></h6> */}
         </div>
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <h2>{celebrity?.name}</h2>
-          <ul style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '20rem' }}>
+          <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <li>Completed Events</li>
             <li>Upcoming Events</li>
           </ul>
@@ -92,7 +135,8 @@ const Calendar = () => {
     )
   }
 
-  const getEventStatus = (startTime, status) => {
+  const getEventStatus = (event) => {
+    const { startTime, status } = event.enquiryDetails
     if (startTime < new Date().getTime()) {
       return "COMPLETED"
     } else if (status === "ACCEPTED") {
@@ -102,20 +146,27 @@ const Calendar = () => {
     }
   }
 
-  const getEventColor = (start, status) => {
-    if ((new Date(start) < new Date()) || status === 'REJECTED') {
+  const getEventColor = (event) => {
+    const { startTime, status } = event.enquiryDetails
+    if ((new Date(startTime) < new Date()) || status === 'REJECTED') {
       return '#ff1a1a'
     } else {
       return '#0d6efd'
     }
   }
-   
+
   const handleEventClick = (clickInfo) => {
     let event = clickInfo.event.toPlainObject();
-    if (event.extendedProps?.status === 'REJECTED') {
-      toast.error(`This event is Rejected`)
-    } else if(event.extendedProps?.status === 'COMPLETED'){
-      toast.info("This event is Completed!!!")
+    let { status } = event?.extendedProps
+    if (status === 'REJECTED') {
+      setSnackInfo(status);
+      setOpenSnack(true);
+    } else if (status === 'COMPLETED') {
+      setSnackInfo(status);
+      setOpenSnack(true);
+    } else if (status === 'BLOCKED') {
+      setSnackInfo(status);
+      setOpenSnack(true);
     } else {
       setSelectedEvent(event);
       setOpen(true);
@@ -130,12 +181,15 @@ const Calendar = () => {
     })
   }
 
-  const handleDateClick = (args) => {
-    console.log(args, "handleDateClick")
-    console.log(blockedDates, "blockedDates")
-    console.log(_.filter(blockedDates, (blocked => blocked.blockedDate === args.start)), "filter");
-    setBlockDates(args);
-    setOpenBlockDate(true);
+  const handleDateClick = (info) => {
+    const filter = events.filter(event => new Date(event?.start).getTime() === info?.start.getTime())
+    if (_.isEmpty(filter)) {
+      setBlockDates(info)
+      setOpenBlockDate(true)
+    } else {
+      setSnackInfo(filter)
+      setOpenSnack(true)
+    }
   }
 
   const handleBlockDate = (from, to) => {
@@ -160,8 +214,48 @@ const Calendar = () => {
     })
   }
 
+  const handleEventContent = (arg) => {
+    const start = arg.event.toPlainObject();
+    const startTime = moment(start.start).format('hh:mm');
+    const status = start.extendedProps?.status
+
+    const getStyles = (status) => {
+      return status === 'COMPLETED' ? 'event-display completed' : status === 'ACCEPTED' ? 'event-display accepted' : 'event-display blocked'
+    }
+
+    return (
+      <div className={getStyles(status)}>
+        <ul>
+          <li><span>{status === 'BLOCKED' ? '' : startTime}</span>&nbsp;<span>{arg.event.title}</span></li>
+        </ul>
+      </div>
+    );
+  };
+
+  const getEventCount = (events,month) => {
+    const filtered = events?.filter((event) => moment(event.start).format("MMMM") === month);
+    const showCount = filtered?.filter((fil) => fil?.status === "ACCEPTED");
+    return showCount?.length;
+  };
+  const completedCount = (events,month) => {
+    const filtered = events?.filter((event) => moment(event.start).format("MMMM") === month);
+    const showCount = filtered?.filter((fil) => fil?.status === "COMPLETED");
+    return showCount?.length;
+  }
+
+  const handleDatesSet = (info) => {
+    if (info.view.type === 'dayGridMonth') {
+      const newMonth = new Date(info.view.currentStart).toLocaleString('default', { month: 'long' });
+      if (newMonth !== currentMonth) {
+        setCurrentMonth(newMonth);
+        console.log(`Month changed to ${newMonth}`);
+      }
+    }
+  };
+
   return (
     <>
+      {openSnack && <SnackBar open={openSnack} handleSnackOpen={handleSnackOpen} handleSnackClose={handleSnackClose} event={snackInfo} />}
       {loading ? WATCH :
         <>
           {renderSidebar()}
@@ -179,8 +273,10 @@ const Calendar = () => {
             weekends={weekEndAvailability}
             selectable={true}
             events={events}
+            eventContent={handleEventContent}
+            datesSet={handleDatesSet}
             selectAllow={(event) => event.start < new Date() ? false : true}
-            select={(event) => handleDateClick(event)}
+            select={handleDateClick}
             eventDidMount={toolTipFunction}
             dayMaxEvents={2}
             eventClick={(event) => handleEventClick(event)}

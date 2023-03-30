@@ -98,8 +98,6 @@ export function CalendarModal(props) {
 
 export const BlockDatesModal = (props) => {
 
-  console.log(props, "blocked");
-
   let { blockDates } = props;
 
   return (
