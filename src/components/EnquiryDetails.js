@@ -67,8 +67,8 @@ export default function EnquiryDetails() {
     { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
     { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 110, },
     { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
-    { field: 'startTime', headerName: 'Start', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => new Date(row.row?.startTime), renderCell: (row) => moment(row.row?.startTime).format('LLL') },
-    { field: 'endTime', headerName: 'End', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => new Date(row.row?.endTime), renderCell: (row) => moment(row.row?.endTime).format('LLL') },
+    { field: 'startTime', headerName: 'Start', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row.row?.startTime).format('LLL') },
+    { field: 'endTime', headerName: 'End', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row.row?.endTime).format('LLL')},
     {
       field: 'action', headerName: 'Action',headerClassName: 'super-app-theme--header', flex: 1, minWidth: 200, align: 'center', headerAlign: 'center',
       renderCell: (row) => {
@@ -150,7 +150,7 @@ export default function EnquiryDetails() {
   }
 
   return (
-    <Box sx={{ height: 400, width: '100%',}}>
+    <Box sx={{ height: 400, width: '100%', paddingTop: '70px'}}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* <Button className='primary' onClick={() => navigate('/processing')}>Schedule List</Button> */}
       </div>

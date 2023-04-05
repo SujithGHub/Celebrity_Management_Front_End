@@ -16,7 +16,6 @@ export const ClientForm = () => {
   const [singleDay, setSingleDay] = useState(false);
   const [, setMultiDay] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const changeHandler = (e) => {
@@ -26,7 +25,7 @@ export const ClientForm = () => {
     }));
   };
   const location = useLocation();
-  const cel = location?.state;
+  const { celebrity } = location?.state;
   const navigate = useNavigate();
   useEffect(() => {
     getAllCelebrity();
@@ -39,13 +38,9 @@ export const ClientForm = () => {
     })
   }
 
-  const changeCelebrity = (value) => {
-    setCelebrityDetails({ ...celebrityDetails, celebrity: value })
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const enquiryInfo = { ...celebrityDetails, startTime: startTime, endTime: endTime }
+    const enquiryInfo = { ...celebrityDetails, celebrity: celebrity, startTime: startTime, endTime: endTime }
     console.log(enquiryInfo, "enquiryInfo");
     axiosInstance.post(`/enquiry`, enquiryInfo).then(res => {
       toast.success(res?.message);
@@ -137,7 +132,7 @@ export const ClientForm = () => {
                 </div>
                 <div className="row client-input">
                   <div className="col">
-                    <Autocomplete
+                    {/* <Autocomplete
                       disablePortal
                       getOptionLabel={(option) => option.name}
                       id="combo-box-demo"
@@ -148,6 +143,15 @@ export const ClientForm = () => {
                       name="celebrity"
                       onChange={(event, value) => changeCelebrity(value)}
                       renderInput={(params) => <TextField {...params} label="Celebrity Name" style={{ width: '25rem' }} />}
+                    /> */}
+                    <TextField className='client-text-field'
+                      id="outlined-basic"
+                      label="Celebrity"
+                      variant="outlined"
+                      name="celebrityName"
+                      value={celebrity?.name || ''}
+                      required
+                      onChange={changeHandler}
                     />
                   </div>
                   <div className="col" >

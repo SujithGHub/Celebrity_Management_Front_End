@@ -12,6 +12,14 @@ export default function BasicMenu(props) {
     )
   }
 
+  const getStyles = (status) => {
+    if (status){
+      return {paddingLeft: '10px', paddingRight: '6px', width: '110px'}
+    } else {
+      return {paddingLeft: '10px', paddingRight: '6px', width: '110px', background:'#f5821f'}
+    }
+  }
+
   const getStatus = (status) => {
     return (
       status === 'pending' ? <span className='filter-text'>Pending</span> : status === 'accepted' ? <span className='filter-text'>Accepted</span> : <span className='filter-text'>Rejected</span>
@@ -28,7 +36,7 @@ export default function BasicMenu(props) {
       <Button
         id="basic-button"
         title='Filter'
-        style={{paddingLeft: '10px', paddingRight: '6px', width: '110px'}}
+        style={getStyles(props?.status)}
         aria-controls={props.openMenu ? 'basic-menu' : undefined}
         aria-haspopup="true"
         variant='contained'

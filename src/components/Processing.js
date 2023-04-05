@@ -94,7 +94,7 @@ export const Processing = () => {
       minWidth: 80,
       flex: 1,
       editable: false,
-      valueGetter: (params) => params.row?.celebrity ? params.row?.celebrity?.name : "-",
+      renderCell: (params) => params.row?.celebrity ? params.row?.celebrity?.name : "-",
       headerAlign: 'center',
       align: 'center'
     },
@@ -158,7 +158,7 @@ export const Processing = () => {
     },
   ];
   return (
-    <div>
+    <div style={{paddingTop: '70px'}}>
       <div className="processing-header">
         <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button>
         <h2>{completed ? 'COMPLETED EVENTS' : 'UPCOMING EVENTS'}</h2>

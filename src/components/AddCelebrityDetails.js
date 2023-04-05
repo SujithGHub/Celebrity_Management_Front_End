@@ -51,11 +51,10 @@ export const AddCelebrityDetails = () => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("celebrity", JSON.stringify(celebrity));
-    console.log(celebrity, "celebrity")
-    axiosInstance.post(`/celebrity`, formData, { headers: { 'Content-Type': "multipart/form-data" } }).then((res) => {
-      toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
-      navigate('/celebrity-details')
-    })
+      axiosInstance.post(`/celebrity`, formData, { headers: { 'Content-Type': "multipart/form-data" } }).then((res) => {
+        toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
+        navigate('/celebrity-details')
+      })
   };
 
   return (

@@ -42,10 +42,10 @@ function ChildModal(props) {
       >
         <Box sx={[style, { textAlign: 'center', width: 500 }]}>
           <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold', textAlign: 'center' }} >
-            {props.event?.title}
+            {(props.event?.title).toUpperCase()}
           </Typography>
 
-          <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ margin: '1rem' }} >
+          <Typography id="keep-mounted-modal-title" variant="h5" component="h3" style={{ margin: '1rem' }} >
             Are you sure to cancel this Event???
           </Typography>
           <div className='modal-button'>
@@ -60,6 +60,8 @@ function ChildModal(props) {
 
 export function CalendarModal(props) {
 
+  console.log(props, "props")
+
   return (
     <div>
       <Modal
@@ -73,9 +75,9 @@ export function CalendarModal(props) {
             <span>Start Time: {moment(props.event?.start).format('LLL')}</span><br />
             <span>End Time: {moment(props.event?.end).format('LLL')}</span>
           </Typography>
-          props?.event ? <Box sx={[style, { textAlign: 'center', width: 500 }]}>
+          <Box sx={[style, { textAlign: 'center', width: 500 }]}>
             <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold', textAlign: 'center' }} >
-              {props.event?.title}
+              {(props.event?.title).toUpperCase()}
             </Typography>
             <Typography id="keep-mounted-modal-description" sx={{ mt: 1, ml: 3, textAlign: 'left' }} >
               <span><b>Organizer Name</b>: {props.event?.extendedProps?.organizerName}</span><br />

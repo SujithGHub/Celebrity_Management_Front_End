@@ -5,26 +5,23 @@ import * as React from 'react';
 export default function SnackBar(props) {
 
   const vertical = 'top'
-  const horizontal = "right"
+  const horizontal = "center"
 
-  const { event } = props;
+  let { event } = props
 
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
 
   const getSeverity = (event) => {
-    return event === 'BLOCKED' ? 'error' : "info"
+    let { status } = event;
+    console.log(event, "event")
+    return status === ('BLOCKED' || 'REJECTED') ? 'error' : "info"
   }
 
   const getTitle = (event) => {
-    if (event === 'BLOCKED') {
-      return `DATE HAS BEEN ${event}`
-    } else if (event === 'COMPLETED') {
-      return `EVENT HAS BEEN ${event}`
-    } else {
-      return `DATE HAS BEEN ${event[0]?.status}`
-    }
+    let { status } = event;
+    return status === 'BLOCKED' ? `DATE HAS BEEN ${status}` : status === ('COMPLETED' || 'REJECTED') ? `THIS EVENT IS ${status}` : `CAN'T BLOCK DATE`
   }
 
   return (
@@ -35,8 +32,8 @@ export default function SnackBar(props) {
         onClose={props.handleSnackClose}
         anchorOrigin={{ vertical, horizontal }}
       >
-        <Alert onClose={props.handleSnackClose} severity={getSeverity(event)} sx={{ width: '100%' }}>
-          {getTitle(event)}
+        <Alert onClose={props?.handleSnackClose} severity={getSeverity(event.extendedProps ? event.extendedProps : event[0])} sx={{ width: '100%' }}>
+          {getTitle(event.extendedProps ? event.extendedProps : event[0])}
         </Alert>
       </Snackbar>
     </div>

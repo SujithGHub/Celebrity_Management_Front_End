@@ -114,21 +114,22 @@ const Calendar = () => {
 
   const renderSidebar = () => {
     return (
-      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 15px 0 15px' }}>
+      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 15px 5px 15px' }}>
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection:'column', alignItems: 'start', height: '30px' }}>
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
-          <ul>
-            <li>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></li>
-            <li>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events,currentMonth)}</span></li>
+          <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between',paddingLeft:'1.5rem' }}>
+            <li>Completed Events</li>
+            <li>Upcoming Events</li>
+            <li>Blocked Dates</li>
           </ul>
           {/* <h6 style={{ marginBottom: '0' }}>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></h6>
           <h6 style={{ marginBottom: '0' }}>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events,currentMonth)}</span></h6> */}
         </div>
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <h2>{celebrity?.name}</h2>
-          <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <li>Completed Events</li>
-            <li>Upcoming Events</li>
+          <ul>
+            <li>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></li>
+            <li>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events,currentMonth)}</span></li>
           </ul>
         </div>
       </div>
@@ -157,15 +158,15 @@ const Calendar = () => {
 
   const handleEventClick = (clickInfo) => {
     let event = clickInfo.event.toPlainObject();
-    let { status } = event?.extendedProps
+    let { status } = event.extendedProps
     if (status === 'REJECTED') {
-      setSnackInfo(status);
+      setSnackInfo(event);
       setOpenSnack(true);
     } else if (status === 'COMPLETED') {
-      setSnackInfo(status);
+      setSnackInfo(event);
       setOpenSnack(true);
     } else if (status === 'BLOCKED') {
-      setSnackInfo(status);
+      setSnackInfo(event);
       setOpenSnack(true);
     } else {
       setSelectedEvent(event);
@@ -182,10 +183,21 @@ const Calendar = () => {
   }
 
   const handleDateClick = (info) => {
-    const filter = events.filter(event => new Date(event?.start).getTime() === info?.start.getTime())
+    const infoDate = new Date(info.start).getDate();
+    const infoMonth = new Date(info.start).getMonth();
+    const filter = events.filter(event => {
+      let eventDate = new Date(event.start).getDate()
+      let eventMonth = new Date(event.start).getMonth()
+      if (infoDate === eventDate && infoMonth === eventMonth) {
+        return event;
+      }
+    })
     if (_.isEmpty(filter)) {
       setBlockDates(info)
       setOpenBlockDate(true)
+    } else if (filter[0]?.status === 'ACCEPTED') {
+      setSnackInfo(filter)
+      setOpenSnack(true)
     } else {
       setSnackInfo(filter)
       setOpenSnack(true)
@@ -218,15 +230,15 @@ const Calendar = () => {
     const start = arg.event.toPlainObject();
     const startTime = moment(start.start).format('hh:mm');
     const status = start.extendedProps?.status
-
-    const getStyles = (status) => {
-      return status === 'COMPLETED' ? 'event-display completed' : status === 'ACCEPTED' ? 'event-display accepted' : 'event-display blocked'
-    }
+    
+    const getStyles = (status) => status === 'COMPLETED' ? 'event-display completed' : status === 'ACCEPTED' ? 'event-display accepted' : 'event-display blocked'
 
     return (
       <div className={getStyles(status)}>
         <ul>
-          <li><span>{status === 'BLOCKED' ? '' : startTime}</span>&nbsp;<span>{arg.event.title}</span></li>
+          <li style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            {status === 'BLOCKED' ? '' : startTime}&nbsp;{arg.event.title}
+          </li>
         </ul>
       </div>
     );
@@ -257,7 +269,7 @@ const Calendar = () => {
     <>
       {openSnack && <SnackBar open={openSnack} handleSnackOpen={handleSnackOpen} handleSnackClose={handleSnackClose} event={snackInfo} />}
       {loading ? WATCH :
-        <>
+        <div style={{paddingTop: '60px'}}>
           {renderSidebar()}
           <FullCalendar
             headerToolbar={{
@@ -273,19 +285,19 @@ const Calendar = () => {
             weekends={weekEndAvailability}
             selectable={true}
             events={events}
-            eventContent={handleEventContent}
-            datesSet={handleDatesSet}
-            selectAllow={(event) => event.start < new Date() ? false : true}
-            select={handleDateClick}
-            eventDidMount={toolTipFunction}
+            eventContent={handleEventContent} //For modifying event display style
+            datesSet={handleDatesSet}  //For getting current month
+            selectAllow={(event) => event.start < new Date() ? false : true} // Where the select should be allowed
+            select={handleDateClick} // For clicking on date area to block date
+            eventDidMount={toolTipFunction} // For event hover effect to display event time
             dayMaxEvents={2}
-            eventClick={(event) => handleEventClick(event)}
+            eventClick={(event) => handleEventClick(event)} // For clicking event to show modal
             eventDisplay="list-item"
             eventMouseEnter={(event) => (event.el.style.cursor = 'pointer')}
           />
           {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}
           {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
-        </>}
+        </div>}
     </>
   )
 }

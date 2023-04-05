@@ -54,8 +54,8 @@ function Header() {
 
   return (
     <>
-      {(path === '/' || path === '/client') ? null : <AppBar position="static">
-        <Container maxWidth="xl" style={{ backgroundColor: 'white', fontFamily: 'Montserrat' }}>
+      {(path === '/' || path === '/client') ? null : <AppBar position="fixed">
+        <Container maxWidth="xl" style={{ maxWidth: '100%', backgroundColor: 'white', fontFamily: 'Montserrat' }}>
           <Toolbar disableGutters>
             <Typography
               variant="h6"
@@ -77,10 +77,10 @@ function Header() {
             <Typography variant='h5' style={{ fontWeight: 'bold', color: 'black', marginLeft: '2rem' }}>{getName(pages, path)}</Typography>
             {!token ? null :
               <>
-                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'flex-end', marginRight: '2rem' } }}>
-                  {path === '/enquiry-details' ? '' : <Button sx={{ my: 2, mx: 2, display: 'block' }} className='button-test' color='primary' onClick={() => navigate('/enquiry-details')}>Enquiry</Button>}
-                  {path === '/processing' ? '' : <Button sx={{ my: 2, mx: 2, display: 'block' }} onClick={() => navigate('/processing')} color='primary'>Schedule</Button>}
-                  {path === '/celebrity-details' ? '' : <Button sx={{ my: 2, mx: 2, display: 'block' }} color='primary' onClick={() => navigate('/celebrity-details')} >Celebrity</Button>}
+                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'flex-end', marginRight: '1rem' } }}>
+                  {path === '/enquiry-details' ? '' : <Button className="primary" style={{backgroundColor: '#f5821f', marginRight: '1rem'}} variant="contained" onClick={() => navigate('/enquiry-details')}>Enquiry</Button>}
+                  {path === '/processing' ? '' : <Button className="primary" style={{backgroundColor: '#f5821f', marginRight: '1rem'}}  variant="contained" onClick={() => navigate('/processing')} color='primary'>Schedule</Button>}
+                  {path === '/celebrity-details' ? '' : <Button className="primary" style={{backgroundColor: '#f5821f'}} variant="contained" onClick={() => navigate('/celebrity-details')} >Celebrity</Button>}
                 </Box>
                 <Box sx={{ flexGrow: 0 }}>
                   <Tooltip title="Open settings">
