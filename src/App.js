@@ -14,19 +14,19 @@ import Header from './util/Header';
 function App() {
   
   return (
-    <div >
+    <>
       <Routes>
         <Route path='/' element={<AdminLogin />}></Route>
-        <Route path="/enquiry-details" element={ <PrivateRoute><EnquiryDetails /></PrivateRoute> } />
-        <Route path="/celebrity-details" element= {<><Header/><CelebrityDetails /></>} />
-        <Route path="/event-details" element={ <PrivateRoute><Calendar /></PrivateRoute> } />
-        <Route path="/add-celebrity-details" element={ <PrivateRoute><AddCelebrityDetails /></PrivateRoute> } />
-        <Route path="/celebrity-profile" element={ <PrivateRoute><CelebrityProfile /></PrivateRoute> } />
-        <Route path="/processing" element={ <PrivateRoute><Processing /></PrivateRoute> } />
-        <Route path="/client" element= {<><Header/><ClientForm /></>} />
+        <Route path="/enquiry-details" element={<PrivateRoute><EnquiryDetails /></PrivateRoute>} />
+        <Route path="/celebrity-details" element={<><Header /><CelebrityDetails /></>} />
+        <Route path="/event-details" element={<PrivateRoute><Calendar /></PrivateRoute>} />
+        <Route path="/add-celebrity-details" element={<PrivateRoute><AddCelebrityDetails /></PrivateRoute>} />
+        <Route path="/celebrity-profile" element={<PrivateRoute><CelebrityProfile /></PrivateRoute>} />
+        <Route path="/processing" element={<PrivateRoute><Processing /></PrivateRoute>} />
+        <Route path="/client" element={<><Header /><ClientForm /></>} />
       </Routes>
-        <ToastContainer autoClose={1000}/>
-    </div>
+      <ToastContainer autoClose={1000} />
+    </>
   );
 }
 

@@ -19,12 +19,11 @@ export const AddCelebrityDetails = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const CelebrityDetails = location?.state  
+  const CelebrityDetails = location?.state 
 
   const [celebrityDetails, setCelebrityDetails] = useState(null);
   const [image, setImage] = useState(null);
   const [value, setValue] = useState(null);
-
 
   const changeHandler = (e, key) => {
     // key === 'dateOfBirth' ? 
@@ -44,17 +43,27 @@ export const AddCelebrityDetails = () => {
     }
   }, [CelebrityDetails])
 
+  const changeImageHandler = (event) => {
+    const file = event?.target?.files[0];
+    if (file?.size <= 100000) {
+      setImage(event.target.files[0])
+    } else {
+      setImage(null)
+      toast.error("File should be less than 100Kb")
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const celebrity = { ...celebrityDetails, dateOfBirth: new Date(value).getTime() }
+    const user = localStorage.getItem('user');
+    const celebrity = { ...celebrityDetails, dateOfBirth: new Date(value).getTime(), user: user }
     const formData = new FormData();
     formData.append("file", image);
     formData.append("celebrity", JSON.stringify(celebrity));
-      axiosInstance.post(`/celebrity`, formData, { headers: { 'Content-Type': "multipart/form-data" } }).then((res) => {
-        toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
-        navigate('/celebrity-details')
-      })
+    axiosInstance.post(`/celebrity`, formData, { headers: { 'Content-Type': "multipart/form-data" } }).then((res) => {
+      toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
+      navigate('/celebrity-details')
+    })
   };
 
   return (
@@ -192,10 +201,14 @@ export const AddCelebrityDetails = () => {
       </div>
 
       <div className="row">
-        <div className='col'>
-          <input type='file' name='img' accept='.jpeg, .jpeg, .png' onChange={(event) => setImage(event.target.files[0])} ></input>
+        <div className='col' style={{ display: 'flex', width:'400px'}}>
+          {celebrityDetails?.base64Image ? <img src={`data:image/jpeg/png;base64,${celebrityDetails?.base64Image}`} alt={celebrityDetails?.name} width='100px' height='100px'></img> : null}
+          <div style={{paddingLeft: '1rem'}}>
+            <label style={{ width: '140px' }}>{celebrityDetails?.image ? 'Update Image' : 'Upload Image'}</label>
+            <input type='file' name='img' accept='.jpeg, .jpg, .png' onChange={(event) => changeImageHandler(event)} ></input>
+          </div>
         </div>
-        <div className="col" >
+        <div className="col" style={{ width:'400px'}}>
           <FormControl >
             <FormLabel id="demo-row-radio-buttons-group-label">
               status

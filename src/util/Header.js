@@ -26,8 +26,10 @@ function Header() {
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [token, setToken] = React.useState('')
+  const [user, setUser] = React.useState('')
 
   React.useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem('user')))
     getToken();
   }, [])
 
@@ -65,7 +67,7 @@ function Header() {
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
-                fontFamily: 'monospace',
+                fontFamily: 'montserrat',
                 fontWeight: 700,
                 letterSpacing: '.3rem',
                 color: 'inherit',
@@ -74,7 +76,7 @@ function Header() {
             >
               <img style={{ cursor: 'pointer' }} alt='Logo' src={Logo} width='80' height='50'></img>
             </Typography>
-            <Typography variant='h5' style={{ fontWeight: 'bold', color: 'black', marginLeft: '2rem' }}>{getName(pages, path)}</Typography>
+            <Typography variant='h5' style={{ fontWeight: 'bold', color: 'black', marginLeft: '2rem',fontFamily: 'montserrat' }}>{getName(pages, path)}</Typography>
             {!token ? null :
               <>
                 <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'flex-end', marginRight: '1rem' } }}>
@@ -85,7 +87,7 @@ function Header() {
                 <Box sx={{ flexGrow: 0 }}>
                   <Tooltip title="Open settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      <Avatar />
+                      <Avatar style={{background: 'grey'}}>{user?.name?.charAt(0)}</Avatar>
                     </IconButton>
                   </Tooltip>
                   <Menu

@@ -119,7 +119,7 @@ const Calendar = () => {
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
           <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between',paddingLeft:'1.5rem' }}>
             <li>Completed Events</li>
-            <li>Upcoming Events</li>
+            <li>Pending Events</li>
             <li>Blocked Dates</li>
           </ul>
           {/* <h6 style={{ marginBottom: '0' }}>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></h6>
@@ -191,6 +191,7 @@ const Calendar = () => {
       if (infoDate === eventDate && infoMonth === eventMonth) {
         return event;
       }
+      return undefined
     })
     if (_.isEmpty(filter)) {
       setBlockDates(info)
@@ -249,6 +250,7 @@ const Calendar = () => {
     const showCount = filtered?.filter((fil) => fil?.status === "ACCEPTED");
     return showCount?.length;
   };
+  
   const completedCount = (events,month) => {
     const filtered = events?.filter((event) => moment(event.start).format("MMMM") === month);
     const showCount = filtered?.filter((fil) => fil?.status === "COMPLETED");

@@ -29,14 +29,13 @@ export default function BasicModal(props) {
   const [celebrity,] = useState(props?.celebrity);
   const [selectedCelebrity, setSelectedCelebrity] = useState(props?.eventInfo?.celebrity);
   const [fromDateError, setFromDateError] = useState(false);
-  const [, setToDateError] = useState(false);
+  const [toDateError, setToDateError] = useState(false);
 
   React.useEffect(() => {
 
   }, [props])
 
   const onChangeHandler = (event) => {
-    console.log(event.target.name, event.target.value)
     setEventToBeEdited({
       ...eventToBeEdited, [event.target.name]: event.target.value
     })
@@ -47,32 +46,36 @@ export default function BasicModal(props) {
     setEventToBeEdited({ ...eventToBeEdited, celebrity: value })
   }
 
-  const checkDateError = (time) => {
+  const checkDateError = (time, type) => {
     const time1 = new Date(time);
     const time2 = new Date(moment().format('LLL'))
-    if (time1 < time2) {
+    const eventStartTime = new Date(eventToBeEdited?.startTime);
+    if (type === 'start' && time1 < time2) {
       setFromDateError(true);
       return true;
+    } else if (type === 'end' && time1 < eventStartTime) {
+      setToDateError(true);
+      return true;
+    } else {
+      return false;
     }
-    setFromDateError(false)
-    setToDateError(false)
-  }
+}
 
 
   const onDateChange = (value, key) => {
     key === 'startTime' ? setEventToBeEdited({
-      ...eventToBeEdited, startTime: moment(value?.$d).format('LLL')
+      ...eventToBeEdited, startTime: new Date(value?.$d).getTime()
     }) : setEventToBeEdited({
-      ...eventToBeEdited, endTime: moment(value?.$d).format('LLL')
+      ...eventToBeEdited, endTime: new Date(value?.$d).getTime()
     })
   }
 
   return (
     <Modal
-      onClose={props.handleClose}
-      open={props.open}
-      aria-labelledby="keep-mounted-modal-title"
-      aria-describedby="keep-mounted-modal-description"
+    onClose={props.handleClose}
+    open={props.open}
+    aria-labelledby="keep-mounted-modal-title"
+    aria-describedby="keep-mounted-modal-description"
     >
       <Box sx={[style, { width: '70%', height: '90%', padding: '20px 40px 0px 40px', overflow: 'auto' }]}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: '30px', marginBottom: '1rem' }}>
@@ -180,7 +183,7 @@ export default function BasicModal(props) {
                   inputFormat="DD/MM/YYYY hh:mm A"
                   renderInput={(params) => (
                     <TextField
-                      variant='standard' {...params} error={checkDateError(eventToBeEdited?.startTime)} style={{ width: '90%' }} helperText="From" />
+                      variant='standard' {...params} style={{ width: '90%' }} helperText="From" />
                   )}
                   PopperProps={{
                     placement: 'right-end',
@@ -196,7 +199,7 @@ export default function BasicModal(props) {
                   inputFormat="DD/MM/YYYY hh:mm A"
                   renderInput={(params) => (
                     <TextField
-                      variant='standard' {...params} error={checkDateError(eventToBeEdited?.endTime, 'end')} style={{ width: '90%' }} helperText="To" />
+                      variant='standard' {...params} style={{ width: '90%' }} helperText="To" />
                   )}
                   PopperProps={{
                     placement: 'right-end',
@@ -229,8 +232,8 @@ export default function BasicModal(props) {
             <div className='col'>
             </div>
           </div>
-          <Button className='primary' variant='contained' disabled={fromDateError}
-            onClick={() => props.submitHandler(eventToBeEdited, "ACCEPTED")}
+          <Button className='primary' variant='contained'
+            onClick={(event) => props.submitHandler(event, eventToBeEdited, "ACCEPTED")}
           // onClick={() => submit(eventToBeEdited)}
           >Confirm Event</Button>
         </>

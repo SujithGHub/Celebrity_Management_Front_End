@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
+import LOGO from '../assets/logo.png';
 import "../css/Admin.css";
 import axiosInstance from "../util/Interceptor";
 
@@ -30,7 +31,8 @@ export const AdminLogin = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     axiosInstance.post(`/user/login`, admin).then((res) => {
-      localStorage.setItem("token", res?.response)
+      localStorage.setItem("token", res?.response?.token)
+      localStorage.setItem("user", JSON.stringify(res?.response))
       const name = admin.mailId?.split("@");
       toast.success(`Welcome ${name[0].toUpperCase()}!!!`, {
         position: toast.POSITION.TOP_RIGHT
@@ -40,6 +42,9 @@ export const AdminLogin = () => {
 
   return (
     <div className="admin-login">
+      <div className="admin-login img">
+        <img src={LOGO} alt='innovative hr' width='450px' />
+      </div>
       <form className="form" onSubmit={(event) => submitHandler(event)}>
         <p style={{ fontSize: "29px" }}>Admin Login</p>
         <TextField

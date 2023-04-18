@@ -15,13 +15,12 @@ export default function SnackBar(props) {
 
   const getSeverity = (event) => {
     let { status } = event;
-    console.log(event, "event")
-    return status === ('BLOCKED' || 'REJECTED') ? 'error' : "info"
+    return status === 'BLOCKED' ? 'error' : status === 'REJECTED' ? 'error' : "info"
   }
 
   const getTitle = (event) => {
     let { status } = event;
-    return status === 'BLOCKED' ? `DATE HAS BEEN ${status}` : status === ('COMPLETED' || 'REJECTED') ? `THIS EVENT IS ${status}` : `CAN'T BLOCK DATE`
+    return status === 'BLOCKED' ? `DATE HAS BEEN ${status}` : status === 'REJECTED' ? `THIS EVENT IS CANCELLED` : status === 'COMPLETED' ? `THIS EVENT IS ${status}` : `CAN'T BLOCK DATE`
   }
 
   return (

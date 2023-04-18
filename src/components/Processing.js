@@ -42,11 +42,11 @@ export const Processing = () => {
   }, [])
 
   const getAllSchedule = async () => {
-    await axios.get(`${REST_API}/enquiry/get-all-enquiry`, { headers: authHeader() }).then(res => {
-      const response = res.data.response;
+    await axios.get(`${REST_API}/schedule/get-all-schedule`, { headers: authHeader() }).then(res => {
+      const response = res.data;
       setSchedule(response);
-      setAvailableEvents(response.filter(res => res.startTime > new Date().getTime()));
-      setCompletedEvents(response.filter(res => res.startTime < new Date().getTime()));
+      setAvailableEvents(response.filter(res => res.enquiryDetails?.startTime > new Date().getTime()));
+      setCompletedEvents(response.filter(res => res.enquiryDetails?.startTime < new Date().getTime()));
     }).catch(error => {
       console.log(error);
     })
@@ -62,7 +62,8 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'center'
+      align: 'center',
+      valueGetter: (param) => param?.row?.enquiryDetails?.name,
     },
     {
       field: 'organizationName',
@@ -73,7 +74,8 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'center'
+      align: 'center',
+      valueGetter: (param) => param?.row?.enquiryDetails?.organizationName
     },
     {
       field: 'eventName',
@@ -84,40 +86,42 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'center'
+      align: 'left',
+      valueGetter: (param) => param?.row?.enquiryDetails?.eventName
     },
     {
       field: 'CelebrityName',
       headerName: 'Celebrity Name',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 80,
+      minWidth: 150,
       flex: 1,
       editable: false,
-      renderCell: (params) => params.row?.celebrity ? params.row?.celebrity?.name : "-",
+      valueGetter: (params) => params.row?.enquiryDetails?.celebrity ? params.row?.enquiryDetails?.celebrity?.name : "-",
       headerAlign: 'center',
-      align: 'center'
+      align: 'left'
     },
     {
       field: 'location',
       headerName: 'Event place',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 80,
+      minWidth: 180,
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'center'
+      align: 'left',
+      valueGetter: (param) => param?.row?.enquiryDetails?.location
     },
     {
       field: 'startTime',
       headerName: 'StartTime',
       headerClassName: 'super-app-theme--header',
-      type: 'number',
+      type: 'date',
       minWidth: 180,
       flex: 1,
       editable: false,
-      renderCell: (param) => moment(param?.row?.startTime).format('LLL'),
+      valueGetter: (param) => moment(param?.row?.enquiryDetails?.startTime).format('LLL'),
       headerAlign: 'center',
       align: 'center'
     },
@@ -125,11 +129,11 @@ export const Processing = () => {
       field: 'endTime',
       headerName: 'EndTime',
       headerClassName: 'super-app-theme--header',
-      type: 'number',
+      type: 'date',
       minWidth: 180,
       flex: 1,
       editable: false,
-      renderCell: (param) => moment(param?.row?.endTime).format('LLL'),
+      valueGetter: (param) => moment(param?.row?.enquiryDetails?.endTime).format('LLL'),
       headerAlign: 'center',
       align: 'left'
     },
@@ -142,7 +146,8 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left'
+      align: 'left',
+      valueGetter: (param) => param?.row?.enquiryDetails?.mailId
     },
     {
       field: 'phoneNumber',
@@ -153,8 +158,8 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'center'
-
+      align: 'center',
+      valueGetter: (param) => param?.row?.enquiryDetails?.phoneNumber
     },
   ];
   return (

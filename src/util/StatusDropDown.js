@@ -14,7 +14,7 @@ export default function BasicMenu(props) {
 
   const getStyles = (status) => {
     if (status){
-      return {paddingLeft: '10px', paddingRight: '6px', width: '110px'}
+      return {paddingLeft: '10px', paddingRight: '6px', width: '120px'}
     } else {
       return {paddingLeft: '10px', paddingRight: '6px', width: '110px', background:'#f5821f'}
     }

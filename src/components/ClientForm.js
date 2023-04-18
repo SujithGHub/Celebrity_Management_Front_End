@@ -1,4 +1,4 @@
-import { Autocomplete, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { DateTimePicker } from "@mui/x-date-pickers";
@@ -12,12 +12,13 @@ import axiosInstance from "../util/Interceptor";
 
 export const ClientForm = () => {
   const [celebrityDetails, setCelebrityDetails] = useState(null);
-  const [actorName, setActorName] = useState([]);
+  const [, setActorName] = useState([]);
   const [singleDay, setSingleDay] = useState(false);
   const [, setMultiDay] = useState(false);
   const [loading, setLoading] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+
   const changeHandler = (e) => {
     setCelebrityDetails((prev) => ({
       ...prev,
@@ -27,6 +28,7 @@ export const ClientForm = () => {
   const location = useLocation();
   const { celebrity } = location?.state;
   const navigate = useNavigate();
+  
   useEffect(() => {
     getAllCelebrity();
   }, []);
@@ -44,7 +46,6 @@ export const ClientForm = () => {
     console.log(enquiryInfo, "enquiryInfo");
     axiosInstance.post(`/enquiry`, enquiryInfo).then(res => {
       toast.success(res?.message);
-      // window.location.reload();
       setLoading(true);
     })
   };
@@ -60,7 +61,7 @@ export const ClientForm = () => {
     <>
       {loading ?
         <div className='client-img'>
-          <h2>Thanks for submitting enquiry!!! We will get back soon</h2>
+          <h2>Thanks for submitting enquiry!!! We will get back soon<a href="/celebrity-details" style={{ textDecoration:'none', paddingLeft: '1rem'}}>Click here</a></h2>
           <img src={loader} alt="Computer man" />
         </div>
         :

@@ -67,8 +67,8 @@ export default function EnquiryDetails() {
     { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
     { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 110, },
     { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
-    { field: 'startTime', headerName: 'Start', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row.row?.startTime).format('LLL') },
-    { field: 'endTime', headerName: 'End', type: 'number', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, renderCell: (row) => moment(row.row?.endTime).format('LLL')},
+    { field: 'startTime', headerName: 'Start', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.startTime).format('LLL') },
+    { field: 'endTime', headerName: 'End', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.endTime).format('LLL')},
     {
       field: 'action', headerName: 'Action',headerClassName: 'super-app-theme--header', flex: 1, minWidth: 200, align: 'center', headerAlign: 'center',
       renderCell: (row) => {
@@ -117,15 +117,15 @@ export default function EnquiryDetails() {
     setEditable(true);
   }
 
-  const handleEventSubmit = (row, key) => {
-    if (!_.isEmpty(row.celebrity)) {
+  const handleEventSubmit = (event, row, key) => {
+    event.preventDefault();
+    if (!_.isEmpty(row?.celebrity)) {
       const acceptedSchedule = { ...row, status: key }
       const schedule = { enquiryDetails: acceptedSchedule }
-      console.log(schedule, "schedule");
-      axiosInstance.post(`/enquiry/status`, schedule).then(response => {
+      axiosInstance.post(`/enquiry/status`, schedule).then(() => {
+        setOpen(false);
         getAllEnquiry();
         toast.success(key === 'ACCEPTED' ? "Enquiry Accepted" : "Enquiry Rejected ");
-        setOpen(false);
         setEditable(false);
       })
     } else {
@@ -135,7 +135,8 @@ export default function EnquiryDetails() {
 
   const getAllCelebrity = async () => {
     await axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
-      setCelebrity(res)
+      const response = res.filter(fil => fil.status === 'ACTIVE');
+      setCelebrity(response)
     })
   }
 
@@ -162,12 +163,11 @@ export default function EnquiryDetails() {
         columns={columns}
         autoHeight
         pagination
-        rowSelection={false}
         disableColumnFilter
         disableColumnMenu
         disableColumnSelector
         pageSize={pageSize}
-        // sortModel={[{field: "start", sort:'asc'}]}
+        sortModel={[{field: "startTime", sort:'asc'}]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         rowsPerPageOptions={[5, 10, 20]}
         disableSelectionOnClick

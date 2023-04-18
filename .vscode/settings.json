@@ -2,5 +2,6 @@
   "cSpell.words": [
     "daygrid",
     "timegrid"
-  ]
+  ],
+  "javascript.validate.enable": true,
 }

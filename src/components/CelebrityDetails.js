@@ -11,16 +11,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import Logo from '../assets/Google-Calendar-icon.png';
 import axiosInstance from "../util/Interceptor";
+import { CIRCLE_WITH_BAR } from '../util/Loader';
 import StatusDropDown from '../util/StatusDropDown';
+
 const CelebrityDetails = () => {
   const navigate = useNavigate()
   const [filter, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [, setCelebrity] = useState([]);
   const [activeCelebrity, setActiveCelebrity] = useState([]);
   const [inactiveCelebrity, setInactiveCelebrity] = useState([]);
   const [active, setActive] = useState(true);
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [token, setToken] = useState('');
 
   const openMenu = Boolean(anchorEl);
@@ -36,11 +39,12 @@ const CelebrityDetails = () => {
     setLoading(true)
     axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
       let result = _.orderBy(res, 'name')
+      setCelebrity(result);
       let activeFilter = _.filter(result, (res => res.status === "ACTIVE"))
       setActiveCelebrity(activeFilter)
       let inactiveFilter = _.filter(result, (res => res.status === "INACTIVE"))
       setInactiveCelebrity(inactiveFilter)
-      setFilter(result);
+      setFilter(activeFilter);
       setLoading(false);
     })
   }
@@ -74,6 +78,7 @@ const CelebrityDetails = () => {
   const getActive = () => {
     return active ? activeCelebrity : inactiveCelebrity
   }
+
   const getToken = () => {
     let tok = localStorage.getItem("token");
     setToken(tok);
@@ -94,11 +99,11 @@ const CelebrityDetails = () => {
               value={search}
               type="search"
               variant="outlined"
-              placeholder="Search..."
+              placeholder="Search Celebrity..."
               size="small"
               InputProps={{
                 style: {
-                  borderRadius: '3rem'
+                  borderRadius: '1rem'
                 },
                 startAdornment: (
                   <InputAdornment position="start">
@@ -113,10 +118,11 @@ const CelebrityDetails = () => {
             <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
           </div>}
         </header>
+    {loading ? CIRCLE_WITH_BAR :
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-            {getActive().map((celebrityItem, key) => (
-              <Grid item xs={4} sm={4} md={3} key={key}>
+          <Grid container spacing={{ xs: 2 }}>
+            {getActive().map((celebrityItem, index) => (
+              <Grid item xs={12} xl={3} sm={6} md={4} lg={3} key={index}>
                 <div className="celebrity-card">
                   <div className="flip-card" key={celebrityItem?.id}>
                     <div className="flip-card-inner">
@@ -132,15 +138,16 @@ const CelebrityDetails = () => {
                         <div className="celebrity-info-container">
                           <h6><span>DOB</span>: {moment(celebrityItem?.dateOfBirth).format('DD/MM/YYYY')}</h6>
                           <h6><span>Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
-                          <div className="scroll">
-                            <h6><span>Email</span>: {celebrityItem?.mailId}</h6>
-                          </div>
-                          <h6><span>Mobile</span>: {celebrityItem?.phoneNumber}</h6>
-                          <div className="scroll card-address">
-                            <h6><span>Address</span>: {celebrityItem?.address}</h6>
-                          </div>
+                          {token ? <>
+                            <div className="scroll">
+                              <h6><span>Email</span>: {celebrityItem?.mailId}</h6>
+                            </div>
+                            <h6><span>Mobile</span>: {celebrityItem?.phoneNumber}</h6>
+                            <div className="scroll card-address">
+                              <h6><span>Address</span>: {celebrityItem?.address}</h6>
+                            </div></> : ""}
                           <h5 className="description-header">Description:</h5>
-                          <div className="scroll description-content">
+                          <div className={token ? 'scroll description-content1' : 'scroll description-content2'}>
                             <p>{celebrityItem?.description}</p>
                           </div>
                         </div>
@@ -155,12 +162,18 @@ const CelebrityDetails = () => {
                             </div>
                             <div className="divider"></div>
                             <Tooltip title='View Calendar'>
-                              <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0 }} alt="logo" width='30px' height='30px' />}>
+                              <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0, marginLeft: '20px' }} alt="logo" width='30px' height='30px' />}>
                               </Button>
                             </Tooltip>
                           </>
                           :
-                          <Button className="Primary" variant="contained" onClick={() => navigate('/client', { state: { celebrity: celebrityItem } })} style={{ marginRight: '1.5rem' }}>BookNow</Button>
+                          <>
+                            <p style={{ display: 'flex', alignItems: 'center', margin: '0', marginRight: '1rem' }}>{celebrityItem?.name}</p>
+                            <div className='divider'></div>
+                            <div className="celebrity-profile">
+                              <button variant="outlined" onClick={() => navigate('/client', { state: { celebrity: celebrityItem } })}>BOOK NOW</button>
+                            </div>
+                          </>
                         }
                       </div>
                     </div>
@@ -169,7 +182,7 @@ const CelebrityDetails = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
+        </Box>}
       </div>
     </>
   );
