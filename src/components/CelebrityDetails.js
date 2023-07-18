@@ -154,7 +154,7 @@ const CelebrityDetails = () => {
                       </div>
                     </div>
                     <div className="card-footer">
-                      <div style={{ width: '120px', display: 'flex', justifyContent: 'space-evenly' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
                         {token ?
                           <>
                             <div className="celebrity-profile">
@@ -168,7 +168,7 @@ const CelebrityDetails = () => {
                           </>
                           :
                           <>
-                            <p style={{ display: 'flex', alignItems: 'center', margin: '0', marginRight: '1rem' }}>{celebrityItem?.name}</p>
+                            <p style={{ display: 'flex', alignItems: 'center', textAlign: 'end', margin: '0', marginRight: '1rem' }}>{celebrityItem?.name}</p>
                             <div className='divider'></div>
                             <div className="celebrity-profile">
                               <button variant="outlined" onClick={() => navigate('/client', { state: { celebrity: celebrityItem } })}>BOOK NOW</button>

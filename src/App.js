@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './App.css';
 import { AddCelebrityDetails } from './components/AddCelebrityDetails';
@@ -12,6 +13,12 @@ import { Processing } from './components/Processing';
 import Header from './util/Header';
 
 function App() {
+
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0,0);
+  },[location])
   
   return (
     <>

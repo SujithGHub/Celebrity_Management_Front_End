@@ -60,8 +60,8 @@ function ChildModal(props) {
 
 export function CalendarModal(props) {
 
-  console.log(props, "props")
-
+  // This modal contains a Child Modal
+  
   return (
     <div>
       <Modal
@@ -118,6 +118,33 @@ export const BlockDatesModal = (props) => {
         </Typography>
         <div className='modal-button'>
             <Button variant='contained' style={{ marginRight: '10px' }} onClick={() => props.handleBlockDate(blockDates.start, blockDates.end)} color='error'>Yes</Button>
+            <Button variant='contained' onClick={props.handleClose}>No</Button>
+          </div>
+      </Box>
+    </Modal>
+  )
+}
+
+export const UnBlockModal = (props) => {
+  
+  const { unBlockDate } = props;
+
+  return (
+    <Modal open={props.open}
+      onClose={props.handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Typography id="keep-mounted-modal-title" variant="h5" style={{ textAlign : 'center'}}>
+          Date is Blocked...Do you want to Unblock???
+        </Typography>
+        <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
+          <span className='from-to'>From</span>: {moment(unBlockDate[0]?.start).format('LLL')} <br />
+          <span className='from-to'>To</span>: {moment(unBlockDate[0]?.end).format('LLL')}
+        </Typography>
+        <div className='modal-button'>
+            <Button variant='contained' style={{ marginRight: '10px' }} onClick={() => props.handleUnBlockDate(unBlockDate[0]?.id)} color='error'>Yes</Button>
             <Button variant='contained' onClick={props.handleClose}>No</Button>
           </div>
       </Box>

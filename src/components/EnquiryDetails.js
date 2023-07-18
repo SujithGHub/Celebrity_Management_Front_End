@@ -63,10 +63,10 @@ export default function EnquiryDetails() {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
-    { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 50 },
-    { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 110, },
-    { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'center', headerAlign: 'center', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
+    { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
+    { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
+    { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 110, },
+    { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
     { field: 'startTime', headerName: 'Start', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.startTime).format('LLL') },
     { field: 'endTime', headerName: 'End', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.endTime).format('LLL')},
     {
@@ -91,7 +91,7 @@ export default function EnquiryDetails() {
               <Button onClick={() => handleEventSave(row)}>
                 {editable ? 'InProgress' : 'Process'}
               </Button>
-              <Button color='error' onClick={(event) => handleEventSubmit(row?.row, 'REJECTED')}>
+              <Button color='error' onClick={(event) => handleEventSubmit(event, row?.row, 'REJECTED')}>
                 Cancel
               </Button>
             </>
@@ -125,7 +125,7 @@ export default function EnquiryDetails() {
       axiosInstance.post(`/enquiry/status`, schedule).then(() => {
         setOpen(false);
         getAllEnquiry();
-        toast.success(key === 'ACCEPTED' ? "Enquiry Accepted" : "Enquiry Rejected ");
+        toast.success(key === 'ACCEPTED' ? "Enquiry Accepted and Email Sent Successfully" : "Enquiry Rejected ");
         setEditable(false);
       })
     } else {

@@ -11,10 +11,6 @@ function CelebrityProfile() {
 
   const { celebrity } = location?.state;
 
-  useEffect(() => {
-    window.scrollTo(0,0)
-  })
-
   const keysToExtract = ['name','mailId', 'phoneNumber', 'gender', 'dateOfBirth', 'profession','address', 'description']
 
   const filteredObject = Object.entries(celebrity).filter(([ key ]) => keysToExtract.includes(key)).reduce((obj, [key,value]) => {

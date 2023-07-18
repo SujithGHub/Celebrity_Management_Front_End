@@ -1,5 +1,6 @@
 .body{
-  font-family: 'montserrat' !important;
+  /* font-family: 'montserrat' !important; */
+  font-family: 'Montserrat' !important;
 }
 
 .admin-login {
@@ -607,4 +608,10 @@ svg#L2 {
   display: inline-block;
   font-size: 120%;
   width: 0.8em;
+}
+.MuiTablePagination-selectLabel{
+  margin-bottom: 0 !important;
+}
+.MuiTablePagination-displayedRows{
+  margin-bottom: 0 !important;
 }

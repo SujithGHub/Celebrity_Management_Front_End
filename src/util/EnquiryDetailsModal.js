@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import moment from 'moment';
 import * as React from 'react';
 import { useState } from 'react';
 
@@ -46,24 +45,33 @@ export default function BasicModal(props) {
     setEventToBeEdited({ ...eventToBeEdited, celebrity: value })
   }
 
-  const checkDateError = (time, type) => {
-    const time1 = new Date(time);
-    const time2 = new Date(moment().format('LLL'))
-    const eventStartTime = new Date(eventToBeEdited?.startTime);
-    if (type === 'start' && time1 < time2) {
-      setFromDateError(true);
-      return true;
-    } else if (type === 'end' && time1 < eventStartTime) {
-      setToDateError(true);
-      return true;
+  const checkDateError = (date, type) => {
+    const newDate = new Date(date).getTime();
+    if (type === "start") {
+      if (newDate < new Date().getTime()) {
+        setFromDateError(true)
+        return true;
+      } else {
+        setFromDateError(false)
+        return false;
+      }
+    } else if (type === "end") {
+      const newStartTime = new Date(eventToBeEdited?.startTime).getTime();
+      if (newDate < newStartTime) {
+        setToDateError(true)
+        return true;
+      } else {
+        setToDateError(false)
+        return false;
+      }
     } else {
-      return false;
+      return false
     }
-}
+  }
 
 
   const onDateChange = (value, key) => {
-    key === 'startTime' ? setEventToBeEdited({
+    key === 'start' ? setEventToBeEdited({
       ...eventToBeEdited, startTime: new Date(value?.$d).getTime()
     }) : setEventToBeEdited({
       ...eventToBeEdited, endTime: new Date(value?.$d).getTime()
@@ -179,11 +187,11 @@ export default function BasicModal(props) {
                   name='startTime'
                   minDate={new Date()}
                   value={eventToBeEdited?.startTime}
-                  onChange={(newStartTime) => onDateChange(newStartTime, 'startTime')}
+                  onChange={(newStartTime) => onDateChange(newStartTime, 'start')}
                   inputFormat="DD/MM/YYYY hh:mm A"
                   renderInput={(params) => (
                     <TextField
-                      variant='standard' {...params} style={{ width: '90%' }} helperText="From" />
+                      variant='standard' {...params} error={checkDateError(eventToBeEdited?.startTime, 'start')} style={{ width: '90%' }} helperText="From" />
                   )}
                   PopperProps={{
                     placement: 'right-end',
@@ -195,11 +203,11 @@ export default function BasicModal(props) {
                   name='endTime'
                   minDate={eventToBeEdited?.startTime}
                   value={eventToBeEdited?.endTime}
-                  onChange={(newEndTime) => onDateChange(newEndTime, 'endTime')}
+                  onChange={(newEndTime) => onDateChange(newEndTime, 'end')}
                   inputFormat="DD/MM/YYYY hh:mm A"
                   renderInput={(params) => (
                     <TextField
-                      variant='standard' {...params} style={{ width: '90%' }} helperText="To" />
+                      variant='standard' {...params} error={checkDateError(eventToBeEdited?.endTime, 'end')} style={{ width: '90%' }} helperText="To" />
                   )}
                   PopperProps={{
                     placement: 'right-end',
@@ -232,7 +240,7 @@ export default function BasicModal(props) {
             <div className='col'>
             </div>
           </div>
-          <Button className='primary' variant='contained'
+          <Button className='primary' variant='contained' disabled={(fromDateError || toDateError)}
             onClick={(event) => props.submitHandler(event, eventToBeEdited, "ACCEPTED")}
           // onClick={() => submit(eventToBeEdited)}
           >Confirm Event</Button>

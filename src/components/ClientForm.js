@@ -42,10 +42,12 @@ export const ClientForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(startTime, endTime)
+    if (!(startTime || endTime)) {
+      return toast.error('Select Date and Time before Submission!!!')
+    }
     const enquiryInfo = { ...celebrityDetails, celebrity: celebrity, startTime: startTime, endTime: endTime }
-    console.log(enquiryInfo, "enquiryInfo");
     axiosInstance.post(`/enquiry`, enquiryInfo).then(res => {
-      toast.success(res?.message);
       setLoading(true);
     })
   };
@@ -193,7 +195,7 @@ export const ClientForm = () => {
                           value={startTime}
                           onChange={(newValue) => setStartTime(newValue?.$d)}
                           renderInput={(params) => (
-                            <TextField {...params} style={{ width: '12.5rem' }} helperText="From" />
+                            <TextField {...params} required style={{ width: '12.5rem' }} helperText="From" />
                           )}
                         />
                         <DateTimePicker
@@ -202,7 +204,7 @@ export const ClientForm = () => {
                           value={endTime}
                           onChange={(newValue) => setEndTime(newValue?.$d)}
                           renderInput={(params) => (
-                            <TextField {...params} style={{ width: '12.5rem' }} helperText="To" />
+                            <TextField {...params} required style={{ width: '12.5rem' }} helperText="To" />
                           )}
                         />
                       </div> : ""}

@@ -20,7 +20,7 @@ export default function SnackBar(props) {
 
   const getTitle = (event) => {
     let { status } = event;
-    return status === 'BLOCKED' ? `DATE HAS BEEN ${status}` : status === 'REJECTED' ? `THIS EVENT IS CANCELLED` : status === 'COMPLETED' ? `THIS EVENT IS ${status}` : `CAN'T BLOCK DATE`
+    return status === 'BLOCKED' ? `DATE HAS BEEN ${status}` : status === 'REJECTED' ? `THIS EVENT IS CANCELLED` : status === 'COMPLETED' ? `THIS EVENT IS ${status}` : ` EVENT IS AVAILABLE CAN'T BLOCK DATE`
   }
 
   return (

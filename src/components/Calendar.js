@@ -13,7 +13,7 @@ import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { BlockDatesModal, CalendarModal } from '../util/CalendarModal';
+import { BlockDatesModal, CalendarModal, UnBlockModal } from '../util/CalendarModal';
 import axiosInstance from '../util/Interceptor';
 import { WATCH } from '../util/Loader';
 import SnackBar from '../util/SnackBar';
@@ -34,6 +34,7 @@ const Calendar = () => {
   const [, setAllEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [blockDates, setBlockDates] = useState(null);
+  const [openUnBlockDate, setOpenUnBlockDate] = useState(false);
   const [blockedDates, setBlockedDates] = useState([]);
   const [loading,] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(null);
@@ -56,6 +57,9 @@ const Calendar = () => {
 
   const handleBlockDatesOpen = () => setOpenBlockDate(true);
   const handleBlockDatesClose = () => setOpenBlockDate(false);
+
+  const handleUnBlockDatesOpen = () => setOpenUnBlockDate(true);
+  const handleUnBlockDatesClose = () => setOpenUnBlockDate(false);
 
   const getBlockedDates = useCallback((celebrityId) => {
     axiosInstance.get(`/block-date/getByCelebrityId/${celebrityId}`).then(response => {
@@ -115,9 +119,9 @@ const Calendar = () => {
   const renderSidebar = () => {
     return (
       <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 15px 5px 15px' }}>
-        <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection:'column', alignItems: 'start', height: '30px' }}>
+        <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'start', height: '30px' }}>
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
-          <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between',paddingLeft:'1.5rem' }}>
+          <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingLeft: '1.5rem' }}>
             <li>Completed Events</li>
             <li>Pending Events</li>
             <li>Blocked Dates</li>
@@ -128,8 +132,8 @@ const Calendar = () => {
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <h2>{celebrity?.name}</h2>
           <ul>
-            <li>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events,currentMonth)}</span></li>
-            <li>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events,currentMonth)}</span></li>
+            <li>Completed Events in {currentMonth} : <span style={{ color: 'red' }}>{completedCount(events, currentMonth)}</span></li>
+            <li>Pending Events in {currentMonth} : <span style={{ color: '#0d6efd' }}>{getEventCount(events, currentMonth)}</span></li>
           </ul>
         </div>
       </div>
@@ -178,7 +182,7 @@ const Calendar = () => {
     axiosInstance.post(`/schedule/status/${scheduleId}`).then(() => {
       setOpen(false);
       toast.success("Event Cancelled");
-      getEvents(celebrity?.id);
+      getBlockedDates(celebrity?.id);
     })
   }
 
@@ -191,17 +195,25 @@ const Calendar = () => {
       if (infoDate === eventDate && infoMonth === eventMonth) {
         return event;
       }
-      return undefined
+      return null
     })
-    if (_.isEmpty(filter)) {
+    if (_.size(filter) > 0) {
+      const accFilter = _.filter(filter, fil => fil.status === 'ACCEPTED')
+      const rejFilter = _.filter(filter, fil => fil.status === 'REJECTED')
+      const blkFilter = _.filter(filter, fil => fil.status === 'BLOCKED')
+      if (accFilter.length > 0) {
+        setSnackInfo(accFilter)
+        setOpenSnack(true)
+      } if (rejFilter.length > 0 && accFilter.length === 0 && blkFilter.length === 0) {
+        setBlockDates(info)
+        setOpenBlockDate(true)
+      } if (blkFilter.length > 0 && accFilter.length === 0) {
+        setBlockDates(blkFilter)
+        setOpenUnBlockDate(true)
+      }
+    } else {
       setBlockDates(info)
       setOpenBlockDate(true)
-    } else if (filter[0]?.status === 'ACCEPTED') {
-      setSnackInfo(filter)
-      setOpenSnack(true)
-    } else {
-      setSnackInfo(filter)
-      setOpenSnack(true)
     }
   }
 
@@ -213,6 +225,14 @@ const Calendar = () => {
       getBlockedDates(celebrity?.id)
       setOpenBlockDate(false);
       toast.success(response?.message);
+    })
+  }
+
+  const handleUnBlockDate = (id) => {
+    axiosInstance.delete(`/block-date/delete-by-id/${id}`).then(response => {
+      getBlockedDates(celebrity?.id)
+      setOpenUnBlockDate(false);
+      toast.success(response?.message)
     })
   }
 
@@ -231,7 +251,7 @@ const Calendar = () => {
     const start = arg.event.toPlainObject();
     const startTime = moment(start.start).format('hh:mm');
     const status = start.extendedProps?.status
-    
+
     const getStyles = (status) => status === 'COMPLETED' ? 'event-display completed' : status === 'ACCEPTED' ? 'event-display accepted' : 'event-display blocked'
 
     return (
@@ -245,13 +265,13 @@ const Calendar = () => {
     );
   };
 
-  const getEventCount = (events,month) => {
+  const getEventCount = (events, month) => {
     const filtered = events?.filter((event) => moment(event.start).format("MMMM") === month);
     const showCount = filtered?.filter((fil) => fil?.status === "ACCEPTED");
     return showCount?.length;
   };
-  
-  const completedCount = (events,month) => {
+
+  const completedCount = (events, month) => {
     const filtered = events?.filter((event) => moment(event.start).format("MMMM") === month);
     const showCount = filtered?.filter((fil) => fil?.status === "COMPLETED");
     return showCount?.length;
@@ -262,7 +282,7 @@ const Calendar = () => {
       const newMonth = new Date(info.view.currentStart).toLocaleString('default', { month: 'long' });
       if (newMonth !== currentMonth) {
         setCurrentMonth(newMonth);
-        console.log(`Month changed to ${newMonth}`);
+        // console.log(`Month changed to ${newMonth}`);
       }
     }
   };
@@ -271,7 +291,7 @@ const Calendar = () => {
     <>
       {openSnack && <SnackBar open={openSnack} handleSnackOpen={handleSnackOpen} handleSnackClose={handleSnackClose} event={snackInfo} />}
       {loading ? WATCH :
-        <div style={{paddingTop: '60px'}}>
+        <div style={{ paddingTop: '60px' }}>
           {renderSidebar()}
           <FullCalendar
             headerToolbar={{
@@ -299,6 +319,7 @@ const Calendar = () => {
           />
           {open && selectedEvent.extendedProps.status === 'ACCEPTED' ? <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedEvent} handleCancelEvent={handleCancelEvent} /> : " "}
           {openBlockDate && <BlockDatesModal open={openBlockDate} handleClose={handleBlockDatesClose} handleOpen={handleBlockDatesOpen} handleBlockDate={handleBlockDate} blockDates={blockDates} />}
+          {openUnBlockDate && <UnBlockModal open={openUnBlockDate} handleClose={handleUnBlockDatesClose} handleOpen={handleUnBlockDatesOpen} unBlockDate={blockDates} handleUnBlockDate={handleUnBlockDate} />}
         </div>}
     </>
   )

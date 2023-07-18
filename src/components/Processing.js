@@ -61,8 +61,8 @@ export const Processing = () => {
       minWidth: 80,
       flex: 1,
       editable: false,
-      headerAlign: 'center',
-      align: 'center',
+      headerAlign: 'left',
+      align: 'left',
       valueGetter: (param) => param?.row?.enquiryDetails?.name,
     },
     {
@@ -73,8 +73,8 @@ export const Processing = () => {
       minWidth: 50,
       flex: 1,
       editable: false,
-      headerAlign: 'center',
-      align: 'center',
+      headerAlign: 'left',
+      align: 'left',
       valueGetter: (param) => param?.row?.enquiryDetails?.organizationName
     },
     {
@@ -85,7 +85,7 @@ export const Processing = () => {
       minWidth: 80,
       flex: 1,
       editable: false,
-      headerAlign: 'center',
+      headerAlign: 'left',
       align: 'left',
       valueGetter: (param) => param?.row?.enquiryDetails?.eventName
     },
@@ -98,7 +98,7 @@ export const Processing = () => {
       flex: 1,
       editable: false,
       valueGetter: (params) => params.row?.enquiryDetails?.celebrity ? params.row?.enquiryDetails?.celebrity?.name : "-",
-      headerAlign: 'center',
+      headerAlign: 'left',
       align: 'left'
     },
     {
