@@ -1,4 +1,4 @@
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { InputLabel, MenuItem, Select } from "@mui/material";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -19,11 +19,15 @@ export const AddCelebrityDetails = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const CelebrityDetails = location?.state 
+  const CelebrityDetails = location?.state
+
 
   const [celebrityDetails, setCelebrityDetails] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [image, setImage] = useState(null);
   const [value, setValue] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+
 
   const changeHandler = (e, key) => {
     // key === 'dateOfBirth' ? 
@@ -31,6 +35,18 @@ export const AddCelebrityDetails = () => {
     // :
     setCelebrityDetails((prev) => ({ ...prev, [e.target?.name]: e.target?.value, }));
   };
+
+  const handleChange = (event, key) => {
+    const selectedValue = event.target.value;
+    const selectedObject = categories.find((option) => option.value === selectedValue);
+    setCelebrityDetails((prevDetails) => ({
+      ...prevDetails,
+      categories: selectedObject,
+    }));
+  }
+
+
+
 
   useEffect(() => {
     if (CelebrityDetails) {
@@ -41,8 +57,16 @@ export const AddCelebrityDetails = () => {
       setValue(CelebrityDetails?.CelebrityDetails?.dateOfBirth)
       setCelebrityDetails(CelebrityDetails?.CelebrityDetails)
     }
+    getAllCategories();
+
   }, [CelebrityDetails])
 
+
+  const getAllCategories = () => {
+    axiosInstance.get(`/category/get-all-category`).then(res => {
+      setCategories(res);
+    })
+  }
   const changeImageHandler = (event) => {
     const file = event?.target?.files[0];
     if (file?.size <= 100000) {
@@ -70,7 +94,7 @@ export const AddCelebrityDetails = () => {
     <form className="container form-container" onSubmit={(e) => handleSubmit(e)} style={{ backgroundColor: "#f0f2f5", height: "100vh", marginTop: '1rem' }}>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
         <h2 style={{ textAlign: "center" }} >  {celebrityDetails?.id ? `Update ${celebrityDetails?.name}'s Details` : `Add Celebrity Details`}</h2>
-        <Button onClick={() => navigate("/celebrity-details")} title="Back" color="error"><ArrowBackIcon /></Button>
+        {/* <Button onClick={() => navigate("/celebrity-details")} title="Back" color="error"><ArrowBackIcon /></Button> */}
       </div>
       <div className="row">
         <div className="col">
@@ -174,17 +198,24 @@ export const AddCelebrityDetails = () => {
           </FormControl>
         </div>
       </div>
-      <div className="row" style={{ maxHeight: "98px" }}>
-        <div className="col">
-          <TextField
-            id="outlined-basic"
-            label="Profession"
-            variant="outlined"
-            name="profession"
-            value={celebrityDetails?.profession || ''}
-            onChange={(event) => changeHandler(event, 'profession')}
-            style={{ width: "400px" }}
-          />
+      <div className="row" style={{ width: '76.5%' }} >
+        <div className="col" >
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Categories</InputLabel>
+            <Select
+              value={celebrityDetails?.categories || []}
+              label="Categories"
+              name='categories'
+              multiple
+              onChange={(event) => changeHandler(event, 'categories')}
+            >
+              {(celebrityDetails?.categories || categories).map((cat) => (
+                <MenuItem key={cat.id} value={cat}>
+                  {cat.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
         <div className="col">
           <TextField
@@ -196,19 +227,19 @@ export const AddCelebrityDetails = () => {
             onChange={(event) => changeHandler(event, 'description')}
             multiline
             maxRows={4}
-          />
+          />  
         </div>
       </div>
 
       <div className="row">
-        <div className='col' style={{ display: 'flex', width:'400px'}}>
+        <div className='col' style={{ display: 'flex', width: '400px' }}>
           {celebrityDetails?.base64Image ? <img src={`data:image/jpeg/png;base64,${celebrityDetails?.base64Image}`} alt={celebrityDetails?.name} width='100px' height='100px'></img> : null}
-          <div style={{paddingLeft: '1rem'}}>
+          <div style={{ paddingLeft: '1rem' }}>
             <label style={{ width: '140px' }}>{celebrityDetails?.image ? 'Update Image' : 'Upload Image'}</label>
             <input type='file' name='img' accept='.jpeg, .jpg, .png' onChange={(event) => changeImageHandler(event)} ></input>
           </div>
         </div>
-        <div className="col" style={{ width:'400px'}}>
+        <div className="col" style={{ width: '400px' }}>
           <FormControl >
             <FormLabel id="demo-row-radio-buttons-group-label">
               status

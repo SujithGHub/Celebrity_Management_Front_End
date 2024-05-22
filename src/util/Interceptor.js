@@ -1,5 +1,4 @@
 import axios from "axios";
-import { errorHandler } from "./Api";
 import { REST_API } from "./EndPoints";
 
 const axiosInstance = axios.create({
@@ -22,8 +21,6 @@ axiosInstance.interceptors.request.use(
     });
 
 axiosInstance.interceptors.response.use((response) => response.data, (error) => {
-    console.log(error)
-    errorHandler(error)
     return Promise.reject(error)
 })
 

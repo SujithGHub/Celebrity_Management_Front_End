@@ -7,6 +7,7 @@ import moment from 'moment';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../util/Api';
 import EnquiryModal from '../util/EnquiryDetailsModal';
 import axiosInstance from '../util/Interceptor';
 import StatusDropDown from '../util/StatusDropDown';
@@ -20,7 +21,7 @@ export default function EnquiryDetails() {
   const [celebrity, setCelebrity] = useState([]);
   const [accepted, setAccepted] = useState(false);
   const [rejected, setRejected] = useState(false);
-  const [, setPending] = useState(false);
+  const [pending, setPending] = useState(true);
   const [acceptedEnquiry, setAcceptedEnquiry] = useState([]);
   const [rejectedEnquiry, setRejectedEnquiry] = useState([]);
   const [pendingEnquiry, setPendingEnquiry] = useState([]);
@@ -63,10 +64,15 @@ export default function EnquiryDetails() {
   }
 
   const columns = [
-    { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
+    { field: 'enquiryNo', headerName: 'Enquiry', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 40,maxWidth:100 },
+    { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 70, valueGetter: (params) => {
+     let celebrityName = params.row.celebrityIds
+     return celebrityName?celebrityName.map(name=>name.name):'-'
+
+     ;}},
     { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
     { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 110, },
-    { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 70, valueGetter: (params) => params.row.celebrity ? params.row.celebrity?.name : '-', },
+    { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
     { field: 'startTime', headerName: 'Start', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.startTime).format('LLL') },
     { field: 'endTime', headerName: 'End', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.endTime).format('LLL')},
     {
@@ -103,7 +109,7 @@ export default function EnquiryDetails() {
       field: 'save',
       headerName: editable ? 'Save' : 'Edit',
       headerClassName: 'super-app-theme--header',
-      hide: accepted || rejected,
+      hide: pending,
       flex: 1, maxWidth: 80,
       align: 'center',
       headerAlign: 'center',
@@ -125,7 +131,7 @@ export default function EnquiryDetails() {
       axiosInstance.post(`/enquiry/status`, schedule).then(() => {
         setOpen(false);
         getAllEnquiry();
-        toast.success(key === 'ACCEPTED' ? "Enquiry Accepted and Email Sent Successfully" : "Enquiry Rejected ");
+        toast.success(key === 'ACCEPTED'? "Enquiry Accepted and Email Sent Successfully" : "Enquiry Rejected ");
         setEditable(false);
       })
     } else {
@@ -147,11 +153,11 @@ export default function EnquiryDetails() {
       setAcceptedEnquiry(enquiry.filter(en => en.status === "ACCEPTED"));
       setRejectedEnquiry(enquiry.filter(en => en.status === "REJECTED"));
       setPendingEnquiry(enquiry.filter(en => en.status === 'PENDING'));
-    })
+    }).catch(err => errorHandler(err))
   }
 
   return (
-    <Box sx={{ height: 400, width: '100%', paddingTop: '70px'}}>
+    <Box sx={{ height: 400, width: '100%'}}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* <Button className='primary' onClick={() => navigate('/processing')}>Schedule List</Button> */}
       </div>
@@ -167,7 +173,7 @@ export default function EnquiryDetails() {
         disableColumnMenu
         disableColumnSelector
         pageSize={pageSize}
-        sortModel={[{field: "startTime", sort:'asc'}]}
+        sortModel={[{field: "enquiryNo", sort:'desc'}]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         rowsPerPageOptions={[5, 10, 20]}
         disableSelectionOnClick

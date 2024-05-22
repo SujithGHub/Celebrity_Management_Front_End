@@ -1,5 +1,4 @@
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import axios from "axios";
 import moment from "moment";
@@ -163,9 +162,9 @@ export const Processing = () => {
     },
   ];
   return (
-    <div style={{paddingTop: '70px'}}>
+    <div>
       <div className="processing-header">
-        <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button>
+        {/* <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button> */}
         <h2>{completed ? 'COMPLETED EVENTS' : 'UPCOMING EVENTS'}</h2>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {/* <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button> */}
@@ -173,6 +172,8 @@ export const Processing = () => {
         </div>
       </div>
       <Box sx={{ height: 400, width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      </div>
         <DataGrid
           rows={(completed ? completedEvents : availableEvents)}
           columns={columns}

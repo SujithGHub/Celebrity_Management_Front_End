@@ -1,15 +1,14 @@
-import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, InputAdornment, TextField, Tooltip } from "@mui/material";
 import Box from '@mui/material/Box';
 import CardMedia from "@mui/material/CardMedia";
 import Grid from '@mui/material/Grid';
-import _ from "lodash";
+import _ from 'lodash';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import Logo from '../assets/Google-Calendar-icon.png';
+import '../css/Admin.css';
 import axiosInstance from "../util/Interceptor";
 import { CIRCLE_WITH_BAR } from '../util/Loader';
 import StatusDropDown from '../util/StatusDropDown';
@@ -19,7 +18,7 @@ const CelebrityDetails = () => {
   const [filter, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [, setCelebrity] = useState([]);
+  const [celebrity, setCelebrity] = useState([]);
   const [activeCelebrity, setActiveCelebrity] = useState([]);
   const [inactiveCelebrity, setInactiveCelebrity] = useState([]);
   const [active, setActive] = useState(true);
@@ -37,8 +36,9 @@ const CelebrityDetails = () => {
 
   const getAllCelebrity = () => {
     setLoading(true)
+    setSearch("")
     axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
-      let result = _.orderBy(res, 'name')
+      let result = _.orderBy(res, 'name') 
       setCelebrity(result);
       let activeFilter = _.filter(result, (res => res.status === "ACTIVE"))
       setActiveCelebrity(activeFilter)
@@ -47,6 +47,19 @@ const CelebrityDetails = () => {
       setFilter(activeFilter);
       setLoading(false);
     })
+  }
+  const getByCategory = (e) =>{
+    setSearch(e.target.value)
+    setLoading(true)
+     axiosInstance.get(`/celebrity/search/${e.target.value===null ? " ":e.target.value}`).then(res=>{
+      setCelebrity(res);
+      let activeFilter = _.filter(res, (res => res.status === "ACTIVE"))
+      setActiveCelebrity(activeFilter)
+      let inactiveFilter = _.filter(res, (res => res.status === "INACTIVE"))
+      setInactiveCelebrity(inactiveFilter)
+      setFilter(activeFilter);
+      setLoading(false);
+     })
   }
 
   const filterHandler = (e, active) => {
@@ -86,16 +99,16 @@ const CelebrityDetails = () => {
 
   return (
     <>
-      <div style={{ paddingTop: '70px' }}>
+      <div>
         <header className={token ? 'private-header' : 'header'}>
           {token ? <div style={{ display: "flex", width: '15rem', paddingLeft: '1.5rem' }}>
-            <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon /></Button>
+            {/* <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon /></Button> */}
           </div> : ""}
           <div >
             <TextField
               id="filled-search"
               className="text"
-              onChange={(e) => filterHandler(e, active)}
+              onChange={(e)=>e.target.value===""? getAllCelebrity():getByCategory(e)}
               value={search}
               type="search"
               variant="outlined"
@@ -114,7 +127,7 @@ const CelebrityDetails = () => {
             />
           </div>
           {token === null ? "" : <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
-            <Button className="primary" style={{ backgroundColor: '#f5821f' }} variant="contained" title="Add celebrity" onClick={() => navigate('/add-celebrity-details')}><AddIcon /></Button>
+            {/* <Button className="primary" style={{ backgroundColor: '#f5821f' }} variant="contained" title="Add celebrity" onClick={() => navigate('/add-celebrity-details')}><AddIcon /></Button> */}
             <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
           </div>}
         </header>
