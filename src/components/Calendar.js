@@ -113,7 +113,8 @@ const Calendar = () => {
   }, [c?.id])
 
   useEffect(() => {
-    getEvents(c?.id)
+    c?.id && getEvents(c?.id)
+    // eslint-disable-next-line
   }, [blockedDates])
 
   const renderSidebar = () => {
@@ -186,6 +187,7 @@ const Calendar = () => {
     })
   }
 
+  // function for Not allowing user to block date if an event is available;
   const handleDateClick = (info) => {
     const infoDate = new Date(info.start).getDate();
     const infoMonth = new Date(info.start).getMonth();
