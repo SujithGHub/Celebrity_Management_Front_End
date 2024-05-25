@@ -22,27 +22,27 @@ const style = {
   borderRadius: '15px',
 };
 
-export default function BasicModal(props) {
+function BasicModal(props) {
 
   const [eventToBeEdited, setEventToBeEdited] = useState(props?.eventInfo);
   const [celebrity,] = useState(props?.celebrity);
-  const [selectedCelebrity, setSelectedCelebrity] = useState(props?.eventInfo?.celebrity);
+  const [selectedCelebrity, setSelectedCelebrity] = useState(props?.eventInfo?.celebrityIds);
   const [fromDateError, setFromDateError] = useState(false);
   const [toDateError, setToDateError] = useState(false);
-
+  
   React.useEffect(() => {
-
-  }, [props])
+    setEventToBeEdited(props?.eventInfo);
+    setSelectedCelebrity(props?.eventInfo?.celebrityIds);
+  }, [props?.eventInfo]);
 
   const onChangeHandler = (event) => {
-    setEventToBeEdited({
-      ...eventToBeEdited, [event.target.name]: event.target.value
-    })
+    setEventToBeEdited({ ...eventToBeEdited, [event.target.name]: event.target.value, });
   }
 
   const changeCelebrity = (value) => {
-    setSelectedCelebrity(value);
+    console.log(value, "value")
     setEventToBeEdited({ ...eventToBeEdited, celebrity: value })
+    console.log(eventToBeEdited, "Updated")
   }
 
   const checkDateError = (date, type) => {
@@ -77,6 +77,29 @@ export default function BasicModal(props) {
       ...eventToBeEdited, endTime: new Date(value?.$d).getTime()
     })
   }
+
+  const getCelebrityOptions = () => {
+    const {
+      status,
+      celebrityIds: celebrityIds,
+    } = props?.eventInfo;
+    if (status === "PENDING" || status === "REJECTED") {
+      return celebrityIds;
+    } else {
+      return props.celebrity;
+    }
+  };
+
+  const getCelebrityValue = () => {
+    const { celebrityIds, status } = props?.eventInfo;
+    if (celebrityIds.length > 1) {
+      if (status === "REJECTED" || status === "PENDING") {
+        return eventToBeEdited?.celebrity;
+      }
+    } else {
+      return celebrityIds[0];
+    }
+  };
 
   return (
     <Modal
@@ -151,11 +174,11 @@ export default function BasicModal(props) {
             <div className='col'>
               <TextField
                 variant='standard'
-                name='location'
+                name='venue'
                 style={{ width: '90%' }}
-                placeholder='Event Location'
-                helperText="Event Location"
-                value={eventToBeEdited?.location}
+                placeholder='Event Venue'
+                helperText="Event Venue"
+                value={eventToBeEdited?.venue}
                 inputProps={
                   { readOnly: true }
                 }
@@ -226,10 +249,9 @@ export default function BasicModal(props) {
                 getOptionLabel={(option) => option.name || ""}
                 id="combo-box-demo"
                 variant="standard"
-                options={celebrity}
-                value={selectedCelebrity || celebrity}
+                options={getCelebrityOptions()}
+                value={getCelebrityValue()}
                 required
-                defaultValue={selectedCelebrity}
                 isOptionEqualToValue={(option, value) => option?.id === value?.id}
                 name="celebrity"
                 placeholder='Celebrity Name'
@@ -240,12 +262,16 @@ export default function BasicModal(props) {
             <div className='col'>
             </div>
           </div>
-          <Button className='primary' variant='contained' disabled={(fromDateError || toDateError)}
+          <Button className='primary' style={{marginRight: '1rem'}} variant='contained' disabled={(fromDateError || toDateError || props?.eventInfo?.status === "ACCEPTED")}
             onClick={(event) => props.submitHandler(event, eventToBeEdited, "ACCEPTED")}
-          // onClick={() => submit(eventToBeEdited)}
-          >Confirm Event</Button>
+          >Accept</Button>
+          <Button className='error' color='error' variant='contained' disabled={props?.eventInfo?.status === "REJECTED"}
+            onClick={(event) => props.submitHandler(event, eventToBeEdited, "REJECTED")}
+          >Reject</Button>
         </>
       </Box>
     </Modal>
   );
 }
+
+export default React.memo(BasicModal);

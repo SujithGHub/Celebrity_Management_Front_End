@@ -12,6 +12,7 @@ import '../css/Admin.css';
 import axiosInstance from "../util/Interceptor";
 import { CIRCLE_WITH_BAR } from '../util/Loader';
 import StatusDropDown from '../util/StatusDropDown';
+import { REST_API } from '../util/EndPoints';
 
 const CelebrityDetails = () => {
   const navigate = useNavigate()
@@ -134,34 +135,34 @@ const CelebrityDetails = () => {
     {loading ? CIRCLE_WITH_BAR :
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={{ xs: 2 }}>
-            {getActive().map((celebrityItem, index) => (
+            {getActive()?.map((celebrityItem, index) => (
               <Grid item xs={12} xl={3} sm={6} md={4} lg={3} key={index}>
                 <div className="celebrity-card">
-                  <div className="flip-card" key={celebrityItem?.id}>
+                  <div className="flip-card" key={celebrityItem.id}>
                     <div className="flip-card-inner">
                       <div className="flip-card-front">
                         <CardMedia
                           component="img"
-                          src={`data:image/jpeg/png;base64,${celebrityItem?.base64Image}`}
+                          src={celebrityItem.image.replace('/api',`${REST_API}`)}
                           style={{ borderRadius: '2rem 0 2rem 0', width: '270px', height: '397px' }}
-                          alt={celebrityItem?.name}
+                          alt={celebrityItem.name}
                         />
                       </div>
                       <div className="flip-card-back">
                         <div className="celebrity-info-container">
-                          <h6><span>DOB</span>: {moment(celebrityItem?.dateOfBirth).format('DD/MM/YYYY')}</h6>
-                          <h6><span>Gender</span>: {celebrityItem?.gender?.toUpperCase()}</h6>
+                          <h6><span>DOB</span>: {moment(celebrityItem.dateOfBirth).format('DD/MM/YYYY')}</h6>
+                          <h6><span>Gender</span>: {celebrityItem.gender?.toUpperCase()}</h6>
                           {token ? <>
                             <div className="scroll">
-                              <h6><span>Email</span>: {celebrityItem?.mailId}</h6>
+                              <h6><span>Email</span>: {celebrityItem.mailId}</h6>
                             </div>
-                            <h6><span>Mobile</span>: {celebrityItem?.phoneNumber}</h6>
+                            <h6><span>Mobile</span>: {celebrityItem.phoneNumber}</h6>
                             <div className="scroll card-address">
-                              <h6><span>Address</span>: {celebrityItem?.address}</h6>
+                              <h6><span>Address</span>: {celebrityItem.address}</h6>
                             </div></> : ""}
                           <h5 className="description-header">Description:</h5>
                           <div className={token ? 'scroll description-content1' : 'scroll description-content2'}>
-                            <p>{celebrityItem?.description}</p>
+                            <p>{celebrityItem.description}</p>
                           </div>
                         </div>
                       </div>

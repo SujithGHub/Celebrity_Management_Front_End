@@ -3,6 +3,7 @@ import { Button, Tooltip } from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { REST_API } from '../util/EndPoints';
 
 function CelebrityProfile() {
 
@@ -30,7 +31,7 @@ function CelebrityProfile() {
       <div style={{display: 'flex', flexDirection:'row', justifyContent: 'flex-start', marginBottom: '5px'}}>
         <Button onClick={() => navigate("/celebrity-details")} color='error' title="Back"><ArrowBackIcon /></Button>
         </div>
-        <img width={350} height={500} alt={celebrity?.name} src={`data:image/jpeg/png;base64,${celebrity?.base64Image}`}></img>
+        <img width={350} height={500} alt={celebrity?.name} src={celebrity?.image.replace('/api',`${REST_API}`)}></img>
       </div>
       <div className='table-body'>
         <div className='profile-edit'>

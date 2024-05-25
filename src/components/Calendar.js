@@ -293,7 +293,7 @@ const Calendar = () => {
     <>
       {openSnack && <SnackBar open={openSnack} handleSnackOpen={handleSnackOpen} handleSnackClose={handleSnackClose} event={snackInfo} />}
       {loading ? WATCH :
-        <div style={{ paddingTop: '60px' }}>
+        <div>
           {renderSidebar()}
           <FullCalendar
             headerToolbar={{

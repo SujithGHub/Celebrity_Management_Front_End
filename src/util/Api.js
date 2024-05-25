@@ -33,7 +33,7 @@ export const errorHandler = (error) => {
     case 400:
     case 404:
     case 422:
-    case 500: toast.error(error.response?.data?.message || "something went wrong");
+    case 500: toast.error(error.response?.data?.message || "Something went wrong");
       break;
     default: toast("Oops!!! Something went wrong")
   }

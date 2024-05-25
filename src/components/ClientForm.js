@@ -11,6 +11,7 @@ export const ClientForm = () => {
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [wait, setWait] = useState(false);
 
   useEffect(() => {
     getAllCelebrity();
@@ -44,14 +45,17 @@ export const ClientForm = () => {
 
   const getAllCelebrity = () => {
     axiosInstance.get(`/celebrity/get-all-celebrity`).then((res) => {
-      setCelebrities(res);
+      const activeCelebrities = res.filter(celebrity => celebrity.status === "ACTIVE")
+      setCelebrities(activeCelebrities);
     })
   }
 
   const handleSubmit = (e) => {
+    setWait(true)
     e.preventDefault();
     axiosInstance.post(`/enquiry`, celebrityDetails).then(res => {
       setLoading(true);
+      setWait(false)
     })
   };
 
@@ -75,6 +79,7 @@ export const ClientForm = () => {
                   topics={topics}
                   selectedTopics={selectedTopics}
                   categories={categories}
+                  wait={wait}
               />
             <div style={{margin: 'auto', width: '70%', paddingTop: '2rem'}}>
             </div>

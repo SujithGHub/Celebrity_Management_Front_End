@@ -38,7 +38,7 @@ export const AdminLogin = () => {
         position: toast.POSITION.TOP_RIGHT
       });
       navigate("/enquiry-details")
-    })};
+    }).catch(err => {})};
 
   return (
     <div className="admin-login">

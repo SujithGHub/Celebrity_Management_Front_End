@@ -24,7 +24,8 @@ export const StepperForm = ({
   selectedCelebrities,
   topics,
   selectedTopics,
-  categories
+  categories,
+  wait
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
@@ -419,7 +420,7 @@ export const StepperForm = ({
               </Button>
             )} */}
 
-              <Button
+              <Button disabled={wait}
                 onClick={
                   activeStep === steps.length - 1 ? handleSubmit : handleNext
                 }

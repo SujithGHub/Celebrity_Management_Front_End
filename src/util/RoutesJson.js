@@ -4,6 +4,8 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import PanoramaIcon from '@mui/icons-material/Panorama';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import TopicIcon from '@mui/icons-material/Topic';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
 export const Routes = {
     "Enquiry Details": {
       URL: '/enquiry-details',
@@ -20,12 +22,19 @@ export const Routes = {
     "Admin": {
         icon: <AdminPanelSettingsIcon sx={{margin:'10px'}}/>,
         "submenu": {
-          "Add Celebrity": {
+          "Add Celebrity": 
+          {
             "URL": "/add-celebrity-details",
             "icon": <PersonAddIcon sx={{margin:'10px'}}/>
-          },"Add Topics": {
+          },
+          "Topics / Categories": 
+          {
             "URL": "/topics",
             "icon": <TopicIcon sx={{margin:'10px'}}/>
+          },
+          "Calendar" : {
+            "URL" : '/admin-calendar',
+            "icon" : <CalendarMonthIcon sx={{margin:'10px'}}/>
           }
         }
       }

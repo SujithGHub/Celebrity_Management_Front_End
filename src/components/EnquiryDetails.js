@@ -66,15 +66,19 @@ export default function EnquiryDetails() {
   const columns = [
     { field: 'enquiryNo', headerName: 'Enquiry', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 40,maxWidth:100 },
     { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 70, valueGetter: (params) => {
-     let celebrityName = params.row.celebrityIds
-     return celebrityName?celebrityName.map(name=>name.name):'-'
-
-     ;}},
+          let celebrityName = params.row.celebrityIds
+          return celebrityName?celebrityName.map(name=>name.name):'-'}},
     { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
-    { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 110, },
+    { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 110, valueGetter: (row) => {
+      return row?.row?.eventName ? row?.row?.eventName : "-"
+    } },
     { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
-    { field: 'startTime', headerName: 'Start', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.startTime).format('LLL') },
-    { field: 'endTime', headerName: 'End', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => moment(row.row?.endTime).format('LLL')},
+    { field: 'startTime', headerName: 'Start', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => {
+      return row.row?.startTime ? moment(row.row?.startTime).format('LLL') : "No Date"
+    }},
+    { field: 'endTime', headerName: 'End', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => {
+      return row.row?.endTime ? moment(row.row?.endTime).format('LLL') : "No Date"
+    }},
     {
       field: 'action', headerName: 'Action',headerClassName: 'super-app-theme--header', flex: 1, minWidth: 200, align: 'center', headerAlign: 'center',
       renderCell: (row) => {
@@ -94,12 +98,10 @@ export default function EnquiryDetails() {
         } else {
           return (
             <>
-              <Button onClick={() => handleEventSave(row)}>
-                {editable ? 'InProgress' : 'Process'}
-              </Button>
-              <Button color='error' onClick={(event) => handleEventSubmit(event, row?.row, 'REJECTED')}>
+              <Button onClick={() => handleEventSave(row)}>Process</Button>
+              {/* <Button color='error' onClick={(event) => handleEventSubmit(event, row?.row, 'REJECTED')}>
                 Cancel
-              </Button>
+              </Button> */}
             </>
           )
         }
@@ -125,19 +127,26 @@ export default function EnquiryDetails() {
 
   const handleEventSubmit = (event, row, key) => {
     event.preventDefault();
-    if (!_.isEmpty(row?.celebrity)) {
-      const acceptedSchedule = { ...row, status: key }
-      const schedule = { enquiryDetails: acceptedSchedule }
-      axiosInstance.post(`/enquiry/status`, schedule).then(() => {
-        setOpen(false);
-        getAllEnquiry();
-        toast.success(key === 'ACCEPTED'? "Enquiry Accepted and Email Sent Successfully" : "Enquiry Rejected ");
-        setEditable(false);
-      })
-    } else {
-      toast.error("Select Celebrity")
+    if (key === "ACCEPTED") {
+      if (row?.celebrityIds.length === 1) {
+        row = {...row, celebrity : row.celebrityIds[0]}
     }
   }
+  if (_.isEmpty(row?.celebrity)) {
+    toast.error("Select Celebrity");
+    return
+  }
+    const acceptedSchedule = { ...row, status: key };
+    const schedule = { enquiryDetails: acceptedSchedule };
+    // axiosInstance.post(`/enquiry/status`, schedule).then(() => {
+    //   setOpen(false);
+    //   getAllEnquiry();
+    //   toast.success(key === "ACCEPTED" ? "Enquiry Accepted and Email Sent Successfully" : "Event Rejected Successfully");
+    //   setEditable(false);
+    // }).catch(err => {
+    //   // toast.error(err?.response?.data?.message)
+    // });
+  };
 
   const getAllCelebrity = async () => {
     await axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
@@ -158,10 +167,7 @@ export default function EnquiryDetails() {
 
   return (
     <Box sx={{ height: 400, width: '100%'}}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* <Button className='primary' onClick={() => navigate('/processing')}>Schedule List</Button> */}
-      </div>
-      <div style={{ textAlign: 'end', padding: '10px' }} >
+      <div style={{ textAlign: 'end', padding: '10px', paddingRight: 0 }} >
         <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')} />
       </div>
       <DataGrid

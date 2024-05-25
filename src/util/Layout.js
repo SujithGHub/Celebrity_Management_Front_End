@@ -155,6 +155,8 @@ export default function Layout() {
                             to={subRoute.URL}
                             sx={{
                               pl: 4,
+                              pt: 0,
+                              pb: 0,
                               backgroundColor: location.pathname === subRoute.URL ? 'rgb(245, 130, 31)' : '',
                               color: location.pathname === subRoute.URL ? 'white' : 'black'
                             }}
@@ -194,7 +196,7 @@ export default function Layout() {
           onClick={handleDrawerClose}
         />
       )}
-      <Main open={open}>
+      <Main open={false}>
         <DrawerHeader />
         <Outlet />
       </Main>

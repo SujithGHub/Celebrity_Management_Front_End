@@ -50,8 +50,20 @@ export const Processing = () => {
       console.log(error);
     })
   }
-
+  
   const columns = [
+    {
+      field: 'scheduleNo',
+      headerName: 'Schedule',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
+      minWidth: 80,
+      flex: 1,
+      editable: false,
+      headerAlign: 'left',
+      align: 'left',
+      valueGetter: (param) => param?.row?.scheduleNo,
+    },
     {
       field: 'name',
       headerName: 'Organizer Name',
@@ -81,7 +93,7 @@ export const Processing = () => {
       headerName: 'EventName',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 80,
+      minWidth: 120,
       flex: 1,
       editable: false,
       headerAlign: 'left',
@@ -101,16 +113,16 @@ export const Processing = () => {
       align: 'left'
     },
     {
-      field: 'location',
-      headerName: 'Event place',
+      field: 'venue',
+      headerName: 'Event Venue',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 180,
+      minWidth: 120,
       flex: 1,
       editable: false,
       headerAlign: 'center',
-      align: 'left',
-      valueGetter: (param) => param?.row?.enquiryDetails?.location
+      align: 'center',
+      valueGetter: (param) => param?.row?.enquiryDetails?.venue
     },
     {
       field: 'startTime',
