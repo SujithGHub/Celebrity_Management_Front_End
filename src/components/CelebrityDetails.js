@@ -12,7 +12,7 @@ import '../css/Admin.css';
 import axiosInstance from "../util/Interceptor";
 import { CIRCLE_WITH_BAR } from '../util/Loader';
 import StatusDropDown from '../util/StatusDropDown';
-import { REST_API } from '../util/EndPoints';
+import { getImagePath } from '../util/Validation';
 
 const CelebrityDetails = () => {
   const navigate = useNavigate()
@@ -143,7 +143,7 @@ const CelebrityDetails = () => {
                       <div className="flip-card-front">
                         <CardMedia
                           component="img"
-                          src={celebrityItem.image.replace('/api',`${REST_API}`)}
+                          src={getImagePath(celebrityItem.image)}
                           style={{ borderRadius: '2rem 0 2rem 0', width: '270px', height: '397px' }}
                           alt={celebrityItem.name}
                         />

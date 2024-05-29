@@ -1,3 +1,5 @@
+import { REST_API } from "./EndPoints";
+
 export const isEmpty = value => value === undefined || value === null || value === '' || value.length === 0;
 
 export const isValidName = (name) => {
@@ -45,4 +47,10 @@ export function isRoleValidation() {
         return role;
     }
     return payload.role;
+}
+
+export function getImagePath (imagePath)  {
+    
+    let imgSrc =  imagePath.replace('/api',`${REST_API}`)
+    return `${imgSrc}?t=${new Date().getTime()}`
 }
