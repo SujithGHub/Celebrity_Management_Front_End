@@ -83,7 +83,7 @@ export function CalendarModal(props) {
               <span><b>Organizer Name</b>: {props.event?.extendedProps?.organizerName}</span><br />
               <span><b>Phone Number</b>: {props.event?.extendedProps?.phoneNumber}</span><br />
               <span><b>Organization Name</b>: {props.event?.extendedProps?.organizationName}</span><br />
-              <span><b>Event Location</b>: {props.event?.extendedProps?.location}</span><br />
+              <span><b>Event Venue</b>: {props.event?.extendedProps?.venue}</span><br />
               <span><b>Start Time</b>: {moment(props.event?.start).format('LLL')}</span><br />
               <span><b>End Time</b>: {moment(props.event?.end).format('LLL')}</span><br />
             </Typography>

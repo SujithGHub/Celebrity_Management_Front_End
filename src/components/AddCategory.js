@@ -20,22 +20,26 @@ function AddCategory() {
     setAdd(row?.row ? false : true);
     setOpen(true);
   };
+  
   useEffect(() => {
     getAllCategories();
   }, []);
+
   const getAllCategories = () => {
     axiosInstance.get(`/category/get-all-category`).then((res) => {
       setCategory(res);
       console.log(res, "category");
     });
   };
+
   const AddCategory = () => {
-    selectedCategory?axiosInstance.post(`/category/add`, selectedCategory).then((res) => {
+    selectedCategory ? axiosInstance.post(`/category/add`, selectedCategory).then((res) => {
       setAddCategory(res);
       getAllCategories();
       setOpen(false);
-    }):toast.error("This Field is Empty!!!!")
+    }).catch((err)=>{}):toast.error("This Field is Empty!!!!")
   };
+
   const DeleteCategory = (e, id) => {
     console.log(id,"id");
     axiosInstance.delete(`/category/remove/${id}`).then((res) => {
@@ -43,12 +47,14 @@ function AddCategory() {
       getAllCategories();
     });
   };
+
   const changeHandler = (e) => {
     setSelectedCategories((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
+  
   const columns = [
     {
       field: "id",

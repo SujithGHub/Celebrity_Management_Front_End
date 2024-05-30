@@ -57,8 +57,8 @@ export const AddCelebrityDetails = () => {
       setValue(CelebrityDetails?.CelebrityDetails?.dateOfBirth)
       setCelebrityDetails(CelebrityDetails?.CelebrityDetails)
     }
+    setCelebrityDetails((prev)=> ({...prev, status : 'ACTIVE'}))
     getAllCategories();
-
   }, [CelebrityDetails])
 
 

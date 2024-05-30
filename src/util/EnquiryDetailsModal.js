@@ -79,19 +79,21 @@ function BasicModal(props) {
   }
 
   const getCelebrityOptions = () => {
-    const {
-      status,
-      celebrityIds: celebrityIds,
-    } = props?.eventInfo;
+    const { status, celebrityIds, celebrity } = props?.eventInfo;
+  
     if (status === "PENDING" || status === "REJECTED") {
       return celebrityIds;
     } else {
-      return props.celebrity;
+      return celebrity ? [celebrity] : [];
     }
   };
+  
 
   const getCelebrityValue = () => {
     const { celebrityIds, status } = props?.eventInfo;
+    if( props?.eventInfo?.celebrity){
+      return props?.eventInfo?.celebrity
+    }
     if (celebrityIds.length > 1) {
       if (status === "REJECTED" || status === "PENDING") {
         return eventToBeEdited?.celebrity;

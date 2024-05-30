@@ -27,7 +27,7 @@ export const Routes = {
             "URL": "/add-celebrity-details",
             "icon": <PersonAddIcon sx={{margin:'10px'}}/>
           },
-          "Topics / Categories": 
+          "Topics/Categories": 
           {
             "URL": "/topics",
             "icon": <TopicIcon sx={{margin:'10px'}}/>

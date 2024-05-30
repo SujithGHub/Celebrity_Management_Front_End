@@ -33,14 +33,16 @@ function AddTopics(category) {
       console.log(res, "topics");
     });
   };
+
   const setAllTopics = () => {
     selectedTopic?axiosInstance.post(`/topics/add`, selectedTopic).then((res) => {
       toast.success("Topic added Successfully");
       setPostTopic(res);
       setOpen(false);
       getAllTopics();
-    }):toast.error("This Field is Empty")
+    }).catch((err)=>{}):toast.error("This Field is Empty")
   };
+
   const deletehandler = (e, id) => {
     console.log(id,"id");
     axiosInstance.delete(`/topics/remove/${id}`).then((res) => {

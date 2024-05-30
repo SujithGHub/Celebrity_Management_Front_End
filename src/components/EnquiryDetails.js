@@ -66,8 +66,8 @@ export default function EnquiryDetails() {
   const columns = [
     { field: 'enquiryNo', headerName: 'Enquiry', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 40,maxWidth:100 },
     { field: 'celebrityName', headerName: 'Celebrity Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 70, valueGetter: (params) => {
-          let celebrityName = params.row.celebrityIds
-          return celebrityName?celebrityName.map(name=>name.name):'-'}},
+          let celebrityName = params.row?.celebrityIds
+          return params.row?.celebrity ?params.row?.celebrity.name:  celebrityName?celebrityName.map(name=>name.name):'-'}},
     { field: 'organizationName', headerName: 'Organization', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
     { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 110, valueGetter: (row) => {
       return row?.row?.eventName ? row?.row?.eventName : "-"
@@ -138,14 +138,14 @@ export default function EnquiryDetails() {
   }
     const acceptedSchedule = { ...row, status: key };
     const schedule = { enquiryDetails: acceptedSchedule };
-    // axiosInstance.post(`/enquiry/status`, schedule).then(() => {
-    //   setOpen(false);
-    //   getAllEnquiry();
-    //   toast.success(key === "ACCEPTED" ? "Enquiry Accepted and Email Sent Successfully" : "Event Rejected Successfully");
-    //   setEditable(false);
-    // }).catch(err => {
-    //   // toast.error(err?.response?.data?.message)
-    // });
+    axiosInstance.post(`/enquiry/status`, schedule).then(() => {
+      setOpen(false);
+      getAllEnquiry();
+      toast.success(key === "ACCEPTED" ? "Enquiry Accepted and Email Sent Successfully" : "Event Rejected Successfully");
+      setEditable(false);
+    }).catch(err => {
+      // toast.error(err?.response?.data?.message)
+    });
   };
 
   const getAllCelebrity = async () => {

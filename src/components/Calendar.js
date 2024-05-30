@@ -3,6 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Button } from '@mui/material';
 import { Tooltip } from 'bootstrap';
@@ -94,7 +95,7 @@ const Calendar = () => {
         title: getEventTitle(event),
         start: getEventStart(event),
         end: getEventEnd(event),
-        location: event.enquiryDetails ? event.enquiryDetails?.location : 'un_available',
+        venue: event.enquiryDetails ? event.enquiryDetails?.venue : 'un_available',
         phoneNumber: event.enquiryDetails ? event.enquiryDetails?.phoneNumber : 'un_available',
         organizerName: event.enquiryDetails ? event.enquiryDetails?.name : 'un_available',
         organizationName: event.enquiryDetails ? event.enquiryDetails?.organizationName : 'un_available',
@@ -299,13 +300,20 @@ const Calendar = () => {
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            }}
+            buttonText = {{
+              today : "Today",
+              month : "Month",
+              day : "Day",
+              week : "Week",
+              list : "Agenda"
             }}
             stickyHeaderDates
             themeSystem="bootstrap5"
             ref={calendarRef}
             aspectRatio={2}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, bootstrap5Plugin]}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin,listPlugin,bootstrap5Plugin]}
             weekends={weekEndAvailability}
             selectable={true}
             events={events}
