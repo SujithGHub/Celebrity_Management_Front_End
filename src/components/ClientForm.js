@@ -14,7 +14,6 @@ export const ClientForm = () => {
   const [wait, setWait] = useState(false);
 
   useEffect(() => {
-    getAllCelebrity();
     getTopics();
     getCategories();
   }, []);
@@ -31,8 +30,12 @@ export const ClientForm = () => {
     })
   }
 
+  const handleClear = () => {
+    setSelectedCelebrities([])
+    setCelebrityDetails({...celebrityDetails, celebrityIds: []})
+  }
+
   const handleCelebrityChange = (event, keyName) => {
-    console.log(keyName, "keyName");
     const newValue = event.target.value
     const selectedIds = typeof newValue === "string" ? newValue.split(",") : newValue;
     if (selectedIds.length <= 3) {
@@ -43,8 +46,13 @@ export const ClientForm = () => {
     }
   };
 
-  const getAllCelebrity = () => {
-    axiosInstance.get(`/celebrity/get-all-celebrity`).then((res) => {
+  const getCelebrityBasedOnCat = (value) => {
+    if (!value) {
+      setCelebrities([]);
+      return
+    }
+    const { id } = value
+    axiosInstance.get(`/celebrity/category/${id}`).then((res) => {
       const activeCelebrities = res.filter(celebrity => celebrity.status === "ACTIVE")
       setCelebrities(activeCelebrities);
     })
@@ -63,7 +71,7 @@ export const ClientForm = () => {
     <>
       {loading ?
         <div className='client-img'>
-          <h2>Thanks for submitting enquiry!!! We will get back soon<a href="/celebrity-details" style={{ textDecoration:'none', paddingLeft: '1rem'}}>Click here</a></h2>
+          <h2>Thanks for submitting enquiry!!! We will get back soon<a href="" target="#" style={{ textDecoration:'none', paddingLeft: '1rem'}}>Click here</a></h2>
           <img src={loader} alt="Computer man" />
         </div>
         :
@@ -74,8 +82,10 @@ export const ClientForm = () => {
                   celebrityDetails={celebrityDetails}
                   celebrities={celebrities} 
                   setCelebrityDetails={setCelebrityDetails} 
+                  getCelebrityBasedOnCat={getCelebrityBasedOnCat}
                   handleCelebrityChange={handleCelebrityChange} 
-                  selectedCelebrities={selectedCelebrities} 
+                  selectedCelebrities={selectedCelebrities}
+                  handleClear={handleClear}
                   topics={topics}
                   selectedTopics={selectedTopics}
                   categories={categories}

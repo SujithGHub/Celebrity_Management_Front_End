@@ -190,7 +190,7 @@ const AdminCalendar = () => {
         eventDidMount={toolTipFunction}
         selectable={true}
       />
-      {/* <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedSchedule} /> */}
+      <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedSchedule} show={"scheduleInfo"}/>
     </div>
   );
 };

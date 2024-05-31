@@ -7,6 +7,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
+import { IconButton, InputAdornment, Typography } from "@mui/material";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -28,7 +30,7 @@ function getStyles(name, selectedNames, theme) {
   };
 }
 
-export default function MultipleSelect({ label, data, names, handleChange, keyName }) {
+export default function MultipleSelect({ label, data, names, handleChange, keyName, handleClear }) {
   const theme = useTheme();
 
   return (
@@ -42,15 +44,25 @@ export default function MultipleSelect({ label, data, names, handleChange, keyNa
           value={names}
           onChange={(e)=>handleChange(e, keyName)}
           input={
-            <OutlinedInput id="select-multiple-chip" label={label} />
+            <OutlinedInput id="select-multiple-chip" endAdornment={
+              (names.length > 0 && keyName != 'topics') && (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClear} edge="start">
+                    <ClearIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            } label={label} />
           }
-          renderValue={() => (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {names.map((name) => (
-                <Chip key={name.id} label={name.name} />
-              ))}
-            </Box>
-          )}
+          renderValue={() => {
+            return (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {names.map((name) => (
+                  <Chip key={name.id} label={name.name} />
+                ))}
+              </Box>
+            )
+          }}
           MenuProps={MenuProps}
         >
           {data.map((rec) => (

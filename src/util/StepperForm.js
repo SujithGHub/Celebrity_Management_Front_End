@@ -12,6 +12,7 @@ import { Autocomplete, Grid, TextField } from "@mui/material";
 import "../css/StepperForm.css";
 import _, { isEmpty } from "lodash";
 import { toast } from "react-toastify";
+import moment, { duration } from "moment/moment";
 
 const steps = ["Organization Details", "Event Details", "Celebrity Details"];
 
@@ -22,9 +23,11 @@ export const StepperForm = ({
   setCelebrityDetails,
   handleCelebrityChange,
   selectedCelebrities,
+  handleClear,
   topics,
   selectedTopics,
   categories,
+  getCelebrityBasedOnCat,
   wait
 }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -121,15 +124,53 @@ export const StepperForm = ({
     setActiveStep(0);
   };
 
+ 
   const changeHandler = (event, key, newValue) => {
     if (key === "startTime" || key === "endTime") {
-      setCelebrityDetails((prev) => ({ ...prev, [key]: event?.$d }));
+      const updatedValue = event?.$d;
+      setCelebrityDetails((prev) => {
+        const newDetails = { ...prev, [key]: updatedValue };
+        if (newDetails.startTime && newDetails.endTime) {
+          newDetails.duration = calculateDuration(newDetails.startTime, newDetails.endTime);
+        }
+        return newDetails;
+      });
     } else if (key === "topic" || key === "category") {
+      if (key === "category") {
+        handleClear();
+        getCelebrityBasedOnCat(newValue);
+      }
       setCelebrityDetails((prev) => ({ ...prev, [key]: newValue }));
     } else {
       const { name, value } = event?.target;
       setCelebrityDetails((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const calculateDuration = (startTime, endTime) => {
+    const startDate = moment(startTime, "MM/DD/YYYY HH:mm:ss");
+    const endDate = moment(endTime, "MM/DD/YYYY HH:mm:ss");
+
+    const diffMilliseconds = endDate.diff(startDate);
+
+    const timeDifferenceInSeconds = diffMilliseconds / 1000;
+
+    const days = Math.floor(timeDifferenceInSeconds / (3600 * 24));
+    const hours = Math.floor((timeDifferenceInSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((timeDifferenceInSeconds % 3600) / 60);
+
+    let durationString = '';
+    if (days > 0) {
+      durationString += `${days} days `;
+    }
+    if (hours > 0) {
+      durationString += `${hours} hours `;
+    }
+    if (minutes > 0) {
+      durationString += `${minutes} minutes`;
+    }
+
+    return durationString.trim();
   };
 
   const stepperJSON = [
@@ -214,7 +255,9 @@ export const StepperForm = ({
         required: true,
         value: celebrityDetails?.duration || "",
         name: "duration",
-        inputType: 'number',
+        inputType: 'text',
+        readOnly :true
+      
       },
       {
         type: "TextField",
@@ -227,6 +270,15 @@ export const StepperForm = ({
     ],
     [
       //3 step
+      {
+        type: 'AutoComplete',
+        label: "Select Category",
+        required: true,
+        value: celebrityDetails?.category || "",
+        options: categories,
+        name: "category",
+        keyName: 'category',
+      },
       {
         type: "Multiselect",
         label: "Select Celebrity",
@@ -249,15 +301,6 @@ export const StepperForm = ({
         names: selectedTopics,
         handleCelebrityChange: handleCelebrityChange,
       },
-      {
-        type: 'AutoComplete',
-        label: "Select Category",
-        required: true,
-        value: celebrityDetails?.category || "",
-        options: categories,
-        name: "category",
-        keyName: 'category',
-      }
     ],
   ];
 
@@ -290,6 +333,7 @@ export const StepperForm = ({
           onChange={(eve) => changeHandler(eve)}
           inputType={data.inputType ? data.inputType : "text"}
           variant="outlined"
+          readOnly={data.readOnly}
         />
       </div>
     );
@@ -306,6 +350,7 @@ export const StepperForm = ({
           setNames={data.setSelectedCelebrityNames} // passing the setState of celebrity names
           keyName={data.keyName}
           handleChange={data.handleCelebrityChange}
+          handleClear={handleClear}
         />
       </div>
     );
@@ -414,11 +459,11 @@ export const StepperForm = ({
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
-              {/* {isStepOptional(activeStep) && (
+              {isStepOptional(activeStep) && (
               <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
                 Skip
               </Button>
-            )} */}
+            )}
 
               <Button disabled={wait}
                 onClick={

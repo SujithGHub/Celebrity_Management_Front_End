@@ -19,9 +19,12 @@ export const TextFieldInput = (props) => {
                 error={props.error}
                 variant={props.variant}
                 onError={props.onError}
-                helperText={props.ErrorText}
+                helperText={props.helperText}
                 type={props.inputType}
-                
+                readOnly={props.readOnly}
+                inputProps={{
+                    readOnly: props.readOnly
+                }}
                 // size="small"
               />
     )

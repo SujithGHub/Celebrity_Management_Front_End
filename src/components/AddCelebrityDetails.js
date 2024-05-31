@@ -38,11 +38,10 @@ export const AddCelebrityDetails = () => {
 
   const handleChange = (event, key) => {
     const selectedValue = event.target.value;
-    const selectedObject = categories.find((option) => option.value === selectedValue);
-    setCelebrityDetails((prevDetails) => ({
-      ...prevDetails,
-      categories: selectedObject,
-    }));
+    console.log(selectedValue, "select");
+    // const selectedObject = categories.find((option) => option.value === selectedValue);
+    const selectedCat = categories.filter(item => item.id === selectedValue.id)
+    setCelebrityDetails((prevDetails) => ({ ...prevDetails, categories: selectedCat }));
   }
 
 
@@ -203,13 +202,12 @@ export const AddCelebrityDetails = () => {
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Categories</InputLabel>
             <Select
-              value={celebrityDetails?.categories || []}
+              value={celebrityDetails?.categories}
               label="Categories"
               name='categories'
-              multiple
-              onChange={(event) => changeHandler(event, 'categories')}
+              onChange={(event) => handleChange(event, 'categories')}
             >
-              {(celebrityDetails?.categories || categories).map((cat) => (
+              {categories && categories.map((cat) => (
                 <MenuItem key={cat.id} value={cat}>
                   {cat.name}
                 </MenuItem>

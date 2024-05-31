@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
+import { isEmpty } from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 
@@ -60,8 +61,23 @@ function ChildModal(props) {
 
 export function CalendarModal(props) {
 
-  // This modal contains a Child Modal
-  
+  // Memoize the formatted event data
+  const formattedEventData = React.useMemo(() => {
+    if (!props.event) return null;
+    
+    return {
+      startTime: moment(props.event.start).format('LLL'),
+      endTime: moment(props.event.end).format('LLL'),
+      title: (props.event.title || '').toUpperCase(),
+      organizerName: props.event.extendedProps?.organizerName || 'N/A',
+      phoneNumber: props.event.extendedProps?.phoneNumber || 'N/A',
+      organizationName: props.event.extendedProps?.organizationName || 'N/A',
+      venue: props.event.extendedProps?.venue || 'N/A'
+    };
+  }, [props.event]);
+
+  if (!formattedEventData) return null; // Render nothing if there is no event data
+
   return (
     <div>
       <Modal
@@ -72,25 +88,29 @@ export function CalendarModal(props) {
       >
         <Box sx={{ ...style }}>
           <Typography id="keep-mounted-modal-description" sx={{ mt: 1 }} >
-            <span>Start Time: {moment(props.event?.start).format('LLL')}</span><br />
-            <span>End Time: {moment(props.event?.end).format('LLL')}</span>
+            <span>Start Time: {formattedEventData.startTime}</span><br />
+            <span>End Time: {formattedEventData.endTime}</span>
           </Typography>
           <Box sx={[style, { textAlign: 'center', width: 500 }]}>
             <Typography id="keep-mounted-modal-title" variant="h5" component="h2" style={{ fontWeight: 'bold', textAlign: 'center' }} >
-              {(props.event?.title).toUpperCase()}
+              {formattedEventData.title}
             </Typography>
             <Typography id="keep-mounted-modal-description" sx={{ mt: 1, ml: 3, textAlign: 'left' }} >
-              <span><b>Organizer Name</b>: {props.event?.extendedProps?.organizerName}</span><br />
-              <span><b>Phone Number</b>: {props.event?.extendedProps?.phoneNumber}</span><br />
-              <span><b>Organization Name</b>: {props.event?.extendedProps?.organizationName}</span><br />
-              <span><b>Event Venue</b>: {props.event?.extendedProps?.venue}</span><br />
-              <span><b>Start Time</b>: {moment(props.event?.start).format('LLL')}</span><br />
-              <span><b>End Time</b>: {moment(props.event?.end).format('LLL')}</span><br />
+              <span><b>Organizer Name</b>: {formattedEventData.organizerName}</span><br />
+              <span><b>Phone Number</b>: {formattedEventData.phoneNumber}</span><br />
+              <span><b>Organization Name</b>: {formattedEventData.organizationName}</span><br />
+              <span><b>Event Venue</b>: {formattedEventData.venue}</span><br />
+              <span><b>Start Time</b>: {formattedEventData.startTime}</span><br />
+              <span><b>End Time</b>: {formattedEventData.endTime}</span><br />
             </Typography>
-            <Typography id="keep-mounted-modal-title" variant="h6" style={{ fontWeight: 'bold', margin: '1rem' }} >
-              Do you want to cancel this Event?
-            </Typography>
-            <ChildModal {...props} />
+            {isEmpty(props.show) ? (
+              <>
+                <Typography id="keep-mounted-modal-title" variant="h6" style={{ fontWeight: 'bold', margin: '1rem' }} >
+                  Do you want to cancel this Event?
+                </Typography>
+                <ChildModal {...props} />
+              </>
+            ) : ""}
           </Box>
         </Box>
       </Modal>
