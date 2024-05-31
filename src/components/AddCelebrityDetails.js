@@ -38,7 +38,6 @@ export const AddCelebrityDetails = () => {
 
   const handleChange = (event, key) => {
     const selectedValue = event.target.value;
-    console.log(selectedValue, "select");
     // const selectedObject = categories.find((option) => option.value === selectedValue);
     const selectedCat = categories.filter(item => item.id === selectedValue.id)
     setCelebrityDetails((prevDetails) => ({ ...prevDetails, categories: selectedCat }));

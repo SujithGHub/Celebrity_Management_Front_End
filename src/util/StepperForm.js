@@ -34,9 +34,13 @@ export const StepperForm = ({
   const [skipped, setSkipped] = useState(new Set());
   const [inputError, setInputError] = useState({
     organizationNameError: false,
-    organizerNameError: false,
+    organizationNameErrorMessage: "",
+    nameError: false,
+    nameErrorMessage: "",
     mailIdError: false,
+    mailIdErrorMessage: "",
     phoneNumberError: false,
+    phoneNumberErrorMessage: ""
   });
 
   const isStepOptional = (step) => {
@@ -47,33 +51,77 @@ export const StepperForm = ({
     return skipped.has(step);
   };
 
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
   const handleNext = () => {
     if (activeStep === 0) {
       if (isEmpty(celebrityDetails?.organizationName)) {
-        setInputError((prev) => ({ ...prev, organizationNameError: true }));
+        setInputError((prev) => ({
+          ...prev,
+          organizationNameError: true,
+          organizationNameErrorMessage: "Organization Name is Required!",
+        }));
         return;
       } else {
-        setInputError((prev) => ({ ...prev, organizationNameError: false }));
+        setInputError((prev) => ({
+          ...prev,
+          organizationNameError: false,
+          organizationNameErrorMessage: "",
+        }));
       }
 
       if (isEmpty(celebrityDetails?.name)) {
-        setInputError((prev) => ({ ...prev, organizerNameError: true }));
+        setInputError((prev) => ({
+          ...prev,
+          nameError: true,
+          nameErrorMessage: "Organizer Name is Required!",
+        }));
         return;
       } else {
-        setInputError((prev) => ({ ...prev, organizerNameError: false }));
+        setInputError((prev) => ({
+          ...prev,
+          nameError: false,
+          nameErrorMessage: "",
+        }));
       }
 
       if (isEmpty(celebrityDetails?.mailId)) {
-        setInputError((prev) => ({ ...prev, mailIdError: true }));
+        setInputError((prev) => ({
+          ...prev,
+          mailIdError: true,
+          mailIdErrorMessage: "Email is required",
+        }));
+        return;
+      } else if (!isValidEmail(celebrityDetails?.mailId)) {
+        setInputError((prev) => ({
+          ...prev,
+          mailIdError: true,
+          mailIdErrorMessage: "Enter a valid email",
+        }));
         return;
       } else {
-        setInputError((prev) => ({ ...prev, mailIdError: false }));
+        setInputError((prev) => ({
+          ...prev,
+          mailIdError: false,
+          mailIdErrorMessage: "",
+        }));
       }
       if (isEmpty(celebrityDetails?.phoneNumber)) {
-        setInputError((prev) => ({ ...prev, phoneNumberError: true }));
+        setInputError((prev) => ({
+          ...prev,
+          phoneNumberError: true,
+          phoneNumberErrorMessage: "Enter Valid Mobile Number",
+        }));
         return;
       } else {
-        setInputError((prev) => ({ ...prev, phoneNumberError: false }));
+        setInputError((prev) => ({
+          ...prev,
+          phoneNumberError: false,
+          phoneNumberErrorMessage: "",
+        }));
       }
     }
     if (activeStep === 1) {
@@ -86,7 +134,7 @@ export const StepperForm = ({
         }
         const oneHr = new Date(startTime.getTime() + 60 * 60 * 1000);
         if (endTime < oneHr) {
-          toast.info("End time must be One hour greater than start time.");
+          toast.info("Event must last at least one hour.");
           return;
         }
       }
@@ -143,6 +191,7 @@ export const StepperForm = ({
       setCelebrityDetails((prev) => ({ ...prev, [key]: newValue }));
     } else {
       const { name, value } = event?.target;
+      setInputError((prev) => ({ ...prev, [name + "Error"]: false, [name + "ErrorMessage"]: "" }));
       setCelebrityDetails((prev) => ({ ...prev, [name]: value }));
     }
   };
@@ -183,14 +232,16 @@ export const StepperForm = ({
         error: inputError.organizationNameError,
         value: celebrityDetails?.organizationName || "",
         name: "organizationName",
+        helperText: inputError.organizationNameErrorMessage
       },
       {
         type: "TextField",
         label: "Contact Person Name",
         required: true,
-        error: inputError.organizerNameError,
+        error: inputError.nameError,
         value: celebrityDetails?.name || "",
         name: "name",
+        helperText: inputError.nameErrorMessage
       },
       {
         type: "TextField",
@@ -200,6 +251,7 @@ export const StepperForm = ({
         value: celebrityDetails?.mailId || "",
         name: "mailId",
         inputType: "email",
+        helperText: inputError.mailIdErrorMessage
       },
       {
         type: "TextField",
@@ -209,6 +261,7 @@ export const StepperForm = ({
         value: celebrityDetails?.phoneNumber || "",
         name: "phoneNumber",
         inputType: "number",
+        helperText: inputError.phoneNumberErrorMessage
       },
     ],
     [
@@ -322,7 +375,7 @@ export const StepperForm = ({
 
   const renderTextFieldInput = (data) => {
     return (
-      <div className="col-5">
+      <div className="col-5" style={{height: '5rem'}}>
         <TextFieldInput
           className="client-text-field"
           label={data.label}
@@ -333,6 +386,7 @@ export const StepperForm = ({
           onChange={(eve) => changeHandler(eve)}
           inputType={data.inputType ? data.inputType : "text"}
           variant="outlined"
+          helperText={data.helperText}
           readOnly={data.readOnly}
         />
       </div>
@@ -382,7 +436,7 @@ export const StepperForm = ({
   const renderStepContent = (activeStep) => {
     return (
       <Box sx={{ flexGrow: 1,marginTop:"2.5rem" }}>
-        <Grid container spacing={2} minHeight={290} sx={{backgroundColor:"initial",boxShadow:"2",borderRadius:"0.5rem",}}>
+        <Grid container spacing={2} minHeight={'22rem'} sx={{backgroundColor:"initial",boxShadow:"2",borderRadius:"0.5rem",}}>
           <div className="client-form-fields">
             {_.map(stepperJSON[activeStep], (stepper) => {
               if (stepper.type === "TextField") {
