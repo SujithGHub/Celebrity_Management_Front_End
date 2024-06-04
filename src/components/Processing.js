@@ -126,7 +126,7 @@ export const Processing = () => {
     },
     {
       field: 'startTime',
-      headerName: 'StartTime',
+      headerName: 'Start Time',
       headerClassName: 'super-app-theme--header',
       type: 'date',
       minWidth: 180,
@@ -138,7 +138,7 @@ export const Processing = () => {
     },
     {
       field: 'endTime',
-      headerName: 'EndTime',
+      headerName: 'End Time',
       headerClassName: 'super-app-theme--header',
       type: 'date',
       minWidth: 180,
@@ -150,7 +150,7 @@ export const Processing = () => {
     },
     {
       field: 'mailId',
-      headerName: 'MailId',
+      headerName: 'Email',
       headerClassName: 'super-app-theme--header',
       type: 'string',
       minWidth: 180,
@@ -177,7 +177,7 @@ export const Processing = () => {
     <div>
       <div className="processing-header">
         {/* <Button className="primary" color="error" title="Back" onClick={() => navigate('/enquiry-details')} ><ArrowBackIcon /></Button> */}
-        <h2>{completed ? 'COMPLETED EVENTS' : 'UPCOMING EVENTS'}</h2>
+        <h2>{completed ? 'Completed Events' : 'Upcomming Events'}</h2>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {/* <Button className='primary' onClick={() => navigate('/celebrity-details')}>Celebrity Details</Button> */}
           <StatusDropDown dropDownItem={dropDownItem} buttonName={'Event'} anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>

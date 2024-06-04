@@ -14,7 +14,7 @@ export const DatePicker = (props) => {
         value={props.value}
         onChange={props.onChange}
         minDate={props.minDate}
-        renderInput={(params) => <TextField required {...params} helperText={props.helperText}/>}
+        renderInput={(params) => <TextField required={props.required} {...params} helperText={props.helperText}/>}
       />
     </LocalizationProvider>
   );

@@ -13,6 +13,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from '../util/Interceptor';
+import MultipleSelect from "../common/MultiSelectDropDown";
+import { getImagePath } from "../util/Validation";
 
 export const AddCelebrityDetails = () => {
 
@@ -24,38 +26,41 @@ export const AddCelebrityDetails = () => {
 
   const [celebrityDetails, setCelebrityDetails] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [updateImage, setUpdateImage] = useState(null);
   const [image, setImage] = useState(null);
   const [value, setValue] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
 
   const changeHandler = (e, key) => {
-    // key === 'dateOfBirth' ? 
-    // setCelebrityDetails((prev) => ({ ...prev,  'dateOfBirth' : moment(e?.$d).format('DD/MM/yyyy')})) 
-    // :
     setCelebrityDetails((prev) => ({ ...prev, [e.target?.name]: e.target?.value, }));
   };
 
   const handleChange = (event, key) => {
     const selectedValue = event.target.value;
-    // const selectedObject = categories.find((option) => option.value === selectedValue);
-    const selectedCat = categories.filter(item => item.id === selectedValue.id)
-    setCelebrityDetails((prevDetails) => ({ ...prevDetails, categories: selectedCat }));
+    const selectedIds = typeof selectedValue === "string" ? selectedValue.split(",") : selectedValue;
+    if (selectedIds.length <= 3) {
+      setSelectedCategories(selectedIds)
+      setCelebrityDetails((prevDetails) => ({ ...prevDetails, [key]: selectedIds }));
+    }
   }
 
-
+  const handleClear = () => {
+    setSelectedCategories([])
+    setCelebrityDetails({...celebrityDetails, categories: []})
+  }
 
 
   useEffect(() => {
     if (CelebrityDetails) {
       if (CelebrityDetails?.CelebrityDetails?.image) {
-        // const file = new File([location.state?.CelebrityDetails?.image], 'celebrity.jpeg', {type:'image/jpeg'});
-        setImage(CelebrityDetails?.CelebrityDetails?.image);
+        // setImage(CelebrityDetails?.CelebrityDetails?.image);
+        setUpdateImage(CelebrityDetails?.CelebrityDetails?.image);
       }
       setValue(CelebrityDetails?.CelebrityDetails?.dateOfBirth)
       setCelebrityDetails(CelebrityDetails?.CelebrityDetails)
     }
-    setCelebrityDetails((prev)=> ({...prev, status : 'ACTIVE'}))
+    setCelebrityDetails((prev)=> ({...prev, status : CelebrityDetails?.CelebrityDetails.status ?CelebrityDetails?.CelebrityDetails.status :'ACTIVE'}))
     getAllCategories();
   }, [CelebrityDetails])
 
@@ -85,7 +90,7 @@ export const AddCelebrityDetails = () => {
     axiosInstance.post(`/celebrity`, formData, { headers: { 'Content-Type': "multipart/form-data" } }).then((res) => {
       toast.success(celebrityDetails?.id ? celebrityDetails.name + " Updated" : "Details Added")
       navigate('/celebrity-details')
-    })
+    }).catch(() => {})
   };
 
   return (
@@ -196,25 +201,19 @@ export const AddCelebrityDetails = () => {
           </FormControl>
         </div>
       </div>
-      <div className="row" style={{ width: '76.5%' }} >
+      <div className="row">
         <div className="col" >
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Categories</InputLabel>
-            <Select
-              value={celebrityDetails?.categories}
-              label="Categories"
-              name='categories'
-              onChange={(event) => handleChange(event, 'categories')}
-            >
-              {categories && categories.map((cat) => (
-                <MenuItem key={cat.id} value={cat}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <MultipleSelect 
+            names={celebrityDetails?.categories ? celebrityDetails?.categories : selectedCategories}
+            label="Categories"
+            name='categories'
+            data={categories}
+            handleChange={handleChange}
+            handleClear={handleClear}
+            keyName={"categories"}
+          />
         </div>
-        <div className="col">
+        <div className="col" style={{display: 'flex', alignItems: 'center', paddingLeft: 0}}>
           <TextField
             style={{ width: "400px" }}
             id="outlined-multiline-flexible"
@@ -230,7 +229,7 @@ export const AddCelebrityDetails = () => {
 
       <div className="row">
         <div className='col' style={{ display: 'flex', width: '400px' }}>
-          {celebrityDetails?.base64Image ? <img src={`data:image/jpeg/png;base64,${celebrityDetails?.base64Image}`} alt={celebrityDetails?.name} width='100px' height='100px'></img> : null}
+          {image ? null : <img src={ updateImage ? getImagePath(updateImage):image } alt={celebrityDetails?.name} width='100px' height='100px'></img> }
           <div style={{ paddingLeft: '1rem' }}>
             <label style={{ width: '140px' }}>{celebrityDetails?.image ? 'Update Image' : 'Upload Image'}</label>
             <input type='file' name='img' accept='.jpeg, .jpg, .png' onChange={(event) => changeImageHandler(event)} ></input>
@@ -239,7 +238,7 @@ export const AddCelebrityDetails = () => {
         <div className="col" style={{ width: '400px' }}>
           <FormControl >
             <FormLabel id="demo-row-radio-buttons-group-label">
-              status
+              Status
             </FormLabel>
             <RadioGroup
               row

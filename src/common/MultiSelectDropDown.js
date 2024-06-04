@@ -54,10 +54,10 @@ export default function MultipleSelect({ label, data, names, handleChange, keyNa
               )
             } label={label} />
           }
-          renderValue={() => {
+          renderValue={(selected) => {
             return (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {names.map((name) => (
+                {selected.map((name) => (
                   <Chip key={name.id} label={name.name} />
                 ))}
               </Box>

@@ -72,11 +72,11 @@ export default function EnquiryDetails() {
     { field: 'eventName', headerName: 'Event Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 110, valueGetter: (row) => {
       return row?.row?.eventName ? row?.row?.eventName : "-"
     } },
-    { field: 'name', headerName: 'Organizer name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
-    { field: 'startTime', headerName: 'Start', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => {
+    { field: 'name', headerName: 'Organizer Name', type: 'string', headerClassName: 'super-app-theme--header', align: 'left', headerAlign: 'left', flex: 1, minWidth: 50 },
+    { field: 'startTime', headerName: 'Start Time', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => {
       return row.row?.startTime ? moment(row.row?.startTime).format('LLL') : "No Date"
     }},
-    { field: 'endTime', headerName: 'End', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => {
+    { field: 'endTime', headerName: 'End Time', type: 'date', headerClassName: 'super-app-theme--header', flex: 1, minWidth: 180, align: 'center', headerAlign: 'center', editable: editable ? true : false, valueGetter: (row) => {
       return row.row?.endTime ? moment(row.row?.endTime).format('LLL') : "No Date"
     }},
     {
@@ -127,7 +127,7 @@ export default function EnquiryDetails() {
 
   const handleEventSubmit = (event, row, key) => {
     event.preventDefault();
-    if (key === "ACCEPTED") {
+    if (key !== "PENDING") {
       if (row?.celebrityIds.length === 1) {
         row = {...row, celebrity : row.celebrityIds[0]}
     }

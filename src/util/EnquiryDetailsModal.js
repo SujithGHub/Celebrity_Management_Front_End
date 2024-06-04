@@ -47,7 +47,12 @@ function BasicModal(props) {
 
   const checkDateError = (date, type) => {
     const newDate = new Date(date).getTime();
+    let startDate;
+    let endDate;
+    let oneHr = new Date(eventToBeEdited?.startTime + 60 * 60 * 1000);
     if (type === "start") {
+      startDate = newDate
+      oneHr = new Date(startDate + 60 * 60 * 1000);
       if (newDate < new Date().getTime()) {
         setFromDateError(true)
         return true;
@@ -56,12 +61,17 @@ function BasicModal(props) {
         return false;
       }
     } else if (type === "end") {
+      endDate = newDate
       const newStartTime = new Date(eventToBeEdited?.startTime).getTime();
       if (newDate < newStartTime) {
         setToDateError(true)
         return true;
       } else {
         setToDateError(false)
+        if (endDate < oneHr) {
+          setFromDateError(true)
+          return true
+        }
         return false;
       }
     } else {

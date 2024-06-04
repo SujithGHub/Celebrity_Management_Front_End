@@ -269,21 +269,21 @@ export const StepperForm = ({
         // 2 step
         type: "TextField",
         label: "Event Name",
-        required: true,
+        required: false,
         value: celebrityDetails?.eventName || "",
         name: "eventName",
       },
       {
         type: "TextField",
         label: "Venue",
-        required: true,
+        required: false,
         value: celebrityDetails?.venue || "",
         name: "venue",
       },
       {
         type: "DateField",
         label: "Start Time",
-        required: true,
+        required: false,
         value: celebrityDetails?.startTime || null,
         name: "startTime",
         minDate: new Date(),
@@ -294,7 +294,7 @@ export const StepperForm = ({
       {
         type: "DateField",
         label: "End Time",
-        required: true,
+        required: false,
         value: celebrityDetails?.endTime || null,
         name: "endTime",
         minDate: celebrityDetails?.startTime,
@@ -305,7 +305,7 @@ export const StepperForm = ({
       {
         type: "TextField",
         label: "Event Duration",
-        required: true,
+        required: false,
         value: celebrityDetails?.duration || "",
         name: "duration",
         inputType: 'text',
@@ -315,7 +315,7 @@ export const StepperForm = ({
       {
         type: "TextField",
         label: "Budget",
-        required: true,
+        required: false,
         value: celebrityDetails?.budget || "",
         name: "budget",
         inputType: 'number',
@@ -326,7 +326,7 @@ export const StepperForm = ({
       {
         type: 'AutoComplete',
         label: "Select Category",
-        required: true,
+        required: false,
         value: celebrityDetails?.category || "",
         options: categories,
         name: "category",
@@ -335,7 +335,7 @@ export const StepperForm = ({
       {
         type: "Multiselect",
         label: "Select Celebrity",
-        required: true,
+        required: false,
         value: celebrityDetails?.celebrityIds || "",
         name: "celebrityIds",
         keyName: "celebrityIds",
@@ -346,7 +346,7 @@ export const StepperForm = ({
       {
         type: "Multiselect",
         label: "Select Topics",
-        required: true,
+        required: false,
         value: celebrityDetails?.topics || "",
         name: "topics",
         keyName: "topics",
