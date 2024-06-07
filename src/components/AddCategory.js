@@ -6,9 +6,10 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import CategoryModal from "../util/CategoryModal";
 import axiosInstance from "../util/Interceptor";
+
 function AddCategory() {
   const [category, setCategory] = useState([]);
-  const [addcategory, setAddCategory] = useState([]);
+  const [, setAddCategory] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [add, setAdd] = useState(false);
   const [selectedCategory, setSelectedCategories] = useState([]);
@@ -28,8 +29,7 @@ function AddCategory() {
   const getAllCategories = () => {
     axiosInstance.get(`/category/get-all-category`).then((res) => {
       setCategory(res);
-      console.log(res, "category");
-    });
+    }).catch(()=>{});
   };
 
   const AddCategory = () => {
@@ -41,11 +41,10 @@ function AddCategory() {
   };
 
   const DeleteCategory = (e, id) => {
-    console.log(id,"id");
     axiosInstance.delete(`/category/remove/${id}`).then((res) => {
       toast.success("Category Deleted Successfully");
       getAllCategories();
-    });
+    }).catch(() => {});
   };
 
   const changeHandler = (e) => {
@@ -73,7 +72,7 @@ function AddCategory() {
     },
     {
       field: "name",
-      headerName: "category Name",
+      headerName: "Name",
       headerClassName: "super-app-theme--header",
       type: "string",
       minWidth: 200,

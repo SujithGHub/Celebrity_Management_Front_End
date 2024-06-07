@@ -4,11 +4,13 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 
-export default function BasicMenu(props) {
+function BasicMenu(props) {
+
+  console.log('rendering');
 
   const getStatusColor = (status) => {
     return (
-      status === 'pending' ? 'info' : status === 'accepted' ? 'success' : 'error'
+      status === 'all' ? 'warning' : status === 'pending' ? 'info' : status === 'accepted' ? 'success' : 'error'
     )
   }
 
@@ -22,7 +24,7 @@ export default function BasicMenu(props) {
 
   const getStatus = (status) => {
     return (
-      status === 'pending' ? <span className='filter-text'>Pending</span> : status === 'accepted' ? <span className='filter-text'>Accepted</span> : <span className='filter-text'>Rejected</span>
+      status === 'all' ? <span className='filter-text'>ALL</span> : status === 'pending' ? <span className='filter-text'>Pending</span> : status === 'accepted' ? <span className='filter-text'>Accepted</span> : <span className='filter-text'>Rejected</span>
     )
   }
 
@@ -64,3 +66,5 @@ export default function BasicMenu(props) {
     </div>
   );
 }
+
+export default React.memo(BasicMenu)

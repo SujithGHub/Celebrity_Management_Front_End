@@ -15,8 +15,11 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
-import { Routes } from './RoutesJson';
+import { getRoutes } from './RoutesJson';
+import { isRoleValidation } from './Validation';
 const drawerWidth = 240;
+
+
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -70,7 +73,9 @@ export default function Layout() {
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
   const [openSubmenu, setOpenSubmenu] = React.useState({});
-
+  const userRole = isRoleValidation();
+  const Routes = getRoutes(userRole);
+  
   React.useEffect(() => {
     setUser(JSON.parse(localStorage.getItem('user')))
     getToken();

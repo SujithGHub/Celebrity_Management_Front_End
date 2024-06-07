@@ -17,10 +17,11 @@ export default function EnquiryDetails() {
   const [open, setOpen] = useState(false);
   const [editable, setEditable] = useState(false);
   const [eventInfo, setEventInfo] = useState([]);
-  const [, setEnquiryList] = useState([]);
+  const [enquiryList, setEnquiryList] = useState([]);
   const [celebrity, setCelebrity] = useState([]);
   const [accepted, setAccepted] = useState(false);
   const [rejected, setRejected] = useState(false);
+  const [allEnquiry,setAllEnquiry]=useState(false);
   const [pending, setPending] = useState(true);
   const [acceptedEnquiry, setAcceptedEnquiry] = useState([]);
   const [rejectedEnquiry, setRejectedEnquiry] = useState([]);
@@ -35,15 +36,24 @@ export default function EnquiryDetails() {
   }, [])
 
   const handleMenuClose = (event, value) => {
-    if (value === 'Accepted') {
+    if(value === 'All'){
+      setAllEnquiry(true);
+      setAccepted(false);
+      setRejected(false);
+      setPending(false);
+    }
+    else if (value === 'Accepted') {
+      setAllEnquiry(false);
       setAccepted(true);
       setRejected(false);
       setPending(false);
     } else if (value === 'Rejected') {
+      setAllEnquiry(false);
       setAccepted(false);
       setRejected(true);
       setPending(false);
     } else {
+      setAllEnquiry(false);
       setPending(true);
       setAccepted(false);
       setRejected(false);
@@ -55,7 +65,7 @@ export default function EnquiryDetails() {
     setAnchorEl(event.currentTarget);
   };
 
-  const dropDownItem = ['Accepted', 'Rejected', 'Pending']
+  const dropDownItem = ['All','Accepted', 'Rejected', 'Pending']
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -168,10 +178,10 @@ export default function EnquiryDetails() {
   return (
     <Box sx={{ height: 400, width: '100%'}}>
       <div style={{ textAlign: 'end', padding: '10px', paddingRight: 0 }} >
-        <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(accepted ? 'accepted' : rejected ? 'rejected' : 'pending')} />
+        <StatusDropDown openMenu={openMenu} anchorEl={anchorEl} handleMenuClose={handleMenuClose} handleClick={handleClick} dropDownItem={dropDownItem} status={(allEnquiry ? 'all' : accepted ? 'accepted' : rejected ? 'rejected' : 'pending')} />
       </div>
       <DataGrid
-        rows={(accepted === true ? acceptedEnquiry : rejected === true ? rejectedEnquiry : pendingEnquiry)}
+        rows={(allEnquiry === true ? enquiryList:accepted === true ? acceptedEnquiry : rejected === true ? rejectedEnquiry : pendingEnquiry)}
         columns={columns}
         autoHeight
         pagination

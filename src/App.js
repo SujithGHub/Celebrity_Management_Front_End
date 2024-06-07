@@ -13,6 +13,7 @@ import { Processing } from './components/Processing';
 import Layout from './util/Layout';
 import AddTopics from './components/AddTopics';
 import AdminCalendar from './components/AdminCalendar';
+import AddAdmin from './components/AddAdmin';
 
 function App() {
   const location = useLocation();
@@ -36,6 +37,8 @@ function App() {
             <Route path="/processing" element={<Processing />} />
             <Route path="/topics" element={<AddTopics />} />
             <Route path="/admin-calendar" element={<AdminCalendar />} />
+            <Route path="/admin-enquiry" element={<><ClientForm /></>} />
+            <Route path="/add-admin" element={<><AddAdmin /></>} />
           </Route>
       </Routes>
       <ToastContainer autoClose={1000} />
