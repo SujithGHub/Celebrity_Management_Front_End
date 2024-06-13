@@ -7,7 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
-import { IconButton, InputAdornment, Typography } from "@mui/material";
+import { IconButton, InputAdornment } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 
 const ITEM_HEIGHT = 48;
@@ -21,23 +21,20 @@ const MenuProps = {
   },
 };
 
-function getStyles(name, selectedNames, theme) {
+function getStyles(rec, names, theme) {
   return {
-    fontWeight:
-      selectedNames.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
+    fontWeight: names.indexOf(rec) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
   };
 }
 
-export default function MultipleSelect({ label, data, names, handleChange, keyName, handleClear }) {
+export default function MultipleSelect({ label, data, width, names, handleChange, keyName, handleClear }) {
   const theme = useTheme();
 
   return (
-    <div>
-      <FormControl sx={{ m: 1, width: 400 }}>
+      <FormControl sx={{ m: 1, width: width ? width : 400 }}>
         <InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
         <Select
+          variant="standard"
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
@@ -45,7 +42,7 @@ export default function MultipleSelect({ label, data, names, handleChange, keyNa
           onChange={(e)=>handleChange(e, keyName)}
           input={
             <OutlinedInput id="select-multiple-chip" endAdornment={
-              (names.length > 0 && keyName != 'topics') && (
+              (names.length > 0) && (
                 <InputAdornment position="end">
                   <IconButton onClick={handleClear} edge="start">
                     <ClearIcon />
@@ -69,13 +66,12 @@ export default function MultipleSelect({ label, data, names, handleChange, keyNa
             <MenuItem
               key={rec.id}
               value={rec}
-              style={getStyles(rec.name, names, theme)}
+              style={getStyles(rec, names, theme)}
             >
               {rec.name}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-    </div>
   );
 }

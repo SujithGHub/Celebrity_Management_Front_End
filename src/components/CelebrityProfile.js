@@ -11,22 +11,21 @@ function CelebrityProfile() {
   const navigate = useNavigate();
 
   const { celebrity } = location?.state;
-  console.log(location,"location");
 
-  const keysToExtract = ['name','mailId', 'phoneNumber', 'gender', 'dateOfBirth', 'categories','address', 'description']
+  const keysToExtract = ['name','mailId', 'topics' ,'phoneNumber', 'gender', 'dateOfBirth', 'categories','location', 'description']
 
   const filteredObject = Object.entries(celebrity).filter(([ key ]) => keysToExtract.includes(key)).reduce((obj, [key,value]) => {
     if (key === 'dateOfBirth') return {...obj, dateOfBirth: moment(value).format("DD-MM-yyyy")}
     if (key === 'gender') return {...obj, gender: value.toUpperCase()}
-    if (key === 'categories') {
-      const categoryNames = value.map(cat => cat.name); // Extracting only the 'name' property from each category
-      return { ...obj, categories: categoryNames.join(",") };
+    if (key === 'categories' || key === "topics") {
+      const names = value.map(cat => cat.name);
+      return { ...obj, [key]: names.join(",") };
     }
     obj[key] = value
     return obj;
   }, {})
   return (
-    <div style={{ paddingLeft: '30px',paddingRight:'30px', display: 'flex' }}>
+    <div style={{ paddingLeft: '15px',paddingRight:'15px', display: 'flex' }}>
       <div>
       <div style={{display: 'flex', flexDirection:'row', justifyContent: 'flex-start', marginBottom: '5px'}}>
         <Button onClick={() => navigate("/celebrity-details")} color='error' title="Back"><ArrowBackIcon /></Button>

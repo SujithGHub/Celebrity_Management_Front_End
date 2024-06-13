@@ -65,10 +65,16 @@ const Calendar = () => {
   const getBlockedDates = useCallback((celebrityId) => {
     axiosInstance.get(`/block-date/getByCelebrityId/${celebrityId}`).then(response => {
       setBlockedDates(response);
-    })
+    }).catch(() => {})
   }, [])
 
-  const getEventTitle = (event) => event.enquiryDetails ? event.enquiryDetails.eventName : "Date is Blocked"
+  const getEventTitle = (event) => {
+    if (event.enquiryDetails) {
+      return event.enquiryDetails.eventName || "Not Available"
+    } else {
+      return "Date is Blocked"
+    }
+  }
   const getEventStart = (event) => {
     if (event?.enquiryDetails) {
       return event?.enquiryDetails?.startTime
@@ -104,13 +110,13 @@ const Calendar = () => {
         display: event.enquiryDetails ? 'list-item' : 'block'
       }))
       setEvents(formattedEvents)
-    })
+    }).catch(() => {})
   }
 
   useEffect(() => {
     axiosInstance.get(`/block-date/getByCelebrityId/${c?.id}`).then(response => {
       setBlockedDates(response);
-    })
+    }).catch(() => {})
   }, [c?.id])
 
   useEffect(() => {
@@ -120,7 +126,7 @@ const Calendar = () => {
 
   const renderSidebar = () => {
     return (
-      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 15px 5px 15px' }}>
+      <div className='demo-app-sidebar' style={{ display: 'flex', justifyContent: 'space-between', padding: '0px 15px 5px 15px' }}>
         <div className='demo-app-sidebar-section' style={{ display: 'flex', flexDirection: 'column', alignItems: 'start', height: '30px' }}>
           <Button onClick={() => navigate('/celebrity-details')} color='error' title='Back'><ArrowBackIcon /></Button>
           <ul style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingLeft: '1.5rem' }}>
@@ -185,7 +191,7 @@ const Calendar = () => {
       setOpen(false);
       toast.success("Event Cancelled");
       getBlockedDates(celebrity?.id);
-    })
+    }).catch(() => {})
   }
 
   // function for Not allowing user to block date if an event is available;
@@ -228,7 +234,7 @@ const Calendar = () => {
       getBlockedDates(celebrity?.id)
       setOpenBlockDate(false);
       toast.success(response?.message);
-    })
+    }).catch(() => {})
   }
 
   const handleUnBlockDate = (id) => {
@@ -236,7 +242,7 @@ const Calendar = () => {
       getBlockedDates(celebrity?.id)
       setOpenUnBlockDate(false);
       toast.success(response?.message)
-    })
+    }).catch(() => {})
   }
 
   const toolTipFunction = (info) => {
@@ -285,9 +291,25 @@ const Calendar = () => {
       const newMonth = new Date(info.view.currentStart).toLocaleString('default', { month: 'long' });
       if (newMonth !== currentMonth) {
         setCurrentMonth(newMonth);
-        // console.log(`Month changed to ${newMonth}`);
       }
     }
+  };
+
+  const displayHeaderView = (arg) => {
+    const viewType = arg.view.type;
+
+    if ( viewType === "timeGridWeek" || viewType === "timeGridDay" || viewType === "listWeek" ) {
+      const formattedDate = arg.date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", });
+      const formattedWeekday = arg.date.toLocaleDateString("en-US", { weekday: "long", });
+      return (
+        <div>
+          <span>{formattedWeekday}</span>
+          <br />
+          <span>{formattedDate}</span>
+        </div>
+      );
+    }
+    return arg.date.toLocaleDateString("en-US", { weekday: "long" });
   };
 
   return (
@@ -310,6 +332,8 @@ const Calendar = () => {
               list : "Agenda"
             }}
             stickyHeaderDates
+            // initialView='timeGridWeek'
+            dayHeaderContent={displayHeaderView}
             themeSystem="bootstrap5"
             ref={calendarRef}
             aspectRatio={2}

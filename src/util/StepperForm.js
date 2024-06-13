@@ -4,21 +4,27 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { TextFieldInput } from "../common/TextField";
 import MultipleSelect from "../common/MultiSelectDropDown";
 import { DatePicker } from "../common/DatePicker";
 import { Autocomplete, Grid, TextField } from "@mui/material";
 import "../css/StepperForm.css";
-import _, { isEmpty } from "lodash";
 import { toast } from "react-toastify";
-import moment, { duration } from "moment/moment";
+import moment from "moment/moment";
+import { isEmpty, isValidMobileNo, getToken } from "./Validation";
+import _ from "lodash";
 
 const steps = ["Organization Details", "Event Details", "Celebrity Details"];
 
 export const StepperForm = ({
   handleSubmit,
-  celebrityDetails,
+  enquiryDetails,
   celebrities,
   setCelebrityDetails,
   handleCelebrityChange,
@@ -27,8 +33,10 @@ export const StepperForm = ({
   topics,
   selectedTopics,
   categories,
-  getCelebrityBasedOnCat,
-  wait
+  getCelebrityBasedOnFilter,
+  accordianExpanded,
+  toggleAccordian,
+  wait,
 }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
@@ -58,7 +66,7 @@ export const StepperForm = ({
 
   const handleNext = () => {
     if (activeStep === 0) {
-      if (isEmpty(celebrityDetails?.organizationName)) {
+      if (isEmpty(enquiryDetails?.organizationName)) {
         setInputError((prev) => ({
           ...prev,
           organizationNameError: true,
@@ -73,7 +81,7 @@ export const StepperForm = ({
         }));
       }
 
-      if (isEmpty(celebrityDetails?.name)) {
+      if (_.isEmpty(enquiryDetails?.name)) {
         setInputError((prev) => ({
           ...prev,
           nameError: true,
@@ -88,14 +96,14 @@ export const StepperForm = ({
         }));
       }
 
-      if (isEmpty(celebrityDetails?.mailId)) {
+      if (_.isEmpty(enquiryDetails?.mailId)) {
         setInputError((prev) => ({
           ...prev,
           mailIdError: true,
           mailIdErrorMessage: "Email is required",
         }));
         return;
-      } else if (!isValidEmail(celebrityDetails?.mailId)) {
+      } else if (!isValidEmail(enquiryDetails?.mailId)) {
         setInputError((prev) => ({
           ...prev,
           mailIdError: true,
@@ -109,7 +117,14 @@ export const StepperForm = ({
           mailIdErrorMessage: "",
         }));
       }
-      if (isEmpty(celebrityDetails?.phoneNumber)) {
+      if (_.isEmpty(enquiryDetails?.phoneNumber)) {
+        setInputError((prev) => ({
+          ...prev,
+          phoneNumberError: true,
+          phoneNumberErrorMessage: "Mobile Number is Required",
+        }));
+        return;
+      } else if (!isValidMobileNo(enquiryDetails.phoneNumber)) {
         setInputError((prev) => ({
           ...prev,
           phoneNumberError: true,
@@ -125,9 +140,9 @@ export const StepperForm = ({
       }
     }
     if (activeStep === 1) {
-      if (celebrityDetails.startTime && celebrityDetails.endTime) {
-        const startTime = new Date(celebrityDetails.startTime);
-        const endTime = new Date(celebrityDetails.endTime);
+      if (enquiryDetails.startTime && enquiryDetails.endTime) {
+        const startTime = new Date(enquiryDetails.startTime);
+        const endTime = new Date(enquiryDetails.endTime);
         if (startTime >= endTime) {
           toast.info("End time must be greater than start time.");
           return;
@@ -155,8 +170,6 @@ export const StepperForm = ({
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
       throw new Error("You can't skip a step that isn't optional.");
     }
 
@@ -183,14 +196,17 @@ export const StepperForm = ({
         }
         return newDetails;
       });
-    } else if (key === "topic" || key === "category") {
-      if (key === "category") {
-        handleClear();
-        getCelebrityBasedOnCat(newValue);
-      }
+    }
+     else if (key === "topic" || key === "category") {
+      // if (key === "category") {
+      //   handleClear();
+      //   getCelebrityBasedOnFilter(newValue, key);
+      // }
       setCelebrityDetails((prev) => ({ ...prev, [key]: newValue }));
-    } else {
-      const { name, value } = event?.target;
+    }
+     else {
+      let { name, value } = event?.target;
+      value = value.trimStart();
       setInputError((prev) => ({ ...prev, [name + "Error"]: false, [name + "ErrorMessage"]: "" }));
       setCelebrityDetails((prev) => ({ ...prev, [name]: value }));
     }
@@ -199,16 +215,12 @@ export const StepperForm = ({
   const calculateDuration = (startTime, endTime) => {
     const startDate = moment(startTime, "MM/DD/YYYY HH:mm:ss");
     const endDate = moment(endTime, "MM/DD/YYYY HH:mm:ss");
-
     const diffMilliseconds = endDate.diff(startDate);
-
     const timeDifferenceInSeconds = diffMilliseconds / 1000;
-
     const days = Math.floor(timeDifferenceInSeconds / (3600 * 24));
     const hours = Math.floor((timeDifferenceInSeconds % (3600 * 24)) / 3600);
     const minutes = Math.floor((timeDifferenceInSeconds % 3600) / 60);
-
-    let durationString = '';
+    let durationString = "";
     if (days > 0) {
       durationString += `${days} days `;
     }
@@ -218,7 +230,6 @@ export const StepperForm = ({
     if (minutes > 0) {
       durationString += `${minutes} minutes`;
     }
-
     return durationString.trim();
   };
 
@@ -230,7 +241,7 @@ export const StepperForm = ({
         label: "Organization Name",
         required: true,
         error: inputError.organizationNameError,
-        value: celebrityDetails?.organizationName || "",
+        value: enquiryDetails?.organizationName || "",
         name: "organizationName",
         helperText: inputError.organizationNameErrorMessage
       },
@@ -239,7 +250,7 @@ export const StepperForm = ({
         label: "Contact Person Name",
         required: true,
         error: inputError.nameError,
-        value: celebrityDetails?.name || "",
+        value: enquiryDetails?.name || "",
         name: "name",
         helperText: inputError.nameErrorMessage
       },
@@ -248,7 +259,7 @@ export const StepperForm = ({
         label: "Email",
         required: true,
         error: inputError.mailIdError,
-        value: celebrityDetails?.mailId || "",
+        value: enquiryDetails?.mailId || "",
         name: "mailId",
         inputType: "email",
         helperText: inputError.mailIdErrorMessage
@@ -258,7 +269,7 @@ export const StepperForm = ({
         label: "Contact Number",
         required: true,
         error: inputError.phoneNumberError,
-        value: celebrityDetails?.phoneNumber || "",
+        value: enquiryDetails?.phoneNumber || "",
         name: "phoneNumber",
         inputType: "number",
         helperText: inputError.phoneNumberErrorMessage
@@ -270,21 +281,21 @@ export const StepperForm = ({
         type: "TextField",
         label: "Event Name",
         required: false,
-        value: celebrityDetails?.eventName || "",
+        value: enquiryDetails?.eventName || "",
         name: "eventName",
       },
       {
         type: "TextField",
         label: "Venue",
         required: false,
-        value: celebrityDetails?.venue || "",
+        value: enquiryDetails?.venue || "",
         name: "venue",
       },
       {
         type: "DateField",
         label: "Start Time",
         required: false,
-        value: celebrityDetails?.startTime || null,
+        value: enquiryDetails?.startTime || null,
         name: "startTime",
         minDate: new Date(),
         helperText: "Start",
@@ -295,9 +306,9 @@ export const StepperForm = ({
         type: "DateField",
         label: "End Time",
         required: false,
-        value: celebrityDetails?.endTime || null,
+        value: enquiryDetails?.endTime || null,
         name: "endTime",
-        minDate: celebrityDetails?.startTime,
+        minDate: enquiryDetails?.startTime,
         helperText: "To",
         inputFormat: "DD/MM/YYYY hh:mm A",
         keyValue: "endTime",
@@ -306,7 +317,7 @@ export const StepperForm = ({
         type: "TextField",
         label: "Event Duration",
         required: false,
-        value: celebrityDetails?.duration || "",
+        value: enquiryDetails?.duration || "",
         name: "duration",
         inputType: 'text',
         readOnly :true
@@ -316,7 +327,7 @@ export const StepperForm = ({
         type: "TextField",
         label: "Budget",
         required: false,
-        value: celebrityDetails?.budget || "",
+        value: enquiryDetails?.budget || "",
         name: "budget",
         inputType: 'number',
       },
@@ -327,7 +338,7 @@ export const StepperForm = ({
         type: 'AutoComplete',
         label: "Select Category",
         required: false,
-        value: celebrityDetails?.category || "",
+        value: enquiryDetails?.category || "",
         options: categories,
         name: "category",
         keyName: 'category',
@@ -336,7 +347,7 @@ export const StepperForm = ({
         type: "Multiselect",
         label: "Select Celebrity",
         required: false,
-        value: celebrityDetails?.celebrityIds || "",
+        value: enquiryDetails?.celebrityIds || "",
         name: "celebrityIds",
         keyName: "celebrityIds",
         data: celebrities,
@@ -347,11 +358,22 @@ export const StepperForm = ({
         type: "Multiselect",
         label: "Select Topics",
         required: false,
-        value: celebrityDetails?.topics || "",
+        value: enquiryDetails?.topics || "",
         name: "topics",
         keyName: "topics",
         data: topics,
         names: selectedTopics,
+        handleCelebrityChange: handleCelebrityChange,
+      },
+      {
+        type: "Multiselect",
+        label: "Select Celebrity",
+        required: false,
+        value: enquiryDetails?.celebrityIds || "",
+        name: "celebrityIds",
+        keyName: "celebrityIds",
+        data: celebrities,
+        names: selectedCelebrities,
         handleCelebrityChange: handleCelebrityChange,
       },
     ],
@@ -393,50 +415,19 @@ export const StepperForm = ({
     );
   };
 
-  const renderMultiSelect = (data) => {
-    return (
-      <div className="col-5">
-        <MultipleSelect
-          className="client-form-field"
-          label={data.label}
-          data={data.data}
-          names={data.names} // state to hold the selected celebrity names
-          setNames={data.setSelectedCelebrityNames} // passing the setState of celebrity names
-          keyName={data.keyName}
-          handleChange={data.handleCelebrityChange}
-          handleClear={handleClear}
-        />
-      </div>
-    );
-  };
-
-  const renderAutoComplete = (data) => {
-    return (
-      <div className="col-5">
-        <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          value={data.value || null}
-          options={data.options}
-          getOptionLabel={(options) => options.name || ""}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          name={data.name}
-          onChange={(event, newValue) =>
-            changeHandler(event, "category", newValue)
-          }
-          sx={{ width: 300 }}
-          renderInput={(params) => (
-            <TextField {...params} name="category" label="Category" />
-          )}
-        />
-      </div>
-    );
-  };
-
   const renderStepContent = (activeStep) => {
     return (
-      <Box sx={{ flexGrow: 1,marginTop:"2.5rem" }}>
-        <Grid container spacing={2} minHeight={'22rem'} sx={{backgroundColor:"initial",boxShadow:"2",borderRadius:"0.5rem",}}>
+      <Box sx={{ flexGrow: 1, marginTop: "2.5rem" }}>
+        <Grid
+          container
+          spacing={2}
+          minHeight={"22rem"}
+          sx={{
+            backgroundColor: "initial",
+            boxShadow: "2",
+            borderRadius: "0.5rem",
+          }}
+        >
           <div className="client-form-fields">
             {_.map(stepperJSON[activeStep], (stepper) => {
               if (stepper.type === "TextField") {
@@ -445,13 +436,87 @@ export const StepperForm = ({
               if (stepper.type === "DateField") {
                 return renderDatePickerInput(stepper);
               }
-              if (stepper.type === "Multiselect") {
-                return renderMultiSelect(stepper);
-              }
-              if (stepper.type === "AutoComplete") {
-                return renderAutoComplete(stepper);
-              }
             })}
+            {activeStep === 2 && (
+              <>
+                <div className="col-8">
+                  <Accordion expanded={accordianExpanded}>
+                    <AccordionSummary
+                      onClick={toggleAccordian}
+                      expandIcon={<ArrowDropDownIcon />}
+                      aria-controls="panel2-content"
+                      id="panel2-header"
+                    >
+                      <Typography>Filter by Category/Topic</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyItems: "center",
+                      }}
+                    >
+                      <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        value={enquiryDetails?.category}
+                        options={categories}
+                        getOptionLabel={(options) => options?.name}
+                        isOptionEqualToValue={(option, value) =>
+                          option?.id === value?.id
+                        }
+                        name={"category"}
+                        onChange={(event, newValue) =>
+                          changeHandler(event, "category", newValue)
+                        }
+                        sx={{ width: 400 }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            name="category"
+                            label="Select Category"
+                          />
+                        )}
+                      />
+                      <MultipleSelect
+                        className="client-form-field"
+                        label={"Select Topics"}
+                        data={topics}
+                        names={selectedTopics}
+                        keyName={"topics"}
+                        handleChange={handleCelebrityChange}
+                        handleClear={() => handleClear('topics')}
+                      />
+                      <Button
+                        color="warning"
+                        onClick={() => getCelebrityBasedOnFilter( enquiryDetails?.category, enquiryDetails?.topics ) }
+                        variant="contained"
+                      >
+                        <FilterAltIcon />
+                      </Button>
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
+                {!accordianExpanded ? <div className="col-8" style={{display: 'flex', alignItems: 'center',}}>
+                    <MultipleSelect
+                      className="client-form-field"
+                      label={"Select Celebrity"}
+                      data={celebrities}
+                      names={selectedCelebrities}
+                      keyName={"celebrityIds"}
+                      handleChange={handleCelebrityChange}
+                      handleClear={() => handleClear("celebrityIds")}
+                    />
+                  <div style={{marginLeft: '2rem'}}>
+                    {selectedCelebrities.map((value, index) => (
+                      <div key={index}>
+                        <span style={{fontWeight: 'bold', marginRight: '10px'}}>Choice {index + 1}: </span>{value.name}
+                      </div>
+                    ))}
+                  </div>
+                </div> : null}
+              </>
+            )}
           </div>
         </Grid>
       </Box>
@@ -459,7 +524,7 @@ export const StepperForm = ({
   };
 
   return (
-    <div className="container" style={{ marginTop: "2rem" }}>
+    <div className="container" style={{marginTop: getToken() ? '1rem' : '2rem'}}>
       <Box sx={{ width: "100%" }}>
         <Stepper activeStep={activeStep}>
           {steps.map((label, index) => {
@@ -493,14 +558,7 @@ export const StepperForm = ({
         ) : (
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
-            <div
-              style={{
-                margin: "auto",
-                //   display: "flex",
-                minHeight: "calc(100vh - 20rem)",
-                justifyItems: "center",
-              }}
-            >
+            <div style={{ margin: "auto", minHeight: "calc(100vh - 20rem)", justifyItems: "center", }}>
               {renderStepContent(activeStep)}
             </div>
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>

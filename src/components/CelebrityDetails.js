@@ -16,7 +16,7 @@ import { getImagePath } from '../util/Validation';
 
 const CelebrityDetails = () => {
   const navigate = useNavigate()
-  const [filter, setFilter] = useState([]);
+  const [, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [celebrity, setCelebrity] = useState([]);
@@ -39,7 +39,7 @@ const CelebrityDetails = () => {
     setLoading(true)
     setSearch("")
     axiosInstance.get(`/celebrity/get-all-celebrity`).then(res => {
-      let result = _.orderBy(res, 'name') 
+      let result = _.orderBy(res, 'name')
       setCelebrity(result);
       let activeFilter = _.filter(result, (res => res.status === "ACTIVE"))
       setActiveCelebrity(activeFilter)
@@ -47,31 +47,28 @@ const CelebrityDetails = () => {
       setInactiveCelebrity(inactiveFilter)
       setFilter(activeFilter);
       setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     })
   }
-  const getByCategory = (e) =>{
-    setSearch(e.target.value)
-    setLoading(true)
-     axiosInstance.get(`/celebrity/search/${e.target.value===null ? " ":e.target.value}`).then(res=>{
-      setCelebrity(res);
-      let activeFilter = _.filter(res, (res => res.status === "ACTIVE"))
-      setActiveCelebrity(activeFilter)
-      let inactiveFilter = _.filter(res, (res => res.status === "INACTIVE"))
-      setInactiveCelebrity(inactiveFilter)
-      setFilter(activeFilter);
-      setLoading(false);
-     })
-  }
 
-  const filterHandler = (e, active) => {
-    const filterResults = filter.filter(item => item.name?.toLowerCase().includes(e.target.value.toLowerCase()))
-    if (active === true) {
-      setActiveCelebrity(filterResults)
-    } else if (active === false) {
-      setInactiveCelebrity(filterResults)
-    }
-    setSearch(e.target.value)
-  }
+  const getByCategory = (e) => {
+    setSearch(e.target.value);
+    setLoading(true);
+    axiosInstance.get(`/celebrity/search?value=${e.target.value}`).then((res) => {
+        setCelebrity(res);
+        let activeFilter = _.filter(res, (res) => res.status === "ACTIVE");
+        setActiveCelebrity(activeFilter);
+        let inactiveFilter = _.filter(res, (res) => res.status === "INACTIVE");
+        setInactiveCelebrity(inactiveFilter);
+        setFilter(activeFilter);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -101,15 +98,11 @@ const CelebrityDetails = () => {
   return (
     <>
       <div>
-        <header className={token ? 'private-header' : 'header'}>
-          {token ? <div style={{ display: "flex", width: '15rem', paddingLeft: '1.5rem' }}>
-            {/* <Button onClick={() => navigate("/processing")} color='error' title="Back"><ArrowBackIcon /></Button> */}
-          </div> : ""}
-          <div >
+        <header className={'private-header'}>
             <TextField
               id="filled-search"
               className="text"
-              onChange={(e)=>e.target.value===""? getAllCelebrity():getByCategory(e)}
+              onChange={getByCategory}
               value={search}
               type="search"
               variant="outlined"
@@ -121,16 +114,14 @@ const CelebrityDetails = () => {
                 },
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                      <SearchIcon />
                   </InputAdornment>
                 ),
               }}
             />
-          </div>
-          {token === null ? "" : <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
-            {/* <Button className="primary" style={{ backgroundColor: '#f5821f' }} variant="contained" title="Add celebrity" onClick={() => navigate('/add-celebrity-details')}><AddIcon /></Button> */}
+            <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
             <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
-          </div>}
+          </div>
         </header>
     {loading ? CIRCLE_WITH_BAR :
         <Box sx={{ flexGrow: 1 }}>
@@ -150,16 +141,20 @@ const CelebrityDetails = () => {
                       </div>
                       <div className="flip-card-back">
                         <div className="celebrity-info-container">
-                          <h6><span>DOB</span>: {moment(celebrityItem.dateOfBirth).format('DD/MM/YYYY')}</h6>
-                          <h6><span>Gender</span>: {celebrityItem.gender?.toUpperCase()}</h6>
-                          {token ? <>
+                          <h6><span>Location</span>: {celebrityItem.location}</h6>
+                          <h6><span>Status</span>: {celebrityItem.status}</h6>
+                          <>
                             <div className="scroll">
                               <h6><span>Email</span>: {celebrityItem.mailId}</h6>
                             </div>
                             <h6><span>Mobile</span>: {celebrityItem.phoneNumber}</h6>
                             <div className="scroll card-address">
-                              <h6><span>Address</span>: {celebrityItem.address}</h6>
-                            </div></> : ""}
+                              <h6><span>Charges</span>: {celebrityItem.charges}</h6>
+                            </div></>
+                          <h5 className="description-header">Category:</h5>
+                          <div>
+                            <p key={index}>{celebrityItem.categories.map(cat => cat.name).join(', ')}</p>
+                          </div>
                           <h5 className="description-header">Description:</h5>
                           <div className={token ? 'scroll description-content1' : 'scroll description-content2'}>
                             <p>{celebrityItem.description}</p>
@@ -185,7 +180,7 @@ const CelebrityDetails = () => {
                             <p style={{ display: 'flex', alignItems: 'center', textAlign: 'end', margin: '0', marginRight: '1rem' }}>{celebrityItem?.name}</p>
                             <div className='divider'></div>
                             <div className="celebrity-profile">
-                              <button variant="outlined" onClick={() => navigate('/client', { state: { celebrity: celebrityItem } })}>BOOK NOW</button>
+                              <button variant="outlined" onClick={() => navigate('/client')}>BOOK NOW</button>
                             </div>
                           </>
                         }

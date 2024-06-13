@@ -137,14 +137,11 @@ export default function EnquiryDetails() {
 
   const handleEventSubmit = (event, row, key) => {
     event.preventDefault();
-    if (key !== "PENDING") {
-      if (row?.celebrityIds.length === 1) {
-        row = {...row, celebrity : row.celebrityIds[0]}
-    }
-  }
-  if (_.isEmpty(row?.celebrity)) {
-    toast.error("Select Celebrity");
-    return
+    if (key !== "REJECTED") {
+      if (_.isEmpty(row?.celebrity)) {
+        toast.error("Select Celebrity");
+        return
+      }
   }
     const acceptedSchedule = { ...row, status: key };
     const schedule = { enquiryDetails: acceptedSchedule };
@@ -154,7 +151,7 @@ export default function EnquiryDetails() {
       toast.success(key === "ACCEPTED" ? "Enquiry Accepted and Email Sent Successfully" : "Event Rejected Successfully");
       setEditable(false);
     }).catch(err => {
-      // toast.error(err?.response?.data?.message)
+      
     });
   };
 

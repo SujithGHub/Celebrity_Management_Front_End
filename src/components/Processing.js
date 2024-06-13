@@ -3,14 +3,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { authHeader } from "../util/Api";
 import { REST_API } from "../util/EndPoints";
 import StatusDropDown from '../util/StatusDropDown';
 
 export const Processing = () => {
-
-  const navigate = useNavigate();
 
   const [pageSize, setPageSize] = useState(5);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -57,12 +54,24 @@ export const Processing = () => {
       headerName: 'Schedule',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 80,
+      minWidth: 30,
       flex: 1,
       editable: false,
       headerAlign: 'left',
       align: 'left',
       valueGetter: (param) => param?.row?.scheduleNo,
+    },
+    {
+      field: 'CelebrityName',
+      headerName: 'Celebrity Name',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
+      minWidth: 120,
+      flex: 1,
+      editable: false,
+      valueGetter: (params) => params.row?.enquiryDetails?.celebrity ? params.row?.enquiryDetails?.celebrity?.name : "-",
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: 'name',
@@ -81,7 +90,7 @@ export const Processing = () => {
       headerName: 'Organization Name',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 50,
+      minWidth: 100,
       flex: 1,
       editable: false,
       headerAlign: 'left',
@@ -101,18 +110,6 @@ export const Processing = () => {
       valueGetter: (param) => param?.row?.enquiryDetails?.eventName
     },
     {
-      field: 'CelebrityName',
-      headerName: 'Celebrity Name',
-      headerClassName: 'super-app-theme--header',
-      type: 'string',
-      minWidth: 150,
-      flex: 1,
-      editable: false,
-      valueGetter: (params) => params.row?.enquiryDetails?.celebrity ? params.row?.enquiryDetails?.celebrity?.name : "-",
-      headerAlign: 'left',
-      align: 'left'
-    },
-    {
       field: 'venue',
       headerName: 'Event Venue',
       headerClassName: 'super-app-theme--header',
@@ -129,7 +126,7 @@ export const Processing = () => {
       headerName: 'Start Time',
       headerClassName: 'super-app-theme--header',
       type: 'date',
-      minWidth: 180,
+      minWidth: 150,
       flex: 1,
       editable: false,
       valueGetter: (param) => moment(param?.row?.enquiryDetails?.startTime).format('LLL'),
@@ -141,7 +138,7 @@ export const Processing = () => {
       headerName: 'End Time',
       headerClassName: 'super-app-theme--header',
       type: 'date',
-      minWidth: 180,
+      minWidth: 150,
       flex: 1,
       editable: false,
       valueGetter: (param) => moment(param?.row?.enquiryDetails?.endTime).format('LLL'),
@@ -153,12 +150,24 @@ export const Processing = () => {
       headerName: 'Email',
       headerClassName: 'super-app-theme--header',
       type: 'string',
-      minWidth: 180,
+      minWidth: 150,
       flex: 1,
       editable: false,
       headerAlign: 'center',
       align: 'left',
       valueGetter: (param) => param?.row?.enquiryDetails?.mailId
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      headerClassName: 'super-app-theme--header',
+      type: 'string',
+      minWidth: 80,
+      flex: 1,
+      editable: false,
+      headerAlign: 'center',
+      align: 'left',
+      valueGetter: (param) => param?.row?.enquiryDetails?.status
     },
     {
       field: 'phoneNumber',

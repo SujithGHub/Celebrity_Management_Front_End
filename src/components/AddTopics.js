@@ -26,11 +26,9 @@ function AddTopics(category) {
     getAllTopics();
   }, []);
 
-  //topics
   const getAllTopics = () => {
     axiosInstance.get(`/topics/get-all-topic`).then((res) => {
       setTopic(res);
-      console.log(res, "topics");
     });
   };
 
@@ -48,18 +46,18 @@ function AddTopics(category) {
     axiosInstance.delete(`/topics/remove/${id}`).then((res) => {
       toast.success("Deleted Successfully");
       getAllTopics();
-    });
+    }).catch(() => {});
   };
+
   const changeHandler = (e) => {
     setSelectedTopic((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
   const combinedRows = topic.map((topicItem, index) => {
     const categoryItem = category[index] || {};
     return { ...topicItem, ...categoryItem };
   });
-  // const checkDisabled =()=>{
-  //   return selectedTopic?false:true
-  // }
+  
   const columns = [
     {
       field: "id",
@@ -79,7 +77,7 @@ function AddTopics(category) {
     },
     {
       field: "name",
-      headerName: "Topics Name",
+      headerName: "Name",
       headerClassName: "super-app-theme--header",
       type: "string",
       minWidth: 100,

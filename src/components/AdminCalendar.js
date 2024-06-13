@@ -9,7 +9,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import _ from 'lodash';
 import moment from 'moment';
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import '../css/Admin.css';
 import axiosInstance from '../util/Interceptor';
 import { CalendarModal } from '../util/CalendarModal';
@@ -23,9 +23,37 @@ const AdminCalendar = () => {
     const [open, setOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState([]);
 
+    const getScheduledEvents = useCallback(async () => {
+      await axiosInstance.get("/schedule/get-all-schedule").then((res) => {
+        const allSchedule = res;
+        const scheduledEvents = allSchedule && _.map(allSchedule, (schedule, key) => ({
+          scheduleId: schedule.id,
+          enquiryId: schedule.enquiryDetails.id,
+          organizationName: schedule.enquiryDetails.organizationName,
+          organizerName: schedule.enquiryDetails.name,
+          email: schedule.enquiryDetails.mailId,
+          venue: schedule.enquiryDetails.venue,
+          mobile: schedule.enquiryDetails.phoneNumber,
+          title: schedule.enquiryDetails.eventName ? schedule.enquiryDetails.eventName : "No Event Name Available!!!",
+          start: schedule.enquiryDetails.startTime || "Not Available!!!",
+          end: schedule.enquiryDetails.endTime,
+          status: getEventStatus(schedule.enquiryDetails),
+          celebrityId: schedule.enquiryDetails.celebrity.id,
+          celebrityName: schedule.enquiryDetails.celebrity.name,
+          celebrityEmail: schedule.enquiryDetails.celebrity.mailId,
+          celebrityMobile: schedule.enquiryDetails.celebrity.phoneNumber,
+          celebrityStatus: schedule.enquiryDetails.celebrity.status,
+          color: getEventColor(schedule.enquiryDetails),
+          display: getEventDisplayStyle(schedule.enquiryDetails),
+        }));
+        setSchedule(scheduledEvents);
+      }).catch(() => {});
+    }, []);
+
+
     useEffect(() => {
         getScheduledEvents();
-    }, []);
+    }, [getScheduledEvents]);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -48,7 +76,7 @@ const AdminCalendar = () => {
 
     const getEventColor = (event) => {
       const { status } = event;
-      return status === "ACCEPTED" ? '#FFFF' : status === "REJECTED" ? "red" : "green"
+      return status === "ACCEPTED" ? '#F5B041' : status === "REJECTED" ? "red" : "green"
     }
 
     const getEventCount = (events, month, status) => {
@@ -78,41 +106,13 @@ const AdminCalendar = () => {
       )
     }
 
-    const getScheduledEvents = () => {
-      axiosInstance.get("/schedule/get-all-schedule").then((res) => {
-        const allSchedule = res;
-        const scheduledEvents = allSchedule && _.map(allSchedule, (schedule, key) => ({
-          scheduleId: schedule.id,
-          enquiryId: schedule.enquiryDetails.id,
-          organizationName: schedule.enquiryDetails.organizationName,
-          organizerName: schedule.enquiryDetails.name,
-          email: schedule.enquiryDetails.mailId,
-          venue: schedule.enquiryDetails.venue,
-          mobile: schedule.enquiryDetails.phoneNumber,
-          title: schedule.enquiryDetails.eventName ? schedule.enquiryDetails.eventName : "No Event Name Available!!!",
-          start: schedule.enquiryDetails.startTime || "Not Available!!!",
-          end: schedule.enquiryDetails.endTime,
-          status: getEventStatus(schedule.enquiryDetails),
-          celebrityId: schedule.enquiryDetails.celebrity.id,
-          celebrityName: schedule.enquiryDetails.celebrity.name,
-          celebrityEmail: schedule.enquiryDetails.celebrity.mailId,
-          celebrityMobile: schedule.enquiryDetails.celebrity.phoneNumber,
-          celebrityStatus: schedule.enquiryDetails.celebrity.status,
-          color: getEventColor(schedule.enquiryDetails),
-          display: getEventDisplayStyle(schedule.enquiryDetails),
-        }));
-        setSchedule(scheduledEvents);
-      });
-    };
-
-
     const handleEventContent = (arg) => {
       let extProps = arg.event.toPlainObject();
       const { status } = extProps.extendedProps
       extProps = extProps.title;
       
       const getStyles = (status) => {
-       return status === 'COMPLETED' ? 'event-display completed' : status === 'ACCEPTED' ? 'event-display accepted' : 'event-display blocked'
+       return status === 'COMPLETED' ? 'event-display completed' : status === 'ACCEPTED' ? 'event-display overall-accepted' : 'event-display blocked'
       }
       return (
         <div className={getStyles(status)}>
@@ -152,6 +152,23 @@ const AdminCalendar = () => {
       setOpen(true)
     }
 
+    const displayHeaderView = (arg) => {
+      const viewType = arg.view.type;
+  
+      if ( viewType === "timeGridWeek" || viewType === "timeGridDay" || viewType === "listWeek" ) {
+        const formattedDate = arg.date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", });
+        const formattedWeekday = arg.date.toLocaleDateString("en-US", { weekday: "long", });
+        return (
+          <div>
+            <span>{formattedWeekday}</span>
+            <br />
+            <span>{formattedDate}</span>
+          </div>
+        );
+      }
+      return arg.date.toLocaleDateString("en-US", { weekday: "long" });
+    };
+
   return (
     <div>
       {renderSidebar()}
@@ -175,6 +192,8 @@ const AdminCalendar = () => {
           week : "Week",
           list : "Agenda"
         }}
+        initialView='timeGridWeek'
+        dayHeaderContent={displayHeaderView}
         ref={calendarRef}
         events={schedule}
         eventContent={handleEventContent} //For modifying event display style

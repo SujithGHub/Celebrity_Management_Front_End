@@ -64,15 +64,16 @@ export function CalendarModal(props) {
   // Memoize the formatted event data
   const formattedEventData = React.useMemo(() => {
     if (!props.event) return null;
-    
+
     return {
       startTime: moment(props.event.start).format('LLL'),
       endTime: moment(props.event.end).format('LLL'),
       title: (props.event.title || '').toUpperCase(),
+      celebrityName: props.event.extendedProps?.celebrityName || 'N/A',
       organizerName: props.event.extendedProps?.organizerName || 'N/A',
       phoneNumber: props.event.extendedProps?.phoneNumber || 'N/A',
       organizationName: props.event.extendedProps?.organizationName || 'N/A',
-      venue: props.event.extendedProps?.venue || 'N/A'
+      venue: props.event.extendedProps?.venue || 'N/A',
     };
   }, [props.event]);
 
@@ -97,8 +98,9 @@ export function CalendarModal(props) {
             </Typography>
             <Typography id="keep-mounted-modal-description" sx={{ mt: 1, ml: 3, textAlign: 'left' }} >
               <span><b>Organizer Name</b>: {formattedEventData.organizerName}</span><br />
-              <span><b>Phone Number</b>: {formattedEventData.phoneNumber}</span><br />
               <span><b>Organization Name</b>: {formattedEventData.organizationName}</span><br />
+              <span><b>Phone Number</b>: {formattedEventData.phoneNumber}</span><br />
+              {!isEmpty(props?.show) ? <><span><b>Celebrity Name</b>: {formattedEventData.celebrityName}</span><br /></> : ""}
               <span><b>Event Venue</b>: {formattedEventData.venue}</span><br />
               <span><b>Start Time</b>: {formattedEventData.startTime}</span><br />
               <span><b>End Time</b>: {formattedEventData.endTime}</span><br />

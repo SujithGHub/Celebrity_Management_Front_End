@@ -6,8 +6,6 @@ import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 
 function BasicMenu(props) {
 
-  console.log('rendering');
-
   const getStatusColor = (status) => {
     return (
       status === 'all' ? 'warning' : status === 'pending' ? 'info' : status === 'accepted' ? 'success' : 'error'

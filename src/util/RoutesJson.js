@@ -6,6 +6,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import TopicIcon from '@mui/icons-material/Topic';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 const commonRoutes = {
     "Enquiry Details": {
@@ -42,10 +43,6 @@ const superAdminRoutes = {
     "Super Admin": {
         icon: <AdminPanelSettingsIcon sx={{ margin: '10px' }} />,
         submenu: {
-            "Add Celebrity": {
-                URL: "/add-celebrity-details",
-                icon: <PersonAddIcon sx={{ margin: '10px' }} />
-            },
             "Topics/Categories": {
                 URL: "/topics",
                 icon: <TopicIcon sx={{ margin: '10px' }} />
@@ -54,10 +51,18 @@ const superAdminRoutes = {
                 URL: '/admin-calendar',
                 icon: <CalendarMonthIcon sx={{ margin: '10px' }} />
             },
+            "Add Event": {
+                URL: '/admin-enquiry',
+                icon: <EventAvailableIcon sx={{ margin: '10px' }} />
+            },
+            "Add Celebrity": {
+                URL: "/add-celebrity-details",
+                icon: <PersonAddIcon sx={{ margin: '10px' }} />
+            },
             "Add Admin": {
                 URL: '/add-admin',
-                icon: <PersonAddIcon sx={{ margin: '10px' }} />
-            }
+                icon: <GroupAddIcon sx={{ margin: '10px' }} />
+            },
         }
     }
 };

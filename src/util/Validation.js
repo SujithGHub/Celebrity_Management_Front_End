@@ -1,6 +1,6 @@
 import { REST_API } from "./EndPoints";
 
-export const isEmpty = value => value === undefined || value === null || value === '' || value.length === 0;
+export const isEmpty = value => value === undefined || value === null || value === '' || value.trim().length === 0;
 
 export const isValidName = (name) => {
     let check = /^[a-zA-Z ]+$/g;
@@ -36,8 +36,7 @@ export function isRoleValidation() {
     if (isAuthenticated) {
         let token = isAuthenticated.split(".")[1];
         let base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-        let jsonPayload = decodeURIComponent(Buffer.from(base64, 'base64').toString('utf-8').split('').map(function (c) {
-            // let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+            let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
         var payload = JSON.parse(jsonPayload);
@@ -51,6 +50,11 @@ export function isRoleValidation() {
 
 export function getImagePath (imagePath)  {
     
-    let imgSrc =  imagePath.replace('/api',`${REST_API}`)
+    let imgSrc =  imagePath?.replace('/api',`${REST_API}`)
     return `${imgSrc}?t=${new Date().getTime()}`
+}
+
+export const getToken = () => {
+    const token = localStorage.getItem('token')
+    return token;
 }

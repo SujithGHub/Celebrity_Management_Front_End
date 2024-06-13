@@ -14,6 +14,7 @@ import Layout from './util/Layout';
 import AddTopics from './components/AddTopics';
 import AdminCalendar from './components/AdminCalendar';
 import AddAdmin from './components/AddAdmin';
+import PageNotFound from './common/PageNotFound';
 
 function App() {
   const location = useLocation();
@@ -27,7 +28,7 @@ function App() {
     <>
     <Routes>
         <Route path="/" element={<AdminLogin />} />
-        <Route path="/client" element={<><ClientForm /></>} />
+          <Route path="/client" element={<><ClientForm /></>} />
           <Route element={<Layout />}>
             <Route path="/enquiry-details" element={<EnquiryDetails />} />
             <Route path="/celebrity-details" element={<><CelebrityDetails /></>} />
@@ -39,6 +40,7 @@ function App() {
             <Route path="/admin-calendar" element={<AdminCalendar />} />
             <Route path="/admin-enquiry" element={<><ClientForm /></>} />
             <Route path="/add-admin" element={<><AddAdmin /></>} />
+            <Route path="*" element={<PageNotFound />} />
           </Route>
       </Routes>
       <ToastContainer autoClose={1000} />

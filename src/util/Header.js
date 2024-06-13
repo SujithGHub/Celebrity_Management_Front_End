@@ -1,6 +1,6 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import * as React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Logo from '../assets/logo1.png';
 import { logout } from './Api';
 
@@ -9,13 +9,12 @@ const settings = { 'Logout': logout };
 
 function Header() {
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   const path = location.pathname;
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [token, setToken] = React.useState('')
+  const [,setToken] = React.useState('')
   const [user, setUser] = React.useState('')
 
   React.useEffect(() => {
@@ -52,7 +51,7 @@ function Header() {
         variant="h6"
         noWrap
         component="a"
-        href="https://innovservices.com/demo/"
+        href="https://innovservices.com/"
         sx={{
           mr: 2,
           display: { xs: 'none', md: 'flex' },
@@ -66,7 +65,7 @@ function Header() {
         <img style={{ cursor: 'pointer' }} alt='Logo' src={Logo} width='80' height='50'></img>
       </Typography>
       <Typography variant='h5' style={{ fontWeight: 'bold', color: 'black',display:'flex',alignItems:'center', fontFamily: 'montserrat' }}>{getName(pages, path)}</Typography>
-      <Box sx={{ flexGrow: 0 }} style={{ display: 'flex'}}>
+      <Box sx={{ flexGrow: 0 }} style={{ display: 'flex', width: '8rem', justifyContent: 'flex-end'}}>
         <Tooltip title="Logout">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0}}>
             <Avatar style={{ background: 'grey' }}>{user?.name?.charAt(0)}</Avatar>
