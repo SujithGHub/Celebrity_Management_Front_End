@@ -8,12 +8,26 @@ import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from '../util/Interceptor';
 import MultipleSelect from "../common/MultiSelectDropDown";
 import { getImagePath } from "../util/Validation";
+
+const buttonStyle = {
+  cursor: 'pointer',
+  color: 'white',
+  backgroundColor: '#1565c0',
+  padding: '0.5rem 1rem',
+  borderRadius: '4px',
+  border: 'none',
+  display: 'inline-block',
+  textAlign: 'center',
+  textDecoration: 'none',
+  fontSize: '1rem',
+  marginLeft:'2rem'
+};
 
 export const AddCelebrityDetails = () => {
 
@@ -228,11 +242,14 @@ export const AddCelebrityDetails = () => {
         <div className='col' style={{ display: 'flex', width: '400px', alignItems: 'center' }}>
           {image ? null : <img src={ updateImage ? getImagePath(updateImage):image } alt={celebrityDetails?.name} width='100px' height='100px'></img> }
           <div style={{ paddingLeft: '1rem' }}>
-            <input type='file' name='img' accept='.jpeg, .jpg, .png' onChange={(event) => changeImageHandler(event)} ></input>
+            <input type='file' name='img' accept='.jpeg, .jpg, .png' onChange={(event) => changeImageHandler(event)} style={{ display: 'none' }} id="fileInput" />
+            <label htmlFor="fileInput" style={buttonStyle} >
+             {celebrityDetails?.name ? "Update" : "Uplode"}
+            </label>
           </div>
         </div>
         <div className="col" style={{ width: '400px' }}>
-          <FormControl style={{display:'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', height: '6rem'}}>
+          <FormControl style={{display:'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: '6rem'}}>
             <FormLabel id="demo-row-radio-buttons-group-label" style={{width: '3rem', marginRight: '2rem'}}>
               Status
             </FormLabel>
@@ -246,12 +263,12 @@ export const AddCelebrityDetails = () => {
               <FormControlLabel
                 value="ACTIVE"
                 control={<Radio checked={celebrityDetails?.status === 'ACTIVE'} />}
-                label="ACTIVE"
+                label="Active"
               />
               <FormControlLabel
                 value="INACTIVE"
                 control={<Radio checked={celebrityDetails?.status === 'INACTIVE'} />}
-                label="INACTIVE"
+                label="InActive"
               />
             </RadioGroup>
           </FormControl>
