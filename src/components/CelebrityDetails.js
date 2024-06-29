@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import CardMedia from "@mui/material/CardMedia";
 import Grid from '@mui/material/Grid';
 import _ from 'lodash';
-import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import Logo from '../assets/Google-Calendar-icon.png';
@@ -19,7 +18,7 @@ const CelebrityDetails = () => {
   const [, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [celebrity, setCelebrity] = useState([]);
+  const [, setCelebrity] = useState([]);
   const [activeCelebrity, setActiveCelebrity] = useState([]);
   const [inactiveCelebrity, setInactiveCelebrity] = useState([]);
   const [active, setActive] = useState(true);
@@ -155,9 +154,9 @@ const CelebrityDetails = () => {
                           <div>
                             <p key={index}>{celebrityItem.categories.map(cat => cat.name).join(', ')}</p>
                           </div>
-                          <h5 className="description-header">Description:</h5>
-                          <div className={token ? 'scroll description-content1' : 'scroll description-content2'}>
-                            <p>{celebrityItem.description}</p>
+                          <h5 className="description-header">Topics:</h5>
+                          <div className={'scroll description-content1'}>
+                            <p>{celebrityItem.topics.map(topic => topic.name).join(', ')}</p>
                           </div>
                         </div>
                       </div>
@@ -167,7 +166,7 @@ const CelebrityDetails = () => {
                         {token ?
                           <>
                             <div className="celebrity-profile">
-                              <button variant="outlined" onClick={() => navigate('/celebrity-profile', { state: { celebrity: celebrityItem } })}>{celebrityItem?.name}</button>
+                              <button variant="outlined" onClick={() => navigate(`/celebrity-profile/${celebrityItem.id}`)}>{celebrityItem?.name}</button>
                             </div>
                             <div className="divider"></div>
                             <Tooltip title='View Calendar'>

@@ -171,18 +171,12 @@ const Calendar = () => {
   const handleEventClick = (clickInfo) => {
     let event = clickInfo.event.toPlainObject();
     let { status } = event.extendedProps
-    if (status === 'REJECTED') {
-      setSnackInfo(event);
-      setOpenSnack(true);
-    } else if (status === 'COMPLETED') {
-      setSnackInfo(event);
-      setOpenSnack(true);
-    } else if (status === 'BLOCKED') {
-      setSnackInfo(event);
-      setOpenSnack(true);
-    } else {
+    if (status === 'ACCEPTED') {
       setSelectedEvent(event);
       setOpen(true);
+    } else {
+      setSnackInfo(event);
+      setOpenSnack(true);
     }
   }
 

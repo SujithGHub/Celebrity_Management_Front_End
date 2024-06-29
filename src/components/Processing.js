@@ -107,7 +107,7 @@ export const Processing = () => {
       editable: false,
       headerAlign: 'left',
       align: 'left',
-      valueGetter: (param) => param?.row?.enquiryDetails?.eventName
+      valueGetter: (param) => param?.row?.enquiryDetails?.eventName ?? "-"
     },
     {
       field: 'venue',
@@ -119,7 +119,7 @@ export const Processing = () => {
       editable: false,
       headerAlign: 'center',
       align: 'center',
-      valueGetter: (param) => param?.row?.enquiryDetails?.venue
+      valueGetter: (param) => param?.row?.enquiryDetails?.venue ?? "-"
     },
     {
       field: 'startTime',

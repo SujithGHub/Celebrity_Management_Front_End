@@ -41,6 +41,7 @@ function BasicModal(props) {
   useEffect(() => {
     checkDateError(eventToBeEdited?.startTime, "start");
     checkDateError(eventToBeEdited?.endTime, "end");
+    // eslint-disable-next-line
   }, [eventToBeEdited?.startTime, eventToBeEdited?.endTime]);
 
   const onChangeHandler = (event) => {
@@ -174,7 +175,7 @@ function BasicModal(props) {
                 style={{ width: "90%" }}
                 placeholder="Organization Name"
                 helperText="Event Organization Name"
-                value={eventToBeEdited?.organizationName}
+                value={eventToBeEdited?.organizationName || ""}
                 inputProps={{ readOnly: true }}
               />
             </div>
@@ -185,7 +186,7 @@ function BasicModal(props) {
                 name="name"
                 placeholder="Organizer Name"
                 helperText="Event Organizer Name"
-                value={eventToBeEdited?.name}
+                value={eventToBeEdited?.name || ""}
                 inputProps={{ readOnly: true }}
               />
             </div>
@@ -198,7 +199,7 @@ function BasicModal(props) {
                 style={{ width: "90%" }}
                 placeholder="Organizer mailId"
                 helperText="Event Organizer mailId"
-                value={eventToBeEdited?.mailId}
+                value={eventToBeEdited?.mailId || ""}
                 inputProps={{ readOnly: true }}
               />
             </div>
@@ -209,7 +210,7 @@ function BasicModal(props) {
                 name="phoneNumber"
                 placeholder="Organizer phoneNumber"
                 helperText="Event Organizer Mobile"
-                value={eventToBeEdited?.phoneNumber}
+                value={eventToBeEdited?.phoneNumber || ""}
                 inputProps={{ readOnly: true }}
               />
             </div>
@@ -222,7 +223,7 @@ function BasicModal(props) {
                 style={{ width: "90%" }}
                 placeholder="Event Venue"
                 helperText="Event Venue"
-                value={eventToBeEdited?.venue}
+                value={eventToBeEdited?.venue || ""}
                 inputProps={{ readOnly: true }}
               />
             </div>
@@ -232,7 +233,7 @@ function BasicModal(props) {
                 style={{ width: "90%" }}
                 placeholder="Event Name"
                 name="eventName"
-                value={eventToBeEdited?.eventName}
+                value={eventToBeEdited?.eventName || ""}
                 onChange={(event) => onChangeHandler(event)}
                 helperText="Event Name"
                 inputProps={{ readOnly: true }}
@@ -248,7 +249,7 @@ function BasicModal(props) {
                 <DateTimePicker
                   name="startTime"
                   minDate={new Date()}
-                  value={eventToBeEdited?.startTime}
+                  value={eventToBeEdited?.startTime || ""}
                   onChange={(newStartTime) =>
                     onDateChange(newStartTime, "start")
                   }
@@ -271,7 +272,7 @@ function BasicModal(props) {
                 <DateTimePicker
                   name="endTime"
                   minDate={eventToBeEdited?.startTime}
-                  value={eventToBeEdited?.endTime}
+                  value={eventToBeEdited?.endTime || ""}
                   onChange={(newEndTime) => onDateChange(newEndTime, "end")}
                   inputFormat="DD/MM/YYYY hh:mm A"
                   renderInput={(params) => (
@@ -309,7 +310,7 @@ function BasicModal(props) {
                     id="combo-box-demo"
                     variant="standard"
                     options={celebrity}
-                    value={eventToBeEdited?.celebrity}
+                    value={eventToBeEdited?.celebrity || null}
                     required
                     sx={{ width: 300 }}
                     isOptionEqualToValue={(option, value) =>

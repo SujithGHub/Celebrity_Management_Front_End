@@ -57,7 +57,7 @@ function BasicMenu(props) {
       >
         {props.dropDownItem.map(item => {
           return (
-            <MenuItem value={item} key={item} onClick={(event) => props.handleMenuClose(event, item)}>{item}</MenuItem>
+            <MenuItem style={{justifyContent: 'center', alignItems: 'center'}} value={item} key={item} onClick={(event) => props.handleMenuClose(event, item)}>{item}</MenuItem>
           )
         })}
       </Menu>

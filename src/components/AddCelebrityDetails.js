@@ -8,18 +8,19 @@ import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import React, { useEffect, useRef, useState } from "react";
+import _ from "lodash";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axiosInstance from '../util/Interceptor';
 import MultipleSelect from "../common/MultiSelectDropDown";
+import axiosInstance from '../util/Interceptor';
 import { getImagePath } from "../util/Validation";
 
 const buttonStyle = {
   cursor: 'pointer',
   color: 'white',
-  backgroundColor: '#1565c0',
-  padding: '0.5rem 1rem',
+  backgroundColor: 'gray',
+  padding: '0.3rem 1rem',
   borderRadius: '4px',
   border: 'none',
   display: 'inline-block',
@@ -34,8 +35,7 @@ export const AddCelebrityDetails = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const CelebrityDetails = location?.state
-
+  const celebrity = location?.state
 
   const [celebrityDetails, setCelebrityDetails] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -47,13 +47,15 @@ export const AddCelebrityDetails = () => {
   const [selectedTopics,setSelectedTopics]=useState([]);
 
 
-  const changeHandler = (e, key) => {
+  const changeHandler = (e) => {
     setCelebrityDetails((prev) => ({ ...prev, [e.target?.name]: e.target?.value, }));
   };
 
   const handleChange = (event, key) => {
     const selectedValue = event.target.value;
-    const selectedIds = typeof selectedValue === "string" ? selectedValue.split(",") : selectedValue;
+    const grouped = _.groupBy(selectedValue, 'id');
+    const uniqueResult = _.flatMap(grouped, group => group.length === 1 ? group : []);
+    const selectedIds = typeof uniqueResult === "string" ? uniqueResult.split(",") : uniqueResult;
     if (key === "categories" && selectedIds.length <= 3) {
       setSelectedCategories(selectedIds)
       setCelebrityDetails((prevDetails) => ({ ...prevDetails, [key]: selectedIds }));
@@ -64,7 +66,7 @@ export const AddCelebrityDetails = () => {
     }
   }
 
-  const handleClear = (event, key) => {
+  const handleClear = (key) => {
     if (key === "categories") {
       setSelectedCategories([])
     } else {
@@ -75,20 +77,23 @@ export const AddCelebrityDetails = () => {
 
 
   useEffect(() => {
-    if (CelebrityDetails) {
-      if (CelebrityDetails?.CelebrityDetails?.image) {
-        // setImage(CelebrityDetails?.CelebrityDetails?.image);
-        setUpdateImage(CelebrityDetails?.CelebrityDetails?.image);
+    if (celebrity) {
+      const celebrityInfo = celebrity?.celebrity;
+      if (celebrityInfo?.image) {
+        setUpdateImage(celebrityInfo?.image);
       }
-      setValue(CelebrityDetails?.CelebrityDetails?.dateOfBirth)
-      setCelebrityDetails(CelebrityDetails?.CelebrityDetails)
-      setSelectedCategories(CelebrityDetails?.CelebrityDetails.categories)
-      setSelectedTopics(CelebrityDetails?.CelebrityDetails.topics)
+      setValue(celebrityInfo?.dateOfBirth);
+      setCelebrityDetails(celebrityInfo);
+      setSelectedCategories(celebrityInfo?.categories);
+      setSelectedTopics(celebrityInfo?.topics);
+      setCelebrityDetails((prev) => ({
+        ...prev,
+        status: celebrityInfo?.status ? celebrityInfo?.status : "ACTIVE",
+      }));
     }
     getAllTopics();
-    setCelebrityDetails((prev)=> ({...prev, status : CelebrityDetails?.CelebrityDetails.status ? CelebrityDetails?.CelebrityDetails.status : 'ACTIVE'}))
     getAllCategories();
-  }, [CelebrityDetails])
+  }, [celebrity]);
 
   const getAllTopics = () => {
     axiosInstance.get(`/topics/get-all-topic`).then((res) => {
@@ -240,11 +245,11 @@ export const AddCelebrityDetails = () => {
 
       <div className="row">
         <div className='col' style={{ display: 'flex', width: '400px', alignItems: 'center' }}>
-          {image ? null : <img src={ updateImage ? getImagePath(updateImage):image } alt={celebrityDetails?.name} width='100px' height='100px'></img> }
+          {image ? image?.name : <img src={ updateImage ? getImagePath(updateImage) : image } alt={celebrityDetails?.name} width='100px' height='100px'></img> }
           <div style={{ paddingLeft: '1rem' }}>
             <input type='file' name='img' accept='.jpeg, .jpg, .png' onChange={(event) => changeImageHandler(event)} style={{ display: 'none' }} id="fileInput" />
             <label htmlFor="fileInput" style={buttonStyle} >
-             {celebrityDetails?.name ? "Update" : "Uplode"}
+             {(celebrityDetails?.name || image) ? "Update" : "Upload"}
             </label>
           </div>
         </div>
@@ -276,10 +281,7 @@ export const AddCelebrityDetails = () => {
       </div>
       <div className="row" style={{width: '50%', display:'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'center'}}>
               <Button style={{width: '5rem', marginRight: '2rem'}} type="submit" variant="contained"> {celebrityDetails?.id ? "Update" : " Add"} </Button>
-        {celebrityDetails?.id ? 
-              <Button style={{width: '5rem'}} onClick={() => navigate('/celebrity-profile', {state: {celebrity: celebrityDetails}})} variant="contained" color="error">Back</Button>
-              :
-              <Button style={{width: '5rem'}} onClick={() => navigate('/celebrity-details', {state: {celebrity: celebrityDetails}})} variant="contained" color="error">Back</Button>}      
+              <Button style={{width: '5rem'}} onClick={() => navigate(celebrityDetails?.id ? `/celebrity-profile/${celebrityDetails?.id}` : '/celebrity-details')} variant="contained" color="error">Back</Button>
       </div>
     </form>
   );

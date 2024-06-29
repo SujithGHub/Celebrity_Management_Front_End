@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 import * as React from 'react';
 
@@ -61,10 +60,11 @@ function ChildModal(props) {
 
 export function CalendarModal(props) {
 
-  // Memoize the formatted event data
+  const admin = props?.show ? true : false
+
   const formattedEventData = React.useMemo(() => {
     if (!props.event) return null;
-
+    
     return {
       startTime: moment(props.event.start).format('LLL'),
       endTime: moment(props.event.end).format('LLL'),
@@ -100,12 +100,12 @@ export function CalendarModal(props) {
               <span><b>Organizer Name</b>: {formattedEventData.organizerName}</span><br />
               <span><b>Organization Name</b>: {formattedEventData.organizationName}</span><br />
               <span><b>Phone Number</b>: {formattedEventData.phoneNumber}</span><br />
-              {!isEmpty(props?.show) ? <><span><b>Celebrity Name</b>: {formattedEventData.celebrityName}</span><br /></> : ""}
+              {admin ? <><span><b>Celebrity Name</b>: {formattedEventData.celebrityName}</span><br /></> : ""}
               <span><b>Event Venue</b>: {formattedEventData.venue}</span><br />
               <span><b>Start Time</b>: {formattedEventData.startTime}</span><br />
               <span><b>End Time</b>: {formattedEventData.endTime}</span><br />
             </Typography>
-            {isEmpty(props.show) ? (
+            {!admin ? (
               <>
                 <Typography id="keep-mounted-modal-title" variant="h6" style={{ fontWeight: 'bold', margin: '1rem' }} >
                   Do you want to cancel this Event?

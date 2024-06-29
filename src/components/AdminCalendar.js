@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import '../css/Admin.css';
 import axiosInstance from '../util/Interceptor';
 import { CalendarModal } from '../util/CalendarModal';
+import SnackBar from '../util/SnackBar';
 
 const AdminCalendar = () => {
 
@@ -22,6 +23,19 @@ const AdminCalendar = () => {
     const [currentMonth, setCurrentMonth] = useState(null);
     const [open, setOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState([]);
+    const [snackInfo, setSnackInfo] = useState(null);
+    const [openSnack, setOpenSnack] = useState(false);
+  
+    const handleSnackOpen = () => {
+      setOpenSnack(true);
+    };
+  
+    const handleSnackClose = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setOpenSnack(false);
+    };
 
     const getScheduledEvents = useCallback(async () => {
       await axiosInstance.get("/schedule/get-all-schedule").then((res) => {
@@ -117,7 +131,7 @@ const AdminCalendar = () => {
       return (
         <div className={getStyles(status)}>
           <ul>
-            <li style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            <li style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
               {extProps}
             </li>
           </ul>
@@ -147,9 +161,17 @@ const AdminCalendar = () => {
 
     const handleSelectEvent = (event) => {
       const scheduleInfo = event?.event?.toPlainObject()
-      // console.log(scheduleInfo.);
-      setSelectedSchedule(scheduleInfo)
-      setOpen(true)
+      console.log(scheduleInfo, "scheduleInfo");
+      if (scheduleInfo) {
+        const { status } = scheduleInfo.extendedProps
+        if (status === "ACCEPTED") {
+          setSelectedSchedule(scheduleInfo);
+          setOpen(true);
+        } else {
+          setOpenSnack(true);
+          setSnackInfo(scheduleInfo);
+        }
+      }
     }
 
     const displayHeaderView = (arg) => {
@@ -210,6 +232,7 @@ const AdminCalendar = () => {
         selectable={true}
       />
       <CalendarModal open={open} handleClose={handleClose} handleOpen={handleOpen} event={selectedSchedule} show={"scheduleInfo"}/>
+      {openSnack && <SnackBar open={openSnack} handleSnackOpen={handleSnackOpen} handleSnackClose={handleSnackClose} event={snackInfo} />}
     </div>
   );
 };

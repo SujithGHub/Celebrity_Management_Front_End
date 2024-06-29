@@ -9,7 +9,7 @@ export const ClientForm = () => {
   const [celebrities, setCelebrities] = useState([]);
   const [categories, setCategories] = useState([]);
   const [enquiryDetails, setCelebrityDetails] = useState(null);
-  const [selectedCelebrities, setSelectedCelebrities] = useState([]);  // To store IDs
+  const [selectedCelebrities, setSelectedCelebrities] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -85,7 +85,6 @@ export const ClientForm = () => {
   const handleSubmit = (e) => {
     setWait(true)
     e.preventDefault();
-    console.log(enquiryDetails, "celebrityDeta");
     axiosInstance.post(`/enquiry`, enquiryDetails).then(res => {
       setLoading(true);
       setWait(false)

@@ -1,16 +1,24 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Button, Tooltip } from '@mui/material';
 import moment from 'moment';
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axiosInstance from '../util/Interceptor';
 import { getImagePath } from '../util/Validation';
 
-function CelebrityProfile() {
+const CelebrityProfile = () => {
 
-  const location = useLocation();
+  const { id } = useParams();
+
+  const [celebrity, setCelebrity] = useState([]);
+
   const navigate = useNavigate();
 
-  const { celebrity } = location?.state;
+  useEffect(() => {
+    axiosInstance
+      .get(`/celebrity/${id}`)
+      .then((res) => setCelebrity(res));
+  }, [id]);
 
   const keysToExtract = ['name','mailId', 'topics' ,'phoneNumber', 'gender', 'dateOfBirth', 'categories','location', 'description']
 
@@ -24,6 +32,7 @@ function CelebrityProfile() {
     obj[key] = value
     return obj;
   }, {})
+  
   return (
     <div style={{ paddingLeft: '15px',paddingRight:'15px', display: 'flex' }}>
       <div>
@@ -36,7 +45,7 @@ function CelebrityProfile() {
         <div className='profile-edit'>
           <h3>{celebrity?.name}'s Profile</h3>
           <Tooltip title='Edit'>
-            <Button variant="text" onClick={() => navigate('/add-celebrity-details', { state: { CelebrityDetails: celebrity } })}>
+            <Button variant="text" onClick={() => navigate('/add-celebrity-details', { state: {celebrity: celebrity}})}>
               Edit Profile
             </Button>
           </Tooltip>

@@ -1,14 +1,13 @@
-import React from "react";
-import { useTheme } from "@mui/material/styles";
+import ClearIcon from '@mui/icons-material/Clear';
+import { IconButton, InputAdornment } from "@mui/material";
 import Box from "@mui/material/Box";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import Chip from "@mui/material/Chip";
+import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
-import Chip from "@mui/material/Chip";
-import { IconButton, InputAdornment } from "@mui/material";
-import ClearIcon from '@mui/icons-material/Clear';
+import React from "react";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -21,14 +20,16 @@ const MenuProps = {
   },
 };
 
-function getStyles(rec, names, theme) {
+function getStyles(rec, names) {
+  const isPresent = names.some(item => item.id === rec.id)
+
   return {
-    fontWeight: names.indexOf(rec) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
+    fontWeight: isPresent ? 600 : 400,
+    backgroundColor : isPresent ? 'rgba(25, 118, 210, 0.08)': 'transparent',
   };
 }
 
 export default function MultipleSelect({ label, data, width, names, handleChange, keyName, handleClear }) {
-  const theme = useTheme();
 
   return (
       <FormControl sx={{ m: 1, width: width ? width : 400 }}>
@@ -42,7 +43,7 @@ export default function MultipleSelect({ label, data, width, names, handleChange
           onChange={(e)=>handleChange(e, keyName)}
           input={
             <OutlinedInput id="select-multiple-chip" endAdornment={
-              (names.length > 0) && (
+              (names?.length > 0) && (
                 <InputAdornment position="end">
                   <IconButton onClick={handleClear} edge="start">
                     <ClearIcon />
@@ -66,7 +67,7 @@ export default function MultipleSelect({ label, data, width, names, handleChange
             <MenuItem
               key={rec.id}
               value={rec}
-              style={getStyles(rec, names, theme)}
+              style={getStyles(rec, names)}
             >
               {rec.name}
             </MenuItem>

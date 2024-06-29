@@ -1,8 +1,7 @@
-import { Autocomplete, Button, FormControl, TextField } from "@mui/material"
-import { TextFieldInput } from "../common/TextField"
-import { useEffect, useState } from "react"
-import axiosInstance from "../util/Interceptor";
+import { Button, FormControl, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import axiosInstance from "../util/Interceptor";
 import { isEmpty } from "../util/Validation";
 
 export default function AddAdmin() {
@@ -15,8 +14,13 @@ export default function AddAdmin() {
 })
 
     useEffect(() => {
-        getRole();
-    }, [])
+      axiosInstance
+        .get(`/role/get-all`, role)
+        .then((res) => {
+          setRole(res);
+        })
+        .catch(() => {});
+    }, [role]);
 
     const changeHandler = (event) => {
       setUserError((prev) => ({ ...prev, [event.target.name + "Error"]: false, }));
@@ -46,13 +50,6 @@ export default function AddAdmin() {
         })
         .catch(() => {});
     };
-
-    const getRole = () => {
-        axiosInstance.get(`/role/get-all`, role).then((res) => {
-            setRole(res);
-        }).catch(() => { })
-    }
-
 
     return (
       <div>
