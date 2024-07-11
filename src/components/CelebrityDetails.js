@@ -125,7 +125,7 @@ const CelebrityDetails = () => {
     {loading ? CIRCLE_WITH_BAR :
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={{ xs: 2 }}>
-            {getActive()?.map((celebrityItem, index) => (
+            {getActive().length > 0 ? getActive().map((celebrityItem, index) => (
               <Grid item xs={12} xl={3} sm={6} md={4} lg={3} key={index}>
                 <div className="celebrity-card">
                   <div className="flip-card" key={celebrityItem.id}>
@@ -188,7 +188,9 @@ const CelebrityDetails = () => {
                   </div>
                 </div>
               </Grid>
-            ))}
+            )) : <div className='container no_record_container'>
+                <h2>No Record Found!!!</h2>  
+                </div>}
           </Grid>
         </Box>}
       </div>
