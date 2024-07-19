@@ -37,7 +37,7 @@ export const AdminLogin = () => {
       toast.success(`Welcome ${name[0].toUpperCase()}!!!`, {
         position: toast.POSITION.TOP_RIGHT
       });
-      navigate("/enquiry-details")
+      navigate("/celebrity-details")
     }).catch(err => {})};
 
   return (

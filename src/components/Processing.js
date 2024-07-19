@@ -41,6 +41,7 @@ export const Processing = () => {
     await axios.get(`${REST_API}/schedule/get-all-schedule`, { headers: authHeader() }).then(res => {
       const response = res.data;
       setSchedule(response);
+      console.log(response, "response");
       setAvailableEvents(response.filter(res => res.enquiryDetails?.startTime > new Date().getTime()));
       setCompletedEvents(response.filter(res => res.enquiryDetails?.startTime < new Date().getTime()));
     }).catch(error => {
@@ -49,18 +50,18 @@ export const Processing = () => {
   }
   
   const columns = [
-    {
-      field: 'scheduleNo',
-      headerName: 'Schedule',
-      headerClassName: 'super-app-theme--header',
-      type: 'string',
-      minWidth: 30,
-      flex: 1,
-      editable: false,
-      headerAlign: 'left',
-      align: 'left',
-      valueGetter: (param) => param?.row?.scheduleNo,
-    },
+    // {
+    //   field: 'scheduleNo',
+    //   headerName: 'Schedule No',
+    //   headerClassName: 'super-app-theme--header',
+    //   type: 'string',
+    //   minWidth: 30,
+    //   flex: 1,
+    //   editable: false,
+    //   headerAlign: 'left',
+    //   align: 'left',
+    //   valueGetter: (param) => param?.row?.scheduleNo,
+    // },
     {
       field: 'CelebrityName',
       headerName: 'Celebrity Name',

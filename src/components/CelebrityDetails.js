@@ -5,7 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Grid from '@mui/material/Grid';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Logo from '../assets/Google-Calendar-icon.png';
 import '../css/Admin.css';
 import axiosInstance from "../util/Interceptor";
@@ -15,6 +15,7 @@ import { getImagePath } from '../util/Validation';
 
 const CelebrityDetails = () => {
   const navigate = useNavigate()
+  const location = useLocation();
   const [, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -32,6 +33,7 @@ const CelebrityDetails = () => {
   useEffect(() => {
     getAllCelebrity();
     getToken();
+    console.log(location.pathname, "path");
   }, []);
 
   const getAllCelebrity = () => {
@@ -55,14 +57,14 @@ const CelebrityDetails = () => {
     setSearch(e.target.value);
     setLoading(true);
     axiosInstance.get(`/celebrity/search?value=${e.target.value}`).then((res) => {
-        setCelebrity(res);
-        let activeFilter = _.filter(res, (res) => res.status === "ACTIVE");
-        setActiveCelebrity(activeFilter);
-        let inactiveFilter = _.filter(res, (res) => res.status === "INACTIVE");
-        setInactiveCelebrity(inactiveFilter);
-        setFilter(activeFilter);
-        setLoading(false);
-      })
+      setCelebrity(res);
+      let activeFilter = _.filter(res, (res) => res.status === "ACTIVE");
+      setActiveCelebrity(activeFilter);
+      let inactiveFilter = _.filter(res, (res) => res.status === "INACTIVE");
+      setInactiveCelebrity(inactiveFilter);
+      setFilter(activeFilter);
+      setLoading(false);
+    })
       .catch((error) => {
         console.error("Error fetching data:", error);
         setLoading(false);
@@ -96,103 +98,103 @@ const CelebrityDetails = () => {
 
   return (
     <>
-      <div>
+      <div style={{ marginTop: token ? "auto" : '2rem' }}>
         <header className={'private-header'}>
-            <TextField
-              id="filled-search"
-              className="text"
-              onChange={getByCategory}
-              value={search}
-              type="search"
-              variant="outlined"
-              placeholder="Search Celebrity..."
-              size="small"
-              InputProps={{
-                style: {
-                  borderRadius: '1rem'
-                },
-                startAdornment: (
-                  <InputAdornment position="start">
-                      <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
-            <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown>
+          <TextField
+            id="filled-search"
+            className="text"
+            onChange={getByCategory}
+            value={search}
+            type="search"
+            variant="outlined"
+            placeholder="Search Celebrity..."
+            size="small"
+            InputProps={{
+              style: {
+                borderRadius: '1rem'
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <div style={{ width: "15rem", display: "flex", justifyContent: "space-around" }}>
+            {token ? <StatusDropDown dropDownItem={dropDownItem} buttonName="Status" anchorEl={anchorEl} handleClick={handleClick} handleMenuClose={handleMenuClose} openMenu={openMenu} ></StatusDropDown> : <Button style={{backgroundColor: 'rgb(245, 130, 31'}} color='secondary' variant="contained" onClick={() => navigate('/client')}>Book Now</Button>}
           </div>
         </header>
-    {loading ? CIRCLE_WITH_BAR :
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={{ xs: 2 }}>
-            {getActive().length > 0 ? getActive().map((celebrityItem, index) => (
-              <Grid item xs={12} xl={3} sm={6} md={4} lg={3} key={index}>
-                <div className="celebrity-card">
-                  <div className="flip-card" key={celebrityItem.id}>
-                    <div className="flip-card-inner">
-                      <div className="flip-card-front">
-                        <CardMedia
-                          component="img"
-                          src={getImagePath(celebrityItem.image)}
-                          style={{ borderRadius: '2rem 0 2rem 0', width: '270px', height: '397px' }}
-                          alt={celebrityItem.name}
-                        />
-                      </div>
-                      <div className="flip-card-back">
-                        <div className="celebrity-info-container">
-                          <h6><span>Location</span>: {celebrityItem.location}</h6>
-                          <h6><span>Status</span>: {celebrityItem.status}</h6>
-                          <>
-                            <div className="scroll">
-                              <h6><span>Email</span>: {celebrityItem.mailId}</h6>
+        {loading ? CIRCLE_WITH_BAR :
+          <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={{ xs: 2 }}>
+              {getActive().length > 0 ? getActive().map((celebrityItem, index) => (
+                <Grid item xs={12} xl={3} sm={6} md={4} lg={3} key={index}>
+                  <div className="celebrity-card">
+                    <div className="flip-card" key={celebrityItem.id}>
+                      <div className={token ? "flip-card-inner" : "flip-card-inner-no-token"}>
+                        <div className="flip-card-front">
+                          <CardMedia
+                            component="img"
+                            src={getImagePath(celebrityItem.image)}
+                            style={{ borderRadius: '2rem 0 2rem 0', width: '270px', height: '397px' }}
+                            alt={celebrityItem.name}
+                          />
+                        </div>
+                        <div className="flip-card-back">
+                          <div className="celebrity-info-container">
+                            <h6><span>Location</span>: {celebrityItem.location}</h6>
+                            <h6><span>Status</span>: {celebrityItem.status}</h6>
+                            <>
+                              <div className="scroll">
+                                <h6><span>Email</span>: {celebrityItem.mailId}</h6>
+                              </div>
+                              <h6><span>Mobile</span>: {celebrityItem.phoneNumber}</h6>
+                              <div className="scroll card-address">
+                                <h6><span>Charges</span>: {celebrityItem.charges}</h6>
+                              </div></>
+                            <h5 className="description-header">Category:</h5>
+                            <div>
+                              <p key={index}>{celebrityItem.categories.map(cat => cat.name).join(', ')}</p>
                             </div>
-                            <h6><span>Mobile</span>: {celebrityItem.phoneNumber}</h6>
-                            <div className="scroll card-address">
-                              <h6><span>Charges</span>: {celebrityItem.charges}</h6>
-                            </div></>
-                          <h5 className="description-header">Category:</h5>
-                          <div>
-                            <p key={index}>{celebrityItem.categories.map(cat => cat.name).join(', ')}</p>
-                          </div>
-                          <h5 className="description-header">Topics:</h5>
-                          <div className={'scroll description-content1'}>
-                            <p>{celebrityItem.topics.map(topic => topic.name).join(', ')}</p>
+                            <h5 className="description-header">Topics:</h5>
+                            <div className={'scroll description-content1'}>
+                              <p>{celebrityItem.topics.map(topic => topic.name).join(', ')}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="card-footer">
-                      <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                        {token ?
-                          <>
-                            <div className="celebrity-profile">
-                              <button variant="outlined" onClick={() => navigate(`/celebrity-profile/${celebrityItem.id}`)}>{celebrityItem?.name}</button>
-                            </div>
-                            <div className="divider"></div>
-                            <Tooltip title='View Calendar'>
-                              <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0, marginLeft: '20px' }} alt="logo" width='30px' height='30px' />}>
-                              </Button>
-                            </Tooltip>
-                          </>
-                          :
-                          <>
-                            <p style={{ display: 'flex', alignItems: 'center', textAlign: 'end', margin: '0', marginRight: '1rem' }}>{celebrityItem?.name}</p>
-                            <div className='divider'></div>
+                      <div className="card-footer">
+                        <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                          {token ?
+                            <>
+                              <div className="celebrity-profile">
+                                <button variant="outlined" onClick={() => navigate(`/celebrity-profile/${celebrityItem.id}`)}>{celebrityItem?.name}</button>
+                              </div>
+                              <div className="divider"></div>
+                              <Tooltip title='View Calendar'>
+                                <Button variant="text" onClick={() => navigate('/event-details', { state: { c: celebrityItem } })} startIcon={<img src={Logo} style={{ marginRight: 0, marginLeft: '20px' }} alt="logo" width='30px' height='30px' />}>
+                                </Button>
+                              </Tooltip>
+                            </>
+                            :
+                            <>
+                              <p style={{ display: 'flex', alignItems: 'center', textAlign: 'end', margin: '0', marginRight: '1rem' }}>{celebrityItem?.name}</p>
+                              {/* <div className='divider'></div>
                             <div className="celebrity-profile">
                               <button variant="outlined" onClick={() => navigate('/client')}>BOOK NOW</button>
-                            </div>
-                          </>
-                        }
+                            </div> */}
+                            </>
+                          }
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Grid>
-            )) : <div className='container no_record_container'>
-                <h2>No Record Found!!!</h2>  
-                </div>}
-          </Grid>
-        </Box>}
+                </Grid>
+              )) : <div className='container no_record_container'>
+                <h2>No Record Found!!!</h2>
+              </div>}
+            </Grid>
+          </Box>}
       </div>
     </>
   );

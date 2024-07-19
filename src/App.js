@@ -27,6 +27,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<AdminLogin />} />
+        <Route path="/book-now" element={<CelebrityDetails />} />
         <Route path="/client" element={<ClientForm />} />
         <Route element={<Layout />}>
           <Route path="/enquiry-details" element={<EnquiryDetails />} />

@@ -67,8 +67,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export default function Layout() {
-  const [token, setToken] = React.useState('');
-  const [user, setUser] = React.useState('')
+  const [, setToken] = React.useState('');
+  const [, setUser] = React.useState('')
   const theme = useTheme();
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
@@ -154,7 +154,7 @@ export default function Layout() {
                   <Collapse in={openSubmenu[key]} timeout="auto" unmountOnExit >
                     <List component="div" disablePadding>
                       {_.map(route.submenu, (subRoute, subKey) => (
-                        <ListItem key={subRoute.URL} disablePadding>
+                        <ListItem onClick={handleDrawerClose} key={subRoute.URL} disablePadding>
                           <ListItemButton
                             component={Link}
                             to={subRoute.URL}
@@ -175,7 +175,7 @@ export default function Layout() {
                   </Collapse>
                 </>
               ) : (
-                <ListItem key={route.URL} disablePadding>
+                <ListItem onClick={handleDrawerClose} key={route.URL} disablePadding>
                   <ListItemButton
                     component={Link}
                     to={route.URL}

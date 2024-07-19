@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import moment from "moment/moment";
 import { isEmpty, isValidMobileNo, getToken } from "./Validation";
 import _ from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const steps = ["Organization Details", "Event Details", "Celebrity Details"];
 
@@ -50,6 +51,8 @@ export const StepperForm = ({
     phoneNumberError: false,
     phoneNumberErrorMessage: ""
   });
+
+  const navigate = useNavigate();
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -165,6 +168,9 @@ export const StepperForm = ({
   };
 
   const handleBack = () => {
+    if(getToken() === null && activeStep === 0) {
+      navigate("/book-now")
+    }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -524,7 +530,7 @@ export const StepperForm = ({
   };
 
   return (
-    <div className="container" style={{marginTop: getToken() ? '1rem' : '2rem'}}>
+    <div className="container" style={{marginTop: getToken() ? '1rem' : '3rem'}}>
       <Box sx={{ width: "100%" }}>
         <Stepper activeStep={activeStep}>
           {steps.map((label, index) => {
@@ -564,8 +570,8 @@ export const StepperForm = ({
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
               <Button
                 color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
+                disabled={getToken() ? activeStep === 0 : false}
+                onClick={() => handleBack()}
                 sx={{ mr: 1 }}
               >
                 Back

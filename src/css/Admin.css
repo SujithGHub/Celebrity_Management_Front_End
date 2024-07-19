@@ -315,6 +315,18 @@ input[type="number"]::-webkit-outer-spin-button {
   border-radius: 2rem 0 2rem 0;
 }
 
+.flip-card-inner-no-token{
+  position: relative;
+  width: 270px;
+  min-height: 400px;
+  text-align: center;
+  transition: transform 1.5s;
+  transform-style: preserve-3d;
+  box-shadow: 0 17px 8px 0 rgb(0 0 0 / 20%);
+  border-radius: 2rem 0 2rem 0;
+  background-color: #f5821f;
+}
+
 .flip-card-front, .flip-card-back {
   position: absolute;
   width: 270px;
