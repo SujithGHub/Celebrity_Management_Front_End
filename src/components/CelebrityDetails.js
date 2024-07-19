@@ -5,7 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Grid from '@mui/material/Grid';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Logo from '../assets/Google-Calendar-icon.png';
 import '../css/Admin.css';
 import axiosInstance from "../util/Interceptor";
@@ -15,7 +15,6 @@ import { getImagePath } from '../util/Validation';
 
 const CelebrityDetails = () => {
   const navigate = useNavigate()
-  const location = useLocation();
   const [, setFilter] = useState([]);
   const [search, setSearch] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -33,7 +32,6 @@ const CelebrityDetails = () => {
   useEffect(() => {
     getAllCelebrity();
     getToken();
-    console.log(location.pathname, "path");
   }, []);
 
   const getAllCelebrity = () => {
